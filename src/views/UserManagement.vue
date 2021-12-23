@@ -18,9 +18,9 @@
           <span class="input-group-text btn-sm" id="basic-addon1">사용유무</span>
           <select class="form-select btn-sm" aria-label="Default select example" v-model="user_param.useflag">
             <option disabled value="">사용유무</option>
-            <option value="">ALL</option>
-            <option value="Y">YES</option>
-            <option value="N">NO</option>
+            <option value="">All</option>
+            <option value="Y">Yes</option>
+            <option value="N">No</option>
           </select>
         </div>
         <!-- <input class="form-control me-2" type="search" placeholder="사용자Id" aria-label="Search" v-model="user_param.userid">
@@ -173,12 +173,28 @@
           {headerName: '조회그룹', field: 'auth'},
           {headerName: 'Role', field: 'role'},
           {headerName: 'Use Role', field: 'use_role'},
-          {headerName: '사용유무', field: 'useflag', cellStyle: {textAlign: "center"}},
+          {headerName: '사용유무', field: 'useflag', cellStyle: {textAlign: "center"},
+            editable: true,
+            cellEditor: 'agRichSelectCellEditor',
+            cellRenderer: useflagCellRenderer,
+            keyCreator: (country) => {
+              return country.name;
+            },
+            cellEditorParams: {
+              cellRenderer: useflagCellRenderer,
+              values: [
+                { name: 'Yes', code: 'Y' },
+                { name: 'No', code: 'N' },
+              ],
+            },
+          },
           {headerName: '지게차 번호', field: 'forklift'},
           {headerName: '비고', field: 'etc'},
           {headerName: '수정자', field: 'upduser'},
           {headerName: '수정일', field: 'upddate', cellStyle: {textAlign: "center"}},
       ]);
+
+      const useflagCellRenderer = (params) => params.value.name;
 
       onMounted(() => {
         console.log("onMounted--");
