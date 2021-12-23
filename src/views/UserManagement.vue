@@ -69,14 +69,6 @@
       @click='saveClick'>저장</button>
     </div>
 
-    <!-- 주석 테스트 -->
-
-    <!-- 주석 테스트2 -->
-
-    <!-- 주석 테스트3 -->
-
-    <!-- 주석 테스트4 -->
-
     <!-- <div class="container">
       <div class="row align-items-start">
         <div class="col">
@@ -183,26 +175,78 @@
           {headerName: 'Use Role', field: 'use_role'},
           {headerName: '사용유무', field: 'useflag', cellStyle: {textAlign: "center"},
             editable: true,
-            cellEditor: 'agRichSelectCellEditor',
+            // cellEditor: 'agRichSelectCellEditor',
+            cellEditor: 'agSelectCellEditor',
             cellRenderer: useflagCellRenderer,
-            keyCreator: (country) => {
-              return country.name;
+            keyCreator: (useflag) => {
+              return useflag.name;
             },
-            cellEditorParams: {
-              cellRenderer: useflagCellRenderer,
-              values: [
-                { name: 'Yes', code: 'Y' },
-                { name: 'No', code: 'N' },
-              ],
+            // cellEditorParams: {
+            //   values: ['Y', 'N'],
+            // },
+            cellEditorParams: function(param){
+              var selectedPlant = getdata(param.data.plantcd);
+              console.log("[selectedPlant]", selectedPlant );
+              if (selectedPlant == 'K143'){
+                return{
+                  values: ['Yes', 'No']
+                };
+              }
+              else{
+                return{
+                  values: ['Y', 'N']
+                };
+              }
+
             },
+            // cellEditorParams: {
+            //   cellRenderer: useflagCellRenderer,
+            //   values: [
+            //     { name: 'Yes', code: 'Y' },
+            //     { name: 'No', code: 'N' },
+            //   ],
+            // },
           },
           {headerName: '지게차 번호', field: 'forklift'},
           {headerName: '비고', field: 'etc'},
           {headerName: '수정자', field: 'upduser'},
-          {headerName: '수정일', field: 'upddate', cellStyle: {textAlign: "center"}},
+          {headerName: '수정일', field: 'upddate', cellStyle: {textAlign: "center"},},
       ]);
+      const useflagCellRenderer = (params) => {
+        console.log("useflagCellRenderer--");
+        params.value.name;
+      };
 
-      const useflagCellRenderer = (params) => params.value.name;
+      var gridOptions = {
+        defaultColDef: {
+          width: 150,
+          editable: true,
+          // filter: 'agTextColumnFilter',
+          // floatingFilter: true,
+          resizable: true,
+          sortable: true,
+          lockPosition: true, //컬럼 드래그로 이동 방지
+          cellStyle: {textAlign: "left"},
+        },
+        columnDefs: columnDefs,
+        rowData: null,
+        rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
+        // GRID READY 이벤트, 사이즈 자동조정
+        onGridReady: function(event) {
+          setTimeout(function () {
+            event.api.setRowData(rowData);
+          }, 1000);
+          event.api.sizeColumnsToFit();
+        },
+        // 창 크기 변경 되었을 때 이벤트
+        onGridSizeChanged: function(event) {
+          event.api.sizeColumnsToFit();
+        },
+        // onRowClicked : function (event){
+        //   console.log(event.username);
+        //   console.log('onRowClicked');
+        // },
+      };
 
       onMounted(() => {
         console.log("onMounted--");
@@ -225,7 +269,6 @@
         const selectedDataStringPresentation = selectedData.map( node => `${node.make} ${node.model}`).join(', ');
         alert(`Selected nodes: ${selectedDataStringPresentation}`);
       };
-
       function searchClick() {  //getPhots함수는 메서드정의. 할때는 반드시 function 키워드쓴다
         let sendData = url.value
                      + "/dw_userList?"
@@ -272,39 +315,6 @@
           console.error(err)
         })
       }
-
-      var gridOptions = {
-        defaultColDef: {
-          width: 150,
-          editable: true,
-          // filter: 'agTextColumnFilter',
-          // floatingFilter: true,
-          resizable: true,
-          sortable: true,
-          lockPosition: true, //컬럼 드래그로 이동 방지
-          cellStyle: {textAlign: "left"},
-        },
-        columnDefs: columnDefs,
-        rowData: null,
-        rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
-        // GRID READY 이벤트, 사이즈 자동조정
-        onGridReady: function(event) {
-          setTimeout(function () {
-            event.api.setRowData(rowData);
-          }, 1000);
-          event.api.sizeColumnsToFit();
-        },
-        // 창 크기 변경 되었을 때 이벤트
-        onGridSizeChanged: function(event) {
-          event.api.sizeColumnsToFit();
-        },
-        onRowClicked : function (event){
-          console.log(event.username);
-          console.log('onRowClicked');
-        },
-
-      };
-
       function createNewRowData() {
         var newData = {
           userid:"",
@@ -438,21 +448,21 @@
           console.error(err)
         });
       }
-      // // 스트링 처리를 한다.
-      // function getdata (data){
-      //   let rtn = "";
-      //   if (data != null){
-      //     var npos1 = data.indexOf("[",0);
-      //     var npos2 = data.indexOf("]",0);
-      //     if (npos1 > -1 && npos2 > -1){
-      //       rtn = data.substring(npos1 + 1, npos2 )
-      //     }
-      //     else{
-      //       rtn = data;
-      //     }
-      //   }
-      //   return rtn;
-      // }
+      // 스트링 처리를 한다.
+      function getdata (data){
+        let rtn = "";
+        if (data != null){
+          var npos1 = data.indexOf("[",0);
+          var npos2 = data.indexOf("]",0);
+          if (npos1 > -1 && npos2 > -1){
+            rtn = data.substring(npos1 + 1, npos2 )
+          }
+          else{
+            rtn = data;
+          }
+        }
+        return rtn;
+      }
 
       return {
         AA: "안녕하세요",
