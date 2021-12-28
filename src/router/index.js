@@ -4,13 +4,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    name: 'Login1',
+    name: 'Root',
     redirect: '/home'
   },
   {
     path: '/login',
-    name: 'Login2',
-    component: () => import('../views/Login.vue')
+    name: 'Login',
+    component: () => import('../components/Login.vue')
   },
   {
     path: '/home',
@@ -60,5 +60,17 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
+router.beforeEach((to, from, next) => {
+  const publicPages = ['Login', 'Register'];
+  const authRequired = !publicPages.includes(to.name);
+  const loggedIn = localStorage.getItem('user');
+
+  if (authRequired && !loggedIn) {
+    router.push({name: 'Login', query: { to: to.path }});
+  } else {
+    next();
+  }
+});
 
 export default router
