@@ -16,9 +16,11 @@
 </template>
 
 <script>
+// import { provide } from "vue";
 import MainHeader from './components/layout/MainHeader.vue'
 import MenuTree from './components/layout/MenuTree.vue'
 // import MainFooter from './components/layout/MainFooter.vue'
+import global from "@/global";
 
 export default {
   name: 'App',
@@ -26,6 +28,12 @@ export default {
     MainHeader,
     MenuTree,
     // MainFooter,
+  },
+  provide(){
+    return{
+      injectProps:'test',
+      global: global,
+    }
   }
 }
 </script>
