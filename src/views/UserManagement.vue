@@ -120,12 +120,10 @@
 </template>
 <script>
   // import Search from '@/components/form/Search.vue'
-  import { reactive, ref, onMounted } from 'vue'
-  import axios from 'axios'
-
+  // import { reactive, ref, onMounted, getCurrentInstance, inject } from 'vue'
+  import { reactive, ref, onMounted, inject } from 'vue'
   import 'ag-grid-community/dist/styles/ag-grid.css';
   import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
-
   import {AgGridVue} from 'ag-grid-vue3'
 
   export default {
@@ -145,16 +143,23 @@
     //   }
     // },
     setup(){
-      console.log("setup--");
+      console.log("[setup--]");
+      const global = inject('global');
+      console.log("[global.server.url] --", global.server.url);
+
+      // const app = getCurrentInstance();
+      // const $axios = app.appContext.config.globalProperties.$axios;
+      // const $url_rest = app.appContext.config.globalProperties.$url_rest;
+
+      const $axios = global.axios;
+      const $url_rest = global.server.url;
 
       let rowData = reactive([]);
       // let rtnmsg = reactive([]);
       // let selData = reactive({userid:"", username:"", plant:"", workcenter:"", warehoue:""
       //                       , auth:"", role:"", use_role:"", uesflag:"", forklift:""
       //                       , etc:"", upduser:"", upddate:""});
-
-      // let url = ref("http://localhost:8090");
-      let url = ref("http://192.168.134.15:8090");
+      let url = ref($url_rest);
 
       let gridApi = ref(null);
       let columnApi = ref(null);
@@ -277,7 +282,7 @@
                      + "&useflag=" + user_param.useflag;
 
         console.log("[sendData", sendData);
-        axios.get(sendData)
+        $axios.get(sendData)
         //   headers: {
         //     'Content-Type': 'application/json; charset = utf-8'
         //   }
@@ -299,7 +304,7 @@
         console.log("[user_param.username]", user_param.username);
         console.log("[user_param.useflag]", user_param.useflag);
 
-        axios.post(urlPost, {
+        $axios.post(urlPost, {
           userid: user_param.userid,
           username: user_param.username,
           useflag: user_param.useflag,
@@ -323,7 +328,6 @@
         };
         return newData;
       }
-
       function addClick() {
         var newItem = createNewRowData();
         // 맨밑에 추가
@@ -360,7 +364,7 @@
 
       //     let urlPost = url.value + '/dw_usersaveList_p';
 
-      //     axios.post(urlPost, {
+      //     $axios.post(urlPost, {
       //       lang:       "KR",
       //       type:       sType,
       //       userid:     selectedData[i].userid,
@@ -416,7 +420,7 @@
         console.log("[checked row]", selectedData);
 
         let urlPost = url.value + '/dw_usersaveList_p_j';
-        axios.post(urlPost, {
+        $axios.post(urlPost, {
           lang:       "KR",
           type:       sType,
           upduser:    "ADMIN",
@@ -463,7 +467,14 @@
         }
         return rtn;
       }
-
+      function getPhotos () {  //getPhots함수는 메서드정의. 할때는 반드시 function 키워드쓴다
+        $axios.get('https://jsonplaceholder.typicode.com/photos?_page=1&_limit=5')
+        .then((res) => {
+          this.photos = res.data
+        }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+          //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+        .catch(err => console.error(err))
+      }
       return {
         AA: "안녕하세요",
         BB: "반갑습니다.",
@@ -493,8 +504,10 @@
         addClick,
         deleteClick,
         saveClick,
+        getPhotos,
       };
     },
+
     components: {
       AgGridVue,
       // Search,
@@ -509,14 +522,6 @@
       console.log("mounted--");
     },
     methods: {
-      getPhotos: function () {  //getPhots함수는 메서드정의. 할때는 반드시 function 키워드쓴다
-        axios.get('https://jsonplaceholder.typicode.com/photos?_page=1&_limit=5')
-        .then((res) => {
-          this.photos = res.data
-        }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
-          //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
-        .catch(err => console.error(err))
-      },
       makeData () {
         console.log("makeData--");
         // this.rowData = [
@@ -551,9 +556,6 @@
       fitColumnsSize(params) {
           params.api.sizeColumnsToFit();
       }, //컬럼의 데이터에 맞춰서 사이즈 조절
-
-
-
       // 무한 스크롤 정의
       handleNotificationListScroll(e) {
         const { scrollHeight, scrollTop, clientHeight } = e.target;
