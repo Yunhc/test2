@@ -1,10 +1,12 @@
 // Vue 3
-import { createStore } from 'vuex'
+// import {provide, inject} from 'vue';
+// import { createStore, Store } from 'vuex';
+import { createStore } from 'vuex';
+import { auth } from './modules/auth';
+
 
 export default createStore({
-  state() {
-    return {
-      author: "jake",
-    };
+  modules: {
+    auth,
   },
 });
