@@ -7,15 +7,35 @@
     </div>
     <div align="right" class="right-box">
       <button type="button" class="btn btn-outline-dark btn-sm"
-        :style="{ margin:'3px', background:'rgb(31, 156, 93)', border:'rgb(31, 156, 93)', color:'white'}">
+        :style="{ margin:'3px', background:'rgb(31, 156, 93)', border:'rgb(31, 156, 93)', color:'white'}"
+        @click=handleLogout>
         Logout
       </button>
     </div>
   </div>
 </template>
 <script>
+  import {useStore} from 'vuex';
+  import {useRouter} from 'vue-router';
+
   export default{
-    name:"header"
+    name:"header",
+    setup(){
+      const store = useStore();	//스토어호출
+      const router = useRouter();	//라우터호출
+
+      function handleLogout() {
+        store.dispatch("auth/logout");
+
+        console.log("[handleLogout] = loggedUser --", store.state.auth.user);
+				console.log("[handleLogout] = loggedIn --", store.state.auth.status.loggedIn);
+        router.push({ path: "/login" });
+      }
+
+      return{
+        handleLogout,
+      }
+    }
   };
 </script>
 
