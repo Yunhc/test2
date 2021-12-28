@@ -21,7 +21,6 @@
 import {ref} from 'vue'
 import {useStore} from 'vuex';
 import {useRouter} from 'vue-router';
-// import User from '../models/user';
 
 export default {
 	setup(){
@@ -34,7 +33,7 @@ export default {
 		let loading = ref(null);
 
 		const store = useStore();	//스토어호출
-		const router = useRouter();	//스토어호출
+		const router = useRouter();	//라우터호출
 
 		user.value.userid = "ADMIN";
 		user.value.password = "wavelink";
