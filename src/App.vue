@@ -6,9 +6,16 @@
     <div id="menutree">
       <MenuTree />
     </div>
-    <div id="body">
+    <div id="body"
+      :style="{
+        'height': `calc(${window_height - 119}px)`
+      }"
+    >
         <router-view/>
     </div>
+    <!-- <div>
+      {{ window_width }}, {{ window_height }}
+    </div> -->
     <!-- <div id="footer">
       <MainFooter />
     </div> -->
@@ -17,6 +24,7 @@
 
 <script>
 // import { provide } from "vue";
+import {onMounted, onUnmounted, ref} from 'vue'
 import MainHeader from './components/layout/MainHeader.vue'
 import MenuTree from './components/layout/MenuTree.vue'
 // import MainFooter from './components/layout/MainFooter.vue'
@@ -24,6 +32,31 @@ import global from "@/global";
 
 export default {
   name: 'App',
+  setup() {
+    console.log("[App] = setup -- ");
+
+    let window_width = ref(window.innerWidth);
+		let window_height = ref(window.innerHeight);
+
+		onMounted(() => {
+			console.log("[login] = ", "onMounted--");
+			window.addEventListener('resize', handleResize);
+    });
+
+		onUnmounted(() =>{
+			console.log("[login] = onUnmounted -- ");
+			// window.addEventListener('resize', handleResize);
+		});
+
+		function handleResize() {
+			window_width.value = window.innerWidth;
+			window_height.value = window.innerHeight;
+    }
+    return {
+			window_width,
+			window_height,
+		};
+  },
   created () {
     console.log("[App] = process.env -- ", process.env);
   },
@@ -66,7 +99,11 @@ export default {
   }
   #body{
     width:100%;
-    height:100%;
+    // height:100%;
+    // height:929px;
+    // height : 100%;
+    // background-color:yellow;
+    // border-top:1px solid #070707;
     // border-bottom:1px solid #070707;
   }
   // #footer{
