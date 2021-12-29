@@ -121,7 +121,8 @@
 <script>
   // import Search from '@/components/form/Search.vue'
   // import { reactive, ref, onMounted, getCurrentInstance, inject } from 'vue'
-  import { reactive, ref, onMounted, inject } from 'vue'
+  import $axios from 'axios';
+  import { reactive, ref, onMounted} from 'vue'
   import 'ag-grid-community/dist/styles/ag-grid.css';
   import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
   import {AgGridVue} from 'ag-grid-vue3'
@@ -143,16 +144,18 @@
     //   }
     // },
     setup(){
-      console.log("[setup--]");
-      const global = inject('global');
-      console.log("[global.server.url] --", global.server.url);
+      // console.log("[setup--]");
+      // const global = inject('global');
+      // console.log("[global.server.url] --", global.server.url);
 
       // const app = getCurrentInstance();
       // const $axios = app.appContext.config.globalProperties.$axios;
       // const $url_rest = app.appContext.config.globalProperties.$url_rest;
 
-      const $axios = global.axios;
-      const $url_rest = global.server.url;
+      // const $axios = global.axios;
+      // const $url_rest = global.server.url;
+
+      const $url_rest = process.env.VUE_APP_SERVER_URL;
 
       let rowData = reactive([]);
       // let rtnmsg = reactive([]);
