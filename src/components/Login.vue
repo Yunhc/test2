@@ -1,7 +1,7 @@
 <template>
+	<!-- <div class="wrap" :style="{ height:'window_height'}"> -->
 	<div class="wrap">
 		<div class="center_box">
-
 			<div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
 				<span class="input-group-text btn-sm" id="basic-addon1">사용자ID</span>
 				<input type="text" class="form-control btn-sm" placeholder="UserID" aria-label="UserID" aria-describedby="basic-addon1" v-model="user.userid">
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import {ref} from 'vue'
+import {onMounted, onUnmounted, ref} from 'vue'
 import {useStore} from 'vuex';
 import {useRouter} from 'vue-router';
 
@@ -37,6 +37,14 @@ export default {
 
 		// user.value.userid = "ADMIN";
 		// user.value.password = "wavelink";
+
+		onMounted(() => {
+			console.log("[login] = ", "onMounted--");
+    });
+
+		onUnmounted(() =>{
+			console.log("[login] = onUnmounted -- ");
+		});
 
 		function handleLogin() {
 			// evt.preventDefault();
@@ -68,7 +76,7 @@ export default {
 		}
 
 		function registerUser() {
-      this.$router.push({name: 'Register'});
+      router.push({name: 'Register'});
     }
 
 		return {
@@ -87,7 +95,7 @@ export default {
 		}
 	},
 	created() {
-		console.log("[login] = created -- ")
+		console.log("[login] = created -- ");
 		if (this.loggedIn) {
 			this.$router.push('/');
 		}
@@ -97,21 +105,23 @@ export default {
 <style lang="scss">
 	.wrap {
 		width: 100%;
-		height: 890px;
+		height: 100%;
+		min-height: 150px;
+		// height: 600px;
 		margin-top: -80px;
 		position: relative;
 		background: white;
 		z-index: 1; //div를 최상위로 올린다.
 	}
 	.center_box {
-		width: 600px;
-		height: 150px;
+		width: 60%;
+		height: 20%;
 		position: absolute;
 		// background: blue;
 		top: 50%;
 		left: 50%;
-		margin-top: -75px;
-		margin-left: -300px;
+		margin-left: -30%;
+		margin-top: -10%;
 	}
 
 </style>
