@@ -35,8 +35,8 @@ export default {
 		const store = useStore();	//스토어호출
 		const router = useRouter();	//라우터호출
 
-		user.value.userid = "ADMIN";
-		user.value.password = "wavelink";
+		// user.value.userid = "ADMIN";
+		// user.value.password = "wavelink";
 
 		function handleLogin() {
 			// evt.preventDefault();
