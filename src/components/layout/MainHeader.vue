@@ -2,7 +2,7 @@
   <div class="header">
     <div align="left" class="left-box">
       <p :style="{ margin:'8px 0 0 10px'}">
-        Dongwha | WMS
+        {{title}}
       </p>
     </div>
     <div align="right" class="right-box">
@@ -15,6 +15,7 @@
   </div>
 </template>
 <script>
+  import {ref} from 'vue'
   import {useStore} from 'vuex';
   import {useRouter} from 'vue-router';
 
@@ -23,6 +24,8 @@
     setup(){
       const store = useStore();	//스토어호출
       const router = useRouter();	//라우터호출
+
+      let title = ref(process.env.VUE_APP_TITLE);
 
       function handleLogout() {
         store.dispatch("auth/logout");
@@ -34,6 +37,7 @@
 
       return{
         handleLogout,
+        title,
       }
     }
   };
