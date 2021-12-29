@@ -6,15 +6,15 @@
     </Search> -->
     <div class="usersearch1">
       <form class="d-flex" :style="{height:'37px'}" >
-        <div class="input-group mb-3" :style="{ margin:'2px 5px 0px 0px'}">
+        <div class="input-group mb-3" :style="{ margin:'5px 5px 0px 5px'}">
           <span class="input-group-text btn-sm" id="basic-addon1">사용자ID</span>
           <input type="text" class="form-control btn-sm" placeholder="UserID" aria-label="UserID" aria-describedby="basic-addon1" v-model="user_param.userid">
         </div>
-        <div class="input-group mb-3" :style="{ margin:'2px 5px 0px 0px'}">
+        <div class="input-group mb-3" :style="{ margin:'5px 5px 0px 0px'}">
           <span class="input-group-text btn-sm" id="basic-addon1">사용자명</span>
           <input type="text" class="form-control btn-sm" placeholder="UserName" aria-label="UserID" aria-describedby="basic-addon1" v-model="user_param.username">
         </div>
-        <div class="input-group mb-3" :style="{ margin:'2px 5px 0px 0px'}">
+        <div class="input-group mb-3" :style="{ margin:'5px 5px 0px 0px'}">
           <span class="input-group-text btn-sm" id="basic-addon1">사용유무</span>
           <select class="form-select btn-sm" aria-label="Default select example" v-model="user_param.useflag">
             <option disabled value="">사용유무</option>
@@ -31,26 +31,30 @@
           <option value="Y">YES</option>
           <option value="N">NO</option>
         </select> -->
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 5px 0px 10px', height:'32px'}"
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 10px', height:'32px'}"
           @click='searchClick_post' >Search</button>
         <!-- <button class="btn btn-outline-success" type="button" :style="{ margin:'0px 5px 0px 10px'}"
           @click='searchClick' >Search</button> -->
       </form>
     </div>
-    <div class="usergrid1">
+    <div class="usergrid1"
+      :style="{
+        'height': `calc(${window_height - 119 - 80}px)`
+      }"
+    >
       <ag-grid-vue
         id="agGrid1"
-        style="width: 100%; height:100%"
         class="ag-theme-alpine"
+        style="width: 100%; height:100%"
         :rowData="rowData.value"
         :gridOptions="gridOptions"
         allow_unsafe_jscode="True"
         >
         <!--
+        style="width: 100%; height:100%"
         :defaultColDef="defaultColDef"
         :columnDefs="columnDefs"
         @grid-ready="onGridReady"
-
         rowSelection="multiple"
         :gridOptions="gridOptions"
         :gridReady="gridSizeFit"
@@ -60,7 +64,7 @@
       </ag-grid-vue>
     </div>
 
-    <div align="right">
+    <div class= "usersave1" align="right">
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
        @click='addClick'>추가</button>
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
@@ -122,7 +126,7 @@
   // import Search from '@/components/form/Search.vue'
   // import { reactive, ref, onMounted, getCurrentInstance, inject } from 'vue'
   import $axios from 'axios';
-  import { reactive, ref, onMounted} from 'vue'
+  import { reactive, ref, onMounted, onUnmounted} from 'vue'
   import 'ag-grid-community/dist/styles/ag-grid.css';
   import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
   import {AgGridVue} from 'ag-grid-vue3'
@@ -256,8 +260,13 @@
         // },
       };
 
+      let window_width = ref(window.innerWidth);
+      let window_height = ref(window.innerHeight);
+
       onMounted(() => {
-        console.log("onMounted--");
+        console.log("[UserManagement] = ", "onMounted--");
+        window.addEventListener('resize', handleResize);
+
         // fetch('https://www.ag-grid.com/example-assets/small-row-data.json')
         //         .then(result => result.json())
         //         .then(remoteRowData => rowData.value = remoteRowData)
@@ -267,6 +276,16 @@
         // rowData.value = null;
         // console.log("[ init rowData ] ", rowData);
       });
+      onUnmounted(() =>{
+        console.log("[UserManagement] = onUnmounted -- ");
+        // window.addEventListener('resize', handleResize);
+      });
+
+      function handleResize() {
+        window_width.value = window.innerWidth;
+        window_height.value = window.innerHeight;
+      }
+
       const onGridReady = params => {
         gridApi = params.api;
         columnApi.value = params.columnApi;
@@ -508,6 +527,8 @@
         deleteClick,
         saveClick,
         getPhotos,
+        window_width,
+        window_height,
       };
     },
 
@@ -520,9 +541,6 @@
     },
     created () {
       console.log("created--");
-    },
-    mounted(){
-      console.log("mounted--");
     },
     methods: {
       makeData () {
@@ -607,23 +625,30 @@
 		text-align: center;
 		color: #2c3e50;
 		width:100%;
-    height:799px;
+    // height:799px;
+    height:100%;
     // border-top:1px solid #070707;
     // border-bottom:1px solid #070707;
 		/* margin-top: 60px; */
 	}
   .list {
     /* height: calc(50vh - 70px); */
+    width : 100%;
     height: 455px;
     overflow: auto;
   }
   .usersearch1 {
-    margin:0px 5px 0px 5px;
+    height : 40px;
     // border-bottom:1px solid #070707;
   }
   .usergrid1 {
+    // width : 100%;
     margin:0px 5px 0px 5px;
-    height: 733px;
+    // height: 733px;
     overflow: auto;
+  }
+  .usersave1 {
+    width : 100%;
+    height : 40px;
   }
 </style>
