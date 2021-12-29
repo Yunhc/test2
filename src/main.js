@@ -45,19 +45,16 @@ import print from 'vue3-print-nb';
 
 const app = createApp(App);
 
-//전역변수 선언
-app.config.globalProperties.$axios = axios;
-app.config.globalProperties.$url_rest = 'http://192.168.134.8:8090';
-
 app.use(router);
 app.use(store);
 app.use(print);
 
 app.mount('#app');
 
-
-
 // app.use(BootstrapVue);
 // app.use(IconsPlugin);
-
 // app.use(VueHtmlToPaper, options);
+
+//전역변수 선언
+app.config.globalProperties.$axios = axios;
+app.config.globalProperties.$url_rest = 'http://localhost:8090';
