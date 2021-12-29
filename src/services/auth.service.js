@@ -1,7 +1,7 @@
 
 import $axios from 'axios';
 
-const API_URL = 'http://192.168.134.8:8090' + '/api/auth/';
+const API_URL = process.env.VUE_APP_SERVER_URL + '/api/auth/';
 const lang = 'KR';
 
 class AuthService {
