@@ -24,6 +24,9 @@ import global from "@/global";
 
 export default {
   name: 'App',
+  created () {
+    console.log("[App] = process.env -- ", process.env);
+  },
   components: {
     MainHeader,
     MenuTree,
