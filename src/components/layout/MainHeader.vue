@@ -46,6 +46,7 @@
 <style lang="scss">
   .header{
     // background:rgb(31, 156, 93);
+    width: 100%;
     height:40px;
     text-align:center;
     font-size:16px;
@@ -55,7 +56,7 @@
   }
   .left-box {
     background:rgb(31, 156, 93);
-    border-bottom:1px solid #35495e;
+    // border-bottom:1px solid #35495e;
     // background:white;
     float: left;
     width: 50%;
@@ -63,6 +64,7 @@
   }
   .right-box {
     background:rgb(31, 156, 93);
+    // border-bottom:1px solid #35495e;
     // background: white;
     float: right;
     width: 50%;
