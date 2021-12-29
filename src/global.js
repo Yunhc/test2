@@ -2,7 +2,7 @@ import {reactive, readonly } from "vue";
 import axios from 'axios';
 
 const server = reactive({
-	url: 'http://192.168.134.8:8090',
+	url: 'http://localhost:8090',
 });
 
 
