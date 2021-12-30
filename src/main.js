@@ -49,6 +49,7 @@ app.use(router);
 app.use(store);
 app.use(print);
 
+
 app.mount('#app');
 
 // app.use(BootstrapVue);
