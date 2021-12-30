@@ -201,7 +201,7 @@
               console.log("[selectedPlant]", selectedPlant );
               if (selectedPlant == 'K143'){
                 return{
-                  values: ['Yes', 'No']
+                  values: ['Y', 'N']
                 };
               }
               else{
