@@ -45,7 +45,7 @@
       <ag-grid-vue
         id="agGrid1"
         class="ag-theme-alpine"
-        style="width: 100%; height:100%"
+        style="width: 1910px; height:100%"
         :rowData="rowData.value"
         :gridOptions="gridOptions"
         allow_unsafe_jscode="True"
@@ -176,10 +176,10 @@
       let columnDefs= reactive([
           {headerName: '선택', field: 'sel', width: 50, cellStyle: {textAlign: "center"},
             headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'},
-          {headerName: '사용자ID', field: 'userid', sortable: true, pinned: 'left'},
-          {headerName: '사용자명', field: 'username', pinned: 'left'},
+          {headerName: '사용자ID', field: 'userid', width: 100, sortable: true, pinned: 'left'},
+          {headerName: '사용자명', field: 'username', width: 100, pinned: 'left'},
           {headerName: '패스워드', field: 'userpwd', hide: true, cellStyle: { color: 'red', textAlign: "left", backgroundColor: "white" }},
-          {headerName: '플랜드', field: 'plantcd', sortable: true, filter: true},
+          {headerName: '플랜드', field: 'plantcd', width: 250, sortable: true, filter: true},
           {headerName: '작업장', field: 'wccode', hide: true},
           {headerName: '창고', field: 'warehouse'},
           {headerName: '조회그룹', field: 'auth'},
