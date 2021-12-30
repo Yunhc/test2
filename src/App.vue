@@ -39,12 +39,15 @@ export default {
 		let window_height = ref(window.innerHeight);
 
 		onMounted(() => {
-			console.log("[login] = ", "onMounted--");
+			console.log("[App] = ", "onMounted--");
 			window.addEventListener('resize', handleResize);
+
+      //화면을 처음 띄울 때 로그인 정보를 초기화 한다.
+      // localStorage.removeItem('user');
     });
 
 		onUnmounted(() =>{
-			console.log("[login] = onUnmounted -- ");
+			console.log("[App] = onUnmounted -- ");
 			// window.addEventListener('resize', handleResize);
 		});
 
