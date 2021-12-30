@@ -20,13 +20,21 @@
 	</div>
 	<div>
 		<transition name="fade" apear>
-			<div class="menupopup-black-bg" v-if="isOpen" >
-				<div class="menupopup-white-bg">
+			<div class="menupopup-black-bg" v-if="isOpen"	>
+				<div class="menupopup-white-bg"
+					@mouseleave="popupleave"
+				>
 					<div class="div_button" v-for="(pro, i) in menus_sub" :key="i">
-						<button type="button" class="btn btn-link" @click="clickSubButton(i)"
+						<button type="button"
+							class="btn btn-link"
+							:style="{color: isOver & subIndex==i ? 'rgb(31, 156, 93)':'DimGray'}"
+							@click="clickSubButton(i)"
+							@mouseover="mouseOver(i)"
+							@mouseleave="mouseLeave()"
 							v-if="menus[index].id==menus_sub[i].pid">
-							{{menus_sub[i].name}}
+							★&nbsp;{{menus_sub[i].name}}
 						</button>
+
 						<!-- <button type="button" class="btn-outline-dark btn-sm" :style="{ margin:'5px', width: '150px'}"
 							@click="clickSubButton(i)"
 							v-if="menus[index].id==menus_sub[i].pid">
@@ -46,6 +54,8 @@ export default {
     return {
 			index : -1, 			//누른 버튼의 인덱스
       isOpen: false, 	//버튼 클릭시 창을 보였다 안보였다 한다.
+			isOver:false,
+			subIndex:-1,
 			menus : [
         {id:'system', name:'시스템관리'},
         {id:'basic', name:'기준정보관리'},
@@ -81,6 +91,17 @@ export default {
 			// alert (this.menus[i]);
 			this.$router.push({ path: "home" });
 		},
+		mouseOver(i){
+			this.isOver = true;
+			this.subIndex = i;
+		},
+		mouseLeave(){
+			this.isOver = false;
+		},
+		popupleave()
+		{
+			this.isOpen = !this.isOpen;
+		}
   },
 }
 </script>
