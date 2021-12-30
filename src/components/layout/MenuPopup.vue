@@ -27,7 +27,7 @@
 					<div class="div_button" v-for="(pro, i) in menus_sub" :key="i">
 						<button type="button"
 							class="btn btn-link"
-							:style="{color: isOver & subIndex==i ? 'rgb(31, 156, 93)':'DimGray'}"
+							:style="{color:isOver&subIndex==i?'rgb(31, 156, 93)':'DimGray'}"
 							@click="clickSubButton(i)"
 							@mouseover="mouseOver(i)"
 							@mouseleave="mouseLeave()"
@@ -86,6 +86,7 @@ export default {
       // alert(this.button_id);
 			this.$router.push({ path: this.menus_sub[i].id });
 			this.isOpen = false;
+			this.subIndex = -1;
     },
 		clickHomeButton(){
 			// alert (this.menus[i]);
@@ -97,6 +98,7 @@ export default {
 		},
 		mouseLeave(){
 			this.isOver = false;
+			this.subIndex = -1;
 		},
 		popupleave()
 		{
