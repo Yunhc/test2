@@ -111,6 +111,7 @@ import * as print_css from 'print-js/dist/print.css';
 
 
 export default {
+  name: 'print',
 	data(){
     return {
       commands : '^XA\n\r^MNM\n\r^FO050,50\n\r^B8N,100,Y,N\n\r^FD1234567\n\r^FS\n\r^PQ3\n\r^XZ',
