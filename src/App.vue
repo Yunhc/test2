@@ -1,18 +1,27 @@
 <template>
   <div id="main">
-    <div id= "header">
+    <!-- <div id= "header">
       <MainHeader />
     </div>
     <div id="menutree">
       <MenuTree />
-    </div>
-    <div id="body"
+    </div> -->
+    <!-- <div id="body"
       :style="{
         'height': `calc(${window_height - 119}px)`
       }"
     >
-        <router-view/>
+      <router-view/>
+    </div> -->
+
+    <div id="body"
+      :style="{
+        'height': `calc(${window_height}px)`
+      }"
+    >
+      <router-view/>
     </div>
+
     <!-- <div>
       {{ window_width }}, {{ window_height }}
     </div> -->
@@ -25,8 +34,8 @@
 <script>
 // import { provide } from "vue";
 import {onMounted, onUnmounted, ref} from 'vue'
-import MainHeader from './components/layout/MainHeader.vue'
-import MenuTree from './components/layout/MenuTree.vue'
+// import MainHeader from './components/layout/MainHeader.vue'
+// import MenuTree from './components/layout/MenuTree.vue'
 // import MainFooter from './components/layout/MainFooter.vue'
 import global from "@/global";
 
@@ -41,6 +50,7 @@ export default {
 		onMounted(() => {
 			console.log("[App] = ", "onMounted--");
 			window.addEventListener('resize', handleResize);
+      window.addEventListener('beforeunload', unLoadEvent);
 
       //화면을 처음 띄울 때 로그인 정보를 초기화 한다.
       // localStorage.removeItem('user');
@@ -49,12 +59,24 @@ export default {
 		onUnmounted(() =>{
 			console.log("[App] = onUnmounted -- ");
 			// window.addEventListener('resize', handleResize);
+      window.removeEventListener('beforeunload', unLoadEvent);
 		});
 
 		function handleResize() {
 			window_width.value = window.innerWidth;
 			window_height.value = window.innerHeight;
     }
+
+    function unLoadEvent(event) {
+      if (this.canLeaveSite) return;
+
+      //화면 로그인 정보를 초기화 한다.
+      // localStorage.removeItem('user');
+
+      event.preventDefault();
+      event.returnValue = '';
+    }
+
     return {
 			window_width,
 			window_height,
@@ -64,8 +86,8 @@ export default {
     console.log("[App] = process.env -- ", process.env);
   },
   components: {
-    MainHeader,
-    MenuTree,
+    // MainHeader,
+    // MenuTree,
     // MainFooter,
   },
   provide(){
@@ -79,35 +101,39 @@ export default {
 
 <style lang="scss">
 /* 반응형 최대크기 */
-  #main {
-    margin:0 auto;
-    width:100%;
-    height:100%;
-    // border-bottom:1px solid #070707;
-  }
   #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
-    color: #2c3e50;
+    color: #a4c8ec;
+    // border-top:1px solid Blue;
+    // border-bottom:1px solid Blue;
   }
-  #header{
+
+  #main {
+    margin:0 auto;
     width:100%;
     height:100%;
+    // border-top:2px solid Yellow;
+    // border-bottom:2px solid Yellow;
   }
-  #menutree{
-    width:100%;
-    height:100%;
-  }
+  // #header{
+  //   width:100%;
+  //   height:100%;
+  // }
+  // #menutree{
+  //   width:100%;
+  //   height:100%;
+  // }
   #body{
     width:100%;
     // height:100%;
     // height:929px;
     // height : 100%;
     // background-color:yellow;
-    // border-top:1px solid #070707;
-    // border-bottom:1px solid #070707;
+    // border-top:3px solid Red;
+    // border-bottom:3px solid Red;
   }
   // #footer{
   //   width:100%;
