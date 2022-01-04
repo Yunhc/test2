@@ -132,6 +132,7 @@
   import {AgGridVue} from 'ag-grid-vue3'
 
   export default {
+    name: 'usermanagement',
     // data: function() {
     //   console.log("data--");
     //   return {

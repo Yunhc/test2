@@ -108,7 +108,7 @@ export default {
 		height: 100%;
 		min-height: 150px;
 		// height: 600px;
-		margin-top: -80px;
+		// margin-top: -80px;
 		position: relative;
 		background: white;
 		z-index: 1; //div를 최상위로 올린다.

@@ -7,7 +7,7 @@
     </div>
     <div align="right" class="right-box">
       <button type="button" class="btn btn-outline-dark btn-sm"
-        :style="{ margin:'3px', background:'rgb(31, 156, 93)', border:'rgb(31, 156, 93)', color:'white'}"
+        :style="{ margin:'3px', background:'transparent', border:'transparent', color:'white'}"
         @click=handleLogout>
         Logout
       </button>
@@ -55,7 +55,7 @@
     // border-bottom:1px solid #070707;
   }
   .left-box {
-    background:rgb(31, 156, 93);
+    background:rgb(97, 170, 47);
     // border-bottom:1px solid #35495e;
     // background:white;
     float: left;
@@ -63,7 +63,7 @@
     height: 38px;
   }
   .right-box {
-    background:rgb(31, 156, 93);
+    background:rgb(97, 170, 47);
     // border-bottom:1px solid #35495e;
     // background: white;
     float: right;

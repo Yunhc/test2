@@ -50,6 +50,11 @@ const routes = [
     name: 'QRCode',
     component: () => import('../views/QRCode.vue')
   },
+  {
+    path: '/mdi',
+    name: 'Mdi',
+    component: () => import('../views/Mdi.vue')
+  },
   // {
   //   path: '*',
   //   component: () => import ('@/views/NotFoundPage.vue'),
@@ -76,8 +81,8 @@ router.beforeEach((to, from, next) => {
   const authRequired = !publicPages.includes(to.name);
   const loggedIn = localStorage.getItem('user');
 
-  console.log("[router] = authRequired --",authRequired);
-  console.log("[router] = loggedIn --",loggedIn);
+  // console.log("[router] = authRequired --",authRequired);
+  // console.log("[router] = loggedIn --",loggedIn);
 
   if (authRequired && !loggedIn) {
     router.push({name: 'Login', query: { to: to.path }});

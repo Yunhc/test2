@@ -11,7 +11,7 @@
 			<qr-code
 				align="center"
 				v-bind:text="qrcode_1_text"
-				size="200"
+				size=200
 				error-level="H"
 				@qrCode="getLink($event)"
 			></qr-code>
@@ -33,6 +33,7 @@ import VueQRCodeComponent from 'vue-qrcode-component';
 import JsBarcode from 'jsbarcode';
 
 export default {
+	name: 'qrcode',
 	components:{
     'qr-code': VueQRCodeComponent,
   },
@@ -53,6 +54,9 @@ export default {
 			.CODE128(this.barcodeValue, {height: 85, textPosition: "bottom", fontSize: 16, marginTop: 20})
 			.render();
 		}
+	},
+	created(){
+		console.log("[QRCode] = create -- ")
 	}
 }
 </script>
