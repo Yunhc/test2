@@ -32,6 +32,7 @@
         {id:'basic', name:'기준정보관리'},
         {id:'order', name:'오더관리'},
         {id:'label', name:'라벨발행 이력'},
+        {id:'stockcount', name:'재고실사'},
         ],
       }
     },
