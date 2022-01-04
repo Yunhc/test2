@@ -1,6 +1,6 @@
 <template>
 
-  <div :style="{ height:'790px'}">
+  <div :style="{ height:'790px', margin:'2px 0px 0px 0px'}">
   <!-- <div v-scroll:#room="handleScroll" :style="{ height:'680px'}"> -->
     <div class="black-bg" v-if="popupisopen">
       <div class="white-bg">
