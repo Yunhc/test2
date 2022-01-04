@@ -12,6 +12,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 import axios from 'axios';
 import print from 'vue3-print-nb';
+import {Tabs, Tab} from 'vue3-tabs-component';
 
 // import java.io.BufferedReader;
 // import java.io.ByteArrayInputStream;
@@ -48,7 +49,8 @@ const app = createApp(App);
 app.use(router);
 app.use(store);
 app.use(print);
-
+app.use('tabs', Tabs);
+app.use('tab', Tab);
 
 app.mount('#app');
 
