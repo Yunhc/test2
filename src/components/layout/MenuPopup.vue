@@ -85,8 +85,10 @@ import room from '@/views/OneRoom.vue'
 import usermanagement from '@/views/UserManagement.vue'
 import mdi from '@/views/Mdi.vue'
 import parents from '@/views/Parents.vue'
+import stockcount_online from '@/views/Stockcount_Online.vue'
 
 export default {
+	name:'menupopup',
 	// Vue.component('my-button2', {
 	// 	template: `<button @click="nice_fun()">개수확인</button>`
 	// 	,methods:{
@@ -105,6 +107,7 @@ export default {
 		usermanagement,
 		mdi,
 		parents,
+		stockcount_online,
   },
 
   setup () {
@@ -122,6 +125,7 @@ export default {
 			{id:'basic', name:'기준정보관리'},
 			{id:'order', name:'오더관리'},
 			{id:'label', name:'라벨발행 이력'},
+			{id:'stock', name:'재고관리'},
 			]);
 		let menus_sub = reactive([
 			{pid: 'system', id:'usermanagement', name:'사용자관리'},
@@ -131,6 +135,7 @@ export default {
 			{pid: 'basic', id:'about', name:'About'},
 			{pid: 'order', id:'room', name:'Room'},
 			{pid: 'label', id:'parents', name:'Slot 테스트'},
+			{pid: 'stock', id:'stockcount_online', name:'Stock Count(Online)'},
 		]);
 
 		let comp = ref(home2);
