@@ -87,6 +87,25 @@ import mdi from '@/views/Mdi.vue'
 import parents from '@/views/Parents.vue'
 
 export default {
+	// Vue.component('my-button2', {
+	// 	template: `<button @click="nice_fun()">개수확인</button>`
+	// 	,methods:{
+	// 		nice_fun:function(){
+	// 			app2.nice = '버튼추가 개수:'+app2.buttons.length;
+	// 		}
+	// 	}
+	// }),
+
+	components: {
+    home2,
+		about,
+    qrcode,
+    print,
+		room,
+		usermanagement,
+		mdi,
+		parents,
+  },
 
   setup () {
 		// let name = ref('menupopup');
