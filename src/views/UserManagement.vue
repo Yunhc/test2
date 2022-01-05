@@ -34,8 +34,8 @@
         </select> -->
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 10px', height:'32px'}"
           @click='searchClick_post' >Search</button>
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 10px', height:'32px'}"
-          @click='searchSelectBox' >Test</button>
+        <!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 10px', height:'32px'}"
+          @click='searchSelectBox' >Test</button> -->
         <!-- <button class="btn btn-outline-success" type="button" :style="{ margin:'0px 5px 0px 10px'}"
           @click='searchClick' >Search</button> -->
       </form>
