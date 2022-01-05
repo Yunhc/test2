@@ -1,7 +1,7 @@
 <template>
   <div :style="{ height:'630px'}">
     <h1>About page</h1>
-    <Child>      
+    <Child>
       <template v-slot:forFirst="props">
         <p>Here is the first {{props.fromHeader}} </p>
       </template>
@@ -20,21 +20,22 @@
     </Child> -->
   </div>
 </template>
-<script> 
-  import Child from './Child.vue' 
+<script>
+  import Child from './Child.vue'
   import HelloWorld from '@/components/HelloWorld.vue'
 
-  export default { 
+  export default {
+    name: 'parents',
     components: {
       Child,
       HelloWorld,
-    }, 
-    data: function() { 
-      return { 
-        AA: "안녕하세요", 
-        BB: "반갑습니다." 
-      } 
-    } 
-  } 
+    },
+    data: function() {
+      return {
+        AA: "안녕하세요",
+        BB: "반갑습니다."
+      }
+    }
+  }
 </script>
 
