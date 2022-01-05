@@ -18,9 +18,10 @@
           <span class="input-group-text btn-sm" id="basic-addon1">사용유무</span>
           <select class="form-select btn-sm" aria-label="Default select example" v-model="user_param.useflag">
             <option disabled value="">사용유무</option>
-            <option value="">All</option>
+            <option v-for="(d, i) in options" :key="i" :value="d.id">{{ d.name }}</option>
+            <!-- <option value="">All</option>
             <option value="Y">Yes</option>
-            <option value="N">No</option>
+            <option value="N">No</option> -->
           </select>
         </div>
         <!-- <input class="form-control me-2" type="search" placeholder="사용자Id" aria-label="Search" v-model="user_param.userid">
@@ -33,6 +34,8 @@
         </select> -->
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 10px', height:'32px'}"
           @click='searchClick_post' >Search</button>
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 10px', height:'32px'}"
+          @click='searchSelectBox' >Test</button>
         <!-- <button class="btn btn-outline-success" type="button" :style="{ margin:'0px 5px 0px 10px'}"
           @click='searchClick' >Search</button> -->
       </form>
@@ -46,6 +49,7 @@
         id="agGrid1"
         class="ag-theme-alpine"
         style="width: 1910px; height:100%"
+        headerHeight='35'
         :rowData="rowData.value"
         :gridOptions="gridOptions"
         allow_unsafe_jscode="True"
@@ -126,7 +130,8 @@
   // import Search from '@/components/form/Search.vue'
   // import { reactive, ref, onMounted, getCurrentInstance, inject } from 'vue'
   import $axios from 'axios';
-  import { reactive, ref, onMounted, onUnmounted} from 'vue'
+  import { reactive, ref, onMounted, onUnmounted, onBeforeMount} from 'vue'
+  import { useStore } from 'vuex';
   import 'ag-grid-community/dist/styles/ag-grid.css';
   import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
   import {AgGridVue} from 'ag-grid-vue3'
@@ -149,7 +154,7 @@
     //   }
     // },
     setup(){
-      // console.log("[setup--]");
+      console.log("[UserManagement] = ", "setup --");
       // const global = inject('global');
       // console.log("[global.server.url] --", global.server.url);
 
@@ -162,16 +167,20 @@
 
       const $url_rest = process.env.VUE_APP_SERVER_URL;
 
+      // let options = reactive([{id:"", name:"All"},
+      //   {id:"Y", name:"Yes"},
+      //   {id:"N", name:"No"},
+      // ]);
+      let options = reactive([]);
+      const store = useStore();	//스토어호출
       let rowData = reactive([]);
       // let rtnmsg = reactive([]);
       // let selData = reactive({userid:"", username:"", plant:"", workcenter:"", warehoue:""
       //                       , auth:"", role:"", use_role:"", uesflag:"", forklift:""
       //                       , etc:"", upduser:"", upddate:""});
       let url = ref($url_rest);
-
       let gridApi = ref(null);
       let columnApi = ref(null);
-
       let user_param = reactive({userid:"", username:"", useflag:""});
 
       let columnDefs= reactive([
@@ -251,6 +260,11 @@
           }, 1000);
           event.api.sizeColumnsToFit();
         },
+        getRowHeight: function() {
+          // assuming 50 characters per line, working how how many lines we need
+          // return 28 * (Math.floor(params.data.model.length / 60) + 1);
+          return 35;
+        },
         // 창 크기 변경 되었을 때 이벤트
         onGridSizeChanged: function(event) {
           event.api.sizeColumnsToFit();
@@ -264,10 +278,14 @@
       let window_width = ref(window.innerWidth);
       let window_height = ref(window.innerHeight);
 
+      onBeforeMount(()=>{
+        console.log("[UserManagement] = ", "onBeforeMount--");
+        searchSelectBox();
+      });
+
       onMounted(() => {
         console.log("[UserManagement] = ", "onMounted--");
         window.addEventListener('resize', handleResize);
-
         // fetch('https://www.ag-grid.com/example-assets/small-row-data.json')
         //         .then(result => result.json())
         //         .then(remoteRowData => rowData.value = remoteRowData)
@@ -297,6 +315,43 @@
         const selectedDataStringPresentation = selectedData.map( node => `${node.make} ${node.model}`).join(', ');
         alert(`Selected nodes: ${selectedDataStringPresentation}`);
       };
+
+      function searchSelectBox() {
+        // options.push({id:"", name:"All"});
+        // options.push({id:"Y", name:"Yes"});
+        // options.push({id:"N", name:"No"});
+
+        console.log("[UserManagement] = userid -- ", store.state.auth.user[0].userid);
+        console.log("[UserManagement] = plat -- ", getdata(store.state.auth.user[0].plantcd));
+
+        let urlPost = url.value + '/api/dw/selectboxList';
+        $axios.post(urlPost, {
+          lang: "KR",
+          userid: store.state.auth.user[0].userid,
+          plant: getdata(store.state.auth.user[0].plantcd),
+          type1: "Useflag",
+          type2: "",
+          type3: "",
+          type4: "",
+          space: "Y",
+        })
+        .then((res) => {
+          console.log("[UserManagement] = response data -- ", res.data);
+
+          options.splice(0, options.length);
+          for(var i=0; i<res.data.length; i++){
+             options.push({id:res.data[i].id, name:res.data[i].name});
+          }
+
+          console.log("[UserManagement] = options data -- ", options);
+        }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+          //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+        .catch(err => {
+          alert(err);
+          console.error(err)
+        })
+      }
+
       function searchClick() {  //getPhots함수는 메서드정의. 할때는 반드시 function 키워드쓴다
         let sendData = url.value
                      + "/dw_userList?"
@@ -502,6 +557,8 @@
         AA: "안녕하세요",
         BB: "반갑습니다.",
         photos: [],
+        options,
+        searchSelectBox,
         userid: "",
         username: "",
         useflag: "",
@@ -541,7 +598,7 @@
 
     },
     created () {
-      console.log("created--");
+      console.log("[UserManagement] = ", "created --");
     },
     methods: {
       makeData () {
