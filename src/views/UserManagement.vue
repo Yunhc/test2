@@ -263,7 +263,7 @@
           setTimeout(function () {
             event.api.setRowData(rowData);
           }, 1000);
-          event.api.sizeColumnsToFit();
+          // event.api.sizeColumnsToFit();
         },
         getRowHeight: function() {
           // assuming 50 characters per line, working how how many lines we need
@@ -271,9 +271,9 @@
           return 35;
         },
         // 창 크기 변경 되었을 때 이벤트
-        onGridSizeChanged: function(event) {
-          event.api.sizeColumnsToFit();
-        },
+        // onGridSizeChanged: function(event) {
+        //   event.api.sizeColumnsToFit();
+        // },
         // onRowClicked : function (event){
         //   console.log(event.username);
         //   console.log('onRowClicked');
@@ -301,7 +301,7 @@
       });
       onUnmounted(() =>{
         console.log("[UserManagement] = onUnmounted -- ");
-        // window.addEventListener('resize', handleResize);
+        window.removeEventListener('resize', handleResize);
       });
 
       function handleResize() {
@@ -413,12 +413,10 @@
       function addClick() {
         var newItem = createNewRowData();
         // 맨밑에 추가
-        // var res = gridOptions.api.updateRowData({add: [newItem]});
-        // rowData.add(res);
+        // gridOptions.api.updateRowData({add: [newItem]});
 
         // 특정위치에 추가
-        var res = gridOptions.api.updateRowData({add: [newItem],addIndex:0});
-        rowData.add(res).addIndex(0);
+        gridOptions.api.updateRowData({add: [newItem],addIndex:0});
         //printResult(res);
       }
       function deleteClick() {
@@ -607,19 +605,19 @@
         //   {make: 'Porsche', model: 'Boxter', price: 72000}
         // ];
       },
-      gridSizeFit (params) {
-        // 모니터나 브라우저 크기에 따라 반응하여 그리드 컬럼 사이즈를 조정합니다.
-        if ( window.innerWidth > 800 ){ // 화면 가로가 800 px 이 넘을 경우
-          params.api.sizeColumnsToFit(); // 가로 스크롤바가 생기지 않도록 컬럼 사이즈를 그리드에 꼭 맞게 조정합니다.
-        } else {
-          // 컬럼의 데이터값이 잘리지 않도록 조정합니다.
-          let allColumnIds = []
-          this.gridOptions.columnApi.getAllColumns().forEach(function (column) {
-            allColumnIds.push(column.colId)
-          })
-          this.gridOptions.columnApi.autoSizeColumns(allColumnIds)
-        }
-      },
+      // gridSizeFit (params) {
+      //   // 모니터나 브라우저 크기에 따라 반응하여 그리드 컬럼 사이즈를 조정합니다.
+      //   if ( window.innerWidth > 800 ){ // 화면 가로가 800 px 이 넘을 경우
+      //     params.api.sizeColumnsToFit(); // 가로 스크롤바가 생기지 않도록 컬럼 사이즈를 그리드에 꼭 맞게 조정합니다.
+      //   } else {
+      //     // 컬럼의 데이터값이 잘리지 않도록 조정합니다.
+      //     let allColumnIds = []
+      //     this.gridOptions.columnApi.getAllColumns().forEach(function (column) {
+      //       allColumnIds.push(column.colId)
+      //     })
+      //     this.gridOptions.columnApi.autoSizeColumns(allColumnIds)
+      //   }
+      // },
       // onGridReady(params) {
       //   this.gridApi = params.api;
       //   this.gridColumnApi = params.columnApi;
@@ -630,9 +628,9 @@
       //     .then((resp) => resp.json())
       //     .then((data) => updateData(data));
       // },
-      fitColumnsSize(params) {
-          params.api.sizeColumnsToFit();
-      }, //컬럼의 데이터에 맞춰서 사이즈 조절
+      // fitColumnsSize(params) {
+      //   params.api.sizeColumnsToFit();
+      // }, //컬럼의 데이터에 맞춰서 사이즈 조절
       // 무한 스크롤 정의
       handleNotificationListScroll(e) {
         const { scrollHeight, scrollTop, clientHeight } = e.target;
