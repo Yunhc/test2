@@ -156,6 +156,7 @@
 
       onUnmounted(() =>{
         console.log("[Stockcount_Online] = onUnmounted -- ");
+        window.removeEventListener('resize', handleResize);
       });
 
       function handleResize() {
