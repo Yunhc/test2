@@ -134,10 +134,15 @@
   import { useStore } from 'vuex';
   import 'ag-grid-community/dist/styles/ag-grid.css';
   import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
-  import {AgGridVue} from 'ag-grid-vue3'
+  import { AgGridVue } from 'ag-grid-vue3'
+  import { getdata } from '@/helper/filter.js';
 
   export default {
     name: 'usermanagement',
+    components: {
+      AgGridVue,
+      // Search,
+    },
     // data: function() {
     //   console.log("data--");
     //   return {
@@ -274,7 +279,6 @@
         //   console.log('onRowClicked');
         // },
       };
-
       let window_width = ref(window.innerWidth);
       let window_height = ref(window.innerHeight);
 
@@ -531,20 +535,20 @@
         });
       }
       // 스트링 처리를 한다.
-      function getdata (data){
-        let rtn = "";
-        if (data != null){
-          var npos1 = data.indexOf("[",0);
-          var npos2 = data.indexOf("]",0);
-          if (npos1 > -1 && npos2 > -1){
-            rtn = data.substring(npos1 + 1, npos2 )
-          }
-          else{
-            rtn = data;
-          }
-        }
-        return rtn;
-      }
+      // function getdata (data){
+      //   let rtn = "";
+      //   if (data != null){
+      //     var npos1 = data.indexOf("[",0);
+      //     var npos2 = data.indexOf("]",0);
+      //     if (npos1 > -1 && npos2 > -1){
+      //       rtn = data.substring(npos1 + 1, npos2 )
+      //     }
+      //     else{
+      //       rtn = data;
+      //     }
+      //   }
+      //   return rtn;
+      // }
       function getPhotos () {  //getPhots함수는 메서드정의. 할때는 반드시 function 키워드쓴다
         $axios.get('https://jsonplaceholder.typicode.com/photos?_page=1&_limit=5')
         .then((res) => {
@@ -589,13 +593,7 @@
         window_height,
       };
     },
-
-    components: {
-      AgGridVue,
-      // Search,
-    },
     computed: {
-
     },
     created () {
       console.log("[UserManagement] = ", "created --");
