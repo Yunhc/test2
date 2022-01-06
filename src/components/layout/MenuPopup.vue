@@ -1,50 +1,61 @@
 // 팝업메뉴 생성시 창을 띄워 메뉴를 선택하도록 한다.
 <template>
-	<div>
-		<div>
-			<button type="button" class="btn btn-outline-dark btn-sm" :style="{ margin:'5px', border:'white'}"
-				v-for="(pro, i) in menus"
-				:key="i"
-				:title="menus[i].name"
-				:button_id="menus[i].id"
-				@click="clickMainButton(i)">
-				{{ menus[i].name }}
-			</button>
+	<div class="menu">
+		<!-- <div :style="{ width:'1910px'}"> -->
+		<div class="menu-main-btn"
+		>
+			<!-- :style="{ margin:'5px', border:'red' }" -->
+			<vue-horizontal :button="false">
+				<section v-for="(pro, i) in menus" :key="i">
+					<button type="button" class="btn btn-outline-dark btn-sm" border-color="white"
+						:title="menus[i].name"
+						:button_id="menus[i].id"
+						@click="clickMainButton(i)">
+						{{ menus[i].name }}
+					</button>
+				</section>
+				<!-- <button type="button" class="btn btn-outline-dark btn-sm"
+					:style="{ pading:'0px 5px' }"
+					v-for="(pro, i) in menus"
+					:key="i"
+					:title="menus[i].name"
+					:button_id="menus[i].id"
+					@click="clickMainButton(i)">
+					{{ menus[i].name }}
+				</button> -->
+			</vue-horizontal>
 		</div>
-		<div align="left" class="selectedmenu">
-			<!-- <button type="button" class="btn btn-outline-dark btn-sm" :style="{ margin:'2px 0 0 5px'}"
-			@click=clickHomeButton>
-				Home
-			</button> -->
-
-			<!-- <div id="app2">
-				<button @click="add">버튼추가</button><br>
-				<component v-for="(item, i) in buttons" v-bind:is="item" :key="i"></component>
-					<button @click="nice_fun()">개수확인</button>
-			</div> -->
-
-			<button
-				v-for="(tab, i) in tabs"
-				:key="i"
-				:class="['tab-button', tab.id=='home2'?{home:true}:{active: currentTab===tab.id}]"
-				@click="changeComponent(tab)"
+		<div class="selected-menu">
+			<div align="left" class="selected-menu-btn">
+				<vue-horizontal :button="false">
+					<button
+						v-for="(tab, i) in tabs"
+						:key="i"
+						:class="['tab-button', tab.id=='home2'?{home:true}:{active: currentTab===tab.id}]"
+						@click="changeComponent(tab)"
+					>
+						{{ tab.name }}
+						<button :class="['tab-in-button']"
+							v-if="tab.id != 'home2'"
+							@click="exitComponent(tab)"
+						>
+							X
+						</button>
+					</button>
+				</vue-horizontal>
+			</div>
+			<div class="menu_body" align="center"
+				:style="{
+					'height': `calc(${window_height - 119}px)`
+				}"
 			>
-				{{ tab.name }}
-				<button :class="['tab-in-button']"
-					v-if="tab.id != 'home2'"
-					@click="exitComponent(tab)"
-				>
-					X
-				</button>
-			</button>
-			<div align="center">
 				<keep-alive :include="selectedTabs">
-					<component :is="comp" class="tab"></component>
-				</keep-alive>
+						<component :is="comp" class="tab"></component>
+					</keep-alive>
 			</div>
 		</div>
 	</div>
-	<div>
+	<div class="menupopup">
 		<transition name="fade" apear>
 			<div class="menupopup-black-bg" v-if="isOpen"	>
 				<div class="menupopup-white-bg"
@@ -60,20 +71,16 @@
 							v-if="menus[index].id==menus_sub[i].pid">
 							★&nbsp;{{menus_sub[i].name}}
 						</button>
-
-						<!-- <button type="button" class="btn-outline-dark btn-sm" :style="{ margin:'5px', width: '150px'}"
-							@click="clickSubButton(i)"
-							v-if="menus[index].id==menus_sub[i].pid">
-							{{menus_sub[i].name}}
-						</button> -->
 					</div>
 				</div>
 			</div>
 		</transition>
 	</div>
 </template>
+
 <script>
-import { onMounted, reactive, ref } from 'vue'
+import VueHorizontal from 'vue-horizontal';
+import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import {useRouter} from 'vue-router';
 // import selectedBtn from '@/components/form/SelectedButton.vue';
 
@@ -100,6 +107,7 @@ export default {
 	// }),
 
 	components: {
+		VueHorizontal,
     home2,
 		about,
     qrcode,
@@ -115,6 +123,8 @@ export default {
   setup () {
 		// let name = ref('menupopup');
 		// props: ['title', 'button_id']; 	//속성값에 버튼이름과 버튼아이디를 넘겨 받도록 한다.
+		let window_width = ref(window.innerWidth);
+		let window_height = ref(window.innerHeight);
 
 		const router = useRouter();	//라우터호출
 
@@ -145,16 +155,26 @@ export default {
     let currentTab = ref("home2");
 		let tabs =  reactive([]);
 		let selectedTabs = ref([]);
+
 		let clickTabExit = ref(false); 	//Tab 종료 버튼을 클릭하면 컴포넌트 변환 버튼도 눌리게 된다.
 		let ignoreClick = ref(false);		//이때 컴포넌트 변환 클릭 이벤트를 무시하도록한다.
 
 		onMounted(() => {
 			console.log("[MenuPopup] = ", "onMounted--");
-			// tabs.push('home2');
 			tabs.push({id:'home2', name:'Home'});
 			selectedTabs.value.push('home2');
 			// console.log("[MenuPopup] = tabs --", tabs);
+			window.addEventListener('resize', handleResize);
     });
+
+		onUnmounted(() =>{
+			window.removeEventListener('resize', handleResize);
+		});
+
+		function handleResize() {
+			window_width.value = window.innerWidth;
+			window_height.value = window.innerHeight;
+    }
 
 		function clickMainButton(i){
 			// alert(this.isOpen);
@@ -251,8 +271,6 @@ export default {
 				selectedTabs.value.splice(nIndex,1);
 			}
 
-
-
 			// console.log("[MenuPopup] = tabs.length -- ", tabs.length);
 			// console.log("[MenuPopup] = tabs -- ", tabs);
 			// let lastsel = ref(tabs[tabs.length - 1].id);
@@ -283,28 +301,53 @@ export default {
 			popupleave,
 			changeComponent,
 			exitComponent,
+			window_width,
+			window_height,
+			handleResize,
     }
   },
 }
 </script>
 <style lang="scss">
-  .menu-item{
-		border-top:1px solid #35495e;
-		border-left:1px solid #35495e;
-		border-right:1px solid #35495e;
-    border-bottom:1px solid #35495e;
-		width:800px;
-    height:600px;
-    text-align:center;
-    font-size:16px;
-    color:#41b883;
-  }
-
-	body{
-		margin : 0
+	section{
+		padding: 0px 2px;
+		// border: white;
 	}
-	div{
-		box-sizing: border-box;
+  .menu{
+		width:1910px;
+    height:100%;
+    text-align:left;
+    font-size:12px;
+
+	// 	border-top:1px solid blue;
+	// 	border-left:1px solid blue;
+	// 	border-right:1px solid blue;
+  //   border-bottom:1px solid blue;
+  }
+	.menu-main-btn{
+		width: 100%;
+		// width: 420px;
+		height: 33px;
+		padding: 0px 5px 0px 5px;
+
+		// border-top:1px solid red;
+		// border-left:1px solid red;
+		// border-right:1px solid red;
+    // border-bottom:1px solid red;
+	}
+	.selected-menu{
+		width:100%;
+		background:white;
+	}
+	.selected-menu-btn{
+		width:100%;
+		height: 35px;
+		background:gainsboro;
+
+		// border-top:1px solid green;
+		// border-left:1px solid green;
+		// border-right:1px solid green;
+    // border-bottom:1px solid green;
 	}
 	.menupopup-black-bg{
 		width: 70%; height: 30%;
@@ -312,8 +355,8 @@ export default {
 		background: white;
 		position: fixed;
 		padding: 1px;
-		margin:-42px 0 0 5px;
-		z-index: 1; //div를 최상위로 올린다.
+		margin: -3px 0px 0px 5px;
+		// z-index: 1; //div를 최상위로 올린다.
 	}
 	.menupopup-white-bg{
 		border-top:1px solid #35495e;
@@ -327,6 +370,10 @@ export default {
 		// border-radius: 8px;
 		// padding: 20px;
 	}
+	.menu_body{
+    width:100%;
+		margin:2px 0px 0px 0px;
+  }
 	.tab-button {
 		font-size:14px;
 		height: 33px;
