@@ -86,6 +86,7 @@ import usermanagement from '@/views/UserManagement.vue'
 import mdi from '@/views/Mdi.vue'
 import parents from '@/views/Parents.vue'
 import stockcount_online from '@/views/Stockcount_Online.vue'
+import stockcount_offline from '@/views/Stockcount_Offline.vue'
 
 export default {
 	name:'menupopup',
@@ -108,6 +109,7 @@ export default {
 		mdi,
 		parents,
 		stockcount_online,
+		stockcount_offline,
   },
 
   setup () {
@@ -136,6 +138,7 @@ export default {
 			{pid: 'order', id:'room', name:'Room'},
 			{pid: 'label', id:'parents', name:'Slot 테스트'},
 			{pid: 'stock', id:'stockcount_online', name:'Stock Count(Online)'},
+			{pid: 'stock', id:'stockcount_offline', name:'Stock Count(Offline)'},
 		]);
 
 		let comp = ref(home2);
