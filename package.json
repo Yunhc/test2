@@ -25,6 +25,7 @@
     "vue": "^3.2.23",
     "vue-barcode": "^1.3.0",
     "vue-class-component": "^8.0.0-rc.1",
+    "vue-horizontal": "^1.0.2",
     "vue-html-to-paper": "^1.4.4",
     "vue-print-nb": "^1.7.5",
     "vue-qrcode-component": "^2.1.1",
