@@ -58,7 +58,7 @@ export default {
 
 		onUnmounted(() =>{
 			console.log("[App] = onUnmounted -- ");
-			// window.addEventListener('resize', handleResize);
+      window.removeEventListener('resize', handleResize);
       window.removeEventListener('beforeunload', unLoadEvent);
 		});
 
