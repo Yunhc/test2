@@ -63,12 +63,12 @@ const routes = [
     path: '/stockcount_online',
     name: 'Stockcount_Online',
     component: () => import('../views/Stockcount_Online.vue')
-  },  
+  },
   {
     path: '/stockcount_offline',
     name: 'Stockcount_Offline',
     component: () => import('../views/Stockcount_Offline.vue')
-  }, 
+  },
 ]
 
 const router = createRouter({
