@@ -37,7 +37,7 @@
     </div>
     <div class="stc_on_grid1"
       :style="{
-        'height': `calc(${window_height - 119 - 98 - 123}px)`
+        'height': `calc(${window_height - 109 - 98 - 123}px)`
       }"
     >
       <ag-grid-vue
@@ -45,7 +45,7 @@
         class="ag-theme-alpine"
         headerHeight='35'
         style="width: 1910px; height:100%"
-        :rowData="rowData.value"
+        :rowData="recvData.value"
         :gridOptions="gridOptions"
         allow_unsafe_jscode="True"
         >
@@ -61,7 +61,7 @@
           v-model="req_param.scan">
       </div>
       <div class="input-group mb-3"
-        :style="{height:'50px', margin:'-16px 0px 0px 0px', background:'gainsboro'}">
+        :style="{height:'48px', margin:'-14px 0px 0px 0px', background:'gainsboro'}">
         <p :style="{margin:'2px 0px 0px 0px', background:'transparent'}">
           Msg:{{msg}}
         </p>
@@ -98,7 +98,7 @@
       const store = useStore();	//스토어호출
       let options = reactive([]);
 
-      let rowData = reactive([]);
+      let recvData = reactive([]);
       let gridApi = ref(null);
       //focus 이동을 위한 변수
       let sctype = ref(null);
@@ -132,7 +132,7 @@
         rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
         onGridReady: function(event) {
           setTimeout(function () {
-            event.api.setRowData(rowData);
+            event.api.setRowData(recvData);
           }, 1000);
           event.api.sizeColumnsToFit();
         },
@@ -170,29 +170,6 @@
         const selectedDataStringPresentation = selectedData.map( node => `${node.make} ${node.model}`).join(', ');
         alert(`Selected nodes: ${selectedDataStringPresentation}`);
       };
-
-      function searchClick_post() {
-        let urlPost = url.value + '/dw_userList_p';
-
-        console.log("[req_param.sctype]", req_param.sctype);
-        console.log("[req_param.rowno]", req_param.rowno);
-        console.log("[req_param.stor_loc]", req_param.stor_loc);
-
-        $axios.post(urlPost, {
-          sctype: req_param.sctype,
-          rowno: req_param.rowno,
-          stor_loc: req_param.stor_loc,
-        })
-        .then((res) => {
-          console.log("[response data]", res.data);
-          rowData.value = res.data;
-          console.log("[ received data ] ", rowData);
-        })
-        .catch(err => {
-          alert(err);
-          console.error(err)
-        })
-      }
 
       async function initSelectBox() {
         let req_param = reactive(
@@ -235,11 +212,10 @@
           var txtscan = document.getElementById("scan");
           txtscan.setAttribute('inputmode','none');
           console.log(txtscan.inputMode);
-        }
-        console.log(getdata(req_param.stor_loc));
 
-        //API전송
-        fn_SendAPI();
+          //API전송
+          fn_SendAPI();
+        }
 
         // if(e.which == 13){
         //   console.log(text)
@@ -250,6 +226,7 @@
         let urlPost = url.value + '/dwt/stc/pda/scan';
 
         console.log("[req_param]", req_param);
+        console.log(getdata(req_param.stor_loc));
 
         $axios.post(urlPost, {
           werks: getdata(store.state.auth.user[0].plantcd),
@@ -263,8 +240,16 @@
         })
         .then((res) => {
           console.log("[response data]", res.data);
-          rowData.value = res.data;
-          console.log("[ received data ] ", rowData);
+          console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
+          console.log("[response data] = eq_param.scan -- ", req_param.scan);
+
+          if (res.data[0].barno != req_param.scan){
+            msg.value = res.data[0].desc;
+          } else{
+            gridOptions.api.updateRowData({add: [res.data[0]], addIndex:0});
+          }
+
+          scan.value.focus();
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => {
@@ -295,10 +280,9 @@
         defaultColGroupDef: null,
         columnTypes: null,
         options,
-        rowData,
+        recvData,
         gridOptions,
         getSelectedRows,
-        searchClick_post,
         keyupenter,
         scanClick,
       };
