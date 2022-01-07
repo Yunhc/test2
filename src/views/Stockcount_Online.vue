@@ -18,7 +18,7 @@
         <span class="input-group-text btn-sm" id="basic-addon1"
           :style="{width:'80px'}">SC Type
         </span>
-        <input type="text" class="form-control btn-sm" placeholder="SC Type" aria-label="SC Type" aria-describedby="basic-addon1"
+        <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="SC Type" aria-label="SC Type" aria-describedby="basic-addon1"
           id="sctype"
           ref="sctype"
           @keyup.enter ='keyupenter'
@@ -28,7 +28,7 @@
         <span class="input-group-text btn-sm" id="basic-addon1"
           :style="{width:'80px'}"
         >Row No</span>
-        <input type="text" class="form-control btn-sm" placeholder="Row No" aria-label="Row No" aria-describedby="basic-addon1"
+        <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Row No" aria-label="Row No" aria-describedby="basic-addon1"
           id="rowno"
           ref="rowno"
           @keyup.enter ='keyupenter'
@@ -53,7 +53,7 @@
     </div>
     <div class= "stc_on_save">
       <div class="input-group mb-3" :style="{height:'30px', margin:'2px 0px 0px 0px'}">
-        <input type="text" class="form-control btn-sm" placeholder="Scan barcode" aria-label="Scan barcode" aria-describedby="basic-addon1"
+        <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Scan barcode" aria-label="Scan barcode" aria-describedby="basic-addon1"
           id="scan"
           ref="scan"
           @keyup.enter ='keyupenter'
