@@ -694,6 +694,7 @@
   .usersearch1 {
     height : 40px;
     // border-bottom:1px solid #070707;
+    margin : -10px 0px 0px 0px;
   }
   .usergrid1 {
     // width : 100%;
