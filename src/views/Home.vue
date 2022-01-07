@@ -4,14 +4,14 @@
       <MainHeader />
     </div>
     <div id="home_menutree">
-      <MenuTree />
+      <MenuPopup />
     </div>
   </div>
 </template>
-
 <script>
 import MainHeader from '@/components/layout/MainHeader.vue'
-import MenuTree from '@/components/layout/MenuTree.vue'
+// import MenuTree from '@/components/layout/MenuTree.vue'
+import MenuPopup from '@/components/layout/MenuPopup.vue'
 // import MainFooter from '@/components/layout/MainFooter.vue'
 import global from "@/global";
 
@@ -24,7 +24,7 @@ export default {
   },
   components: {
     MainHeader,
-    MenuTree,
+    MenuPopup,
   },
   provide(){
     return{
@@ -34,7 +34,6 @@ export default {
   }
 }
 </script>
-
 <style lang="scss">
   /* 반응형 최대크기 */
   #home {
@@ -43,15 +42,21 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
+
     // border-top:2px solid blue;
     // border-bottom:2px solid blue;
   }
   #home_header{
     width:100%;
-    height:100%;
+    height:40px;
+
+    z-index: 1; //div를 최상위로 올린다.
+    position:fixed;
+    top: 0px;
   }
   #home_menutree{
     width:100%;
-    height:100%;
+    height:42px;
+    border-bottom:1px solid #d9dce0;
   }
 </style>
