@@ -1,7 +1,6 @@
 // 팝업메뉴 생성시 창을 띄워 메뉴를 선택하도록 한다.
 <template>
 	<div class="menu">
-		<!-- <div :style="{ width:'1910px'}"> -->
 		<div class="menu-main-btn"
 		>
 			<!-- :style="{ margin:'5px', border:'red' }" -->
@@ -55,7 +54,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="menupopup">
+	<div class="menupopup" align="left">
 		<transition name="fade" apear>
 			<div class="menupopup-black-bg" v-if="isOpen"	>
 				<div class="menupopup-white-bg"
@@ -189,8 +188,8 @@ export default {
 		function clickSubButton(i){
       // alert(this.button_id);
 			// router.push({ path: menus_sub[i].id });
-
 			console.log("[MenuPopup] = clickSubButton  tabs-- ", tabs);
+
 			let isIncluld = ref(false);
 			for(var j=0; j<tabs.length; j++)
 			{
@@ -201,12 +200,20 @@ export default {
 			}
 			if(isIncluld.value){
 				changeComponent({id:menus_sub[i].id, name:menus_sub[i].name});
-
 			}
 			else{
+				//탭순서를 앞쪽으로 넣기위해 변경
+				if (tabs.length > 1){
+					tabs.splice(0, 1);
+					tabs.unshift({id:menus_sub[i].id, name:menus_sub[i].name});
+					tabs.unshift({id:'home2', name:'Home'});
+					selectedTabs.value.push(menus_sub[i].id);
+				}
+				else{
+					tabs.push({id:menus_sub[i].id, name:menus_sub[i].name});
+					selectedTabs.value.push(menus_sub[i].id);
+				}
 				changeComponent({id:menus_sub[i].id, name:menus_sub[i].name});
-				tabs.push({id:menus_sub[i].id, name:menus_sub[i].name});
-				selectedTabs.value.push(menus_sub[i].id);
 			}
 
 			isOpen.value = false;
@@ -277,7 +284,12 @@ export default {
 			// console.log("[MenuPopup] = lastsel -- ", lastsel.value);
 
 			clickTabExit.value = true;
-			changeComponent(tabs[tabs.length - 1]);
+			if (tabs.length > 1){
+				changeComponent(tabs[1]);
+			}else{
+				changeComponent(tabs[0]);
+			}
+
       // comp.value = lastsel.value;
       // currentTab.value = lastsel.value;
     }
@@ -314,7 +326,7 @@ export default {
 		// border: white;
 	}
   .menu{
-		width:1910px;
+		width:100%px;
     height:100%;
     text-align:left;
     font-size:12px;
@@ -330,6 +342,9 @@ export default {
 		height: 33px;
 		padding: 0px 5px 0px 5px;
 
+		position:fixed;
+    top: 40px;
+
 		// border-top:1px solid red;
 		// border-left:1px solid red;
 		// border-right:1px solid red;
@@ -344,19 +359,24 @@ export default {
 		height: 35px;
 		background:gainsboro;
 
+		position:fixed;
+    top: 73px;
+
 		// border-top:1px solid green;
 		// border-left:1px solid green;
 		// border-right:1px solid green;
     // border-bottom:1px solid green;
 	}
 	.menupopup-black-bg{
-		width: 70%; height: 30%;
+		width: 70%;
+		// height: 30%;
 		// background: rgba(0,0,0,255);
 		background: white;
 		position: fixed;
+		top: 73px;
 		padding: 1px;
-		margin: -3px 0px 0px 5px;
-		// z-index: 1; //div를 최상위로 올린다.
+		margin: 0px 0px 0px 5px;
+		z-index: 1; //div를 최상위로 올린다.
 	}
 	.menupopup-white-bg{
 		border-top:1px solid #35495e;
@@ -372,7 +392,10 @@ export default {
 	}
 	.menu_body{
     width:100%;
-		margin:2px 0px 0px 0px;
+		margin: 2px 0px 0px 0px;
+
+		position:fixed;
+    top: 108px;
   }
 	.tab-button {
 		font-size:14px;
