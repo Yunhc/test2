@@ -356,7 +356,7 @@ export default {
 	}
 	.selected-menu-btn{
 		width:100%;
-		height: 35px;
+		height: 36px;
 		background:gainsboro;
 
 		position:fixed;
