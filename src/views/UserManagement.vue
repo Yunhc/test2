@@ -42,7 +42,7 @@
     </div>
     <div class="usergrid1"
       :style="{
-        'height': `calc(${window_height - 119 - 80}px)`
+        'height': `calc(${window_height - 109 - 80}px)`
       }"
     >
       <ag-grid-vue
@@ -50,7 +50,7 @@
         class="ag-theme-alpine"
         style="width: 1910px; height:100%"
         headerHeight='35'
-        :rowData="rowData.value"
+        :rowData="recvData.value"
         :gridOptions="gridOptions"
         allow_unsafe_jscode="True"
         >
@@ -153,7 +153,7 @@
     //     username: '',
     //     useflag: '',
     //     scrollPostion : 0,
-    //     rowData: [],
+    //     recvData: [],
     //     defaultColGroupDef: null,
     //     columnTypes: null,
     //   }
@@ -178,7 +178,7 @@
       // ]);
       let options = reactive([]);
       const store = useStore();	//스토어호출
-      let rowData = reactive([]);
+      let recvData = reactive([]);
       // let rtnmsg = reactive([]);
       // let selData = reactive({userid:"", username:"", plant:"", workcenter:"", warehoue:""
       //                       , auth:"", role:"", use_role:"", uesflag:"", forklift:""
@@ -261,7 +261,7 @@
         // GRID READY 이벤트, 사이즈 자동조정
         onGridReady: function(event) {
           setTimeout(function () {
-            event.api.setRowData(rowData);
+            event.api.setRowData(recvData);
           }, 1000);
           // event.api.sizeColumnsToFit();
         },
@@ -292,12 +292,12 @@
         window.addEventListener('resize', handleResize);
         // fetch('https://www.ag-grid.com/example-assets/small-row-data.json')
         //         .then(result => result.json())
-        //         .then(remoteRowData => rowData.value = remoteRowData)
-        //         .then(remoteRowData => console.log("[ init rowData ] ", remoteRowData));
+        //         .then(remoteRowData => recvData.value = remoteRowData)
+        //         .then(remoteRowData => console.log("[ init recvData ] ", remoteRowData));
 
         // searchClick_post();
-        // rowData.value = null;
-        // console.log("[ init rowData ] ", rowData);
+        // recvData.value = null;
+        // console.log("[ init recvData ] ", recvData);
       });
       onUnmounted(() =>{
         console.log("[UserManagement] = onUnmounted -- ");
@@ -371,7 +371,7 @@
         // })
         .then((res) => {
           console.log(res.data);
-          rowData.value = res.data;
+          recvData.value = res.data;
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => {
@@ -393,8 +393,8 @@
         })
         .then((res) => {
           console.log("[response data]", res.data);
-          rowData.value = res.data;
-          console.log("[ received data ] ", rowData);
+          recvData.value = res.data;
+          console.log("[ received data ] ", recvData);
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => {
@@ -427,7 +427,7 @@
 
         saveUser2("D");
         // var res = gridOptions.api.updateRowData({remove: selectedData});
-        // rowData.remove(res);
+        // recvData.remove(res);
       }
       function saveClick() {
         // alert("saveClick");
@@ -576,7 +576,7 @@
         //   lockPosition: true, //컬럼 드래그로 이동 방지
         //   cellStyle: {textAlign: "left"},
         // },
-        rowData,
+        recvData,
         onGridReady,
         gridOptions,
         getSelectedRows,
@@ -599,7 +599,7 @@
     methods: {
       makeData () {
         console.log("makeData--");
-        // this.rowData = [
+        // this.recvData = [
         //   {make: 'Toyota', model: 'Celica', price: 35000},
         //   {make: 'Ford', model: 'Mondeo', price: 32000},
         //   {make: 'Porsche', model: 'Boxter', price: 72000}
@@ -694,7 +694,7 @@
   .usersearch1 {
     height : 40px;
     // border-bottom:1px solid #070707;
-    margin : -10px 0px 0px 0px;
+    margin : -5px 0px 0px 0px;
   }
   .usergrid1 {
     // width : 100%;
