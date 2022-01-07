@@ -160,6 +160,4 @@ export default {
   // @media(max-width: 750px){
   //   #nav{ width:100%; }
   // }
-
-
 </style>
