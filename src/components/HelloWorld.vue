@@ -1,5 +1,12 @@
 <template>
-  <div class="hello">
+  <!-- <div class="hello"
+    :style="{
+      'height': `calc(${window_height - 110}px)`
+    }"
+  > -->
+  <div class="hello"
+    :style="{hegith:'200px'}"
+  >
     <h1>{{ msg }}</h1>
     <p>
       For a guide and recipes on how to configure / customize this project,<br>
@@ -33,10 +40,36 @@
 </template>
 
 <script>
+import { ref, onMounted, onUnmounted } from 'vue'
+
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  setup(){
+    let window_width = ref(window.innerWidth);
+    let window_height = ref(window.innerHeight);
+
+    onMounted(() => {
+      console.log("[Stockcount_Online] = ", "onMounted--");
+      window.addEventListener('resize', handleResize);
+    });
+
+    onUnmounted(() =>{
+      console.log("[Stockcount_Online] = onUnmounted -- ");
+      window.removeEventListener('resize', handleResize);
+    });
+
+    function handleResize() {
+      window_width.value = window.innerWidth;
+      window_height.value = window.innerHeight;
+    }
+
+    return{
+      window_width,
+      window_height,
+    };
   }
 }
 </script>
