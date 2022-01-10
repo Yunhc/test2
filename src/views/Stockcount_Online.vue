@@ -56,7 +56,8 @@
         <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Scan barcode" aria-label="Scan barcode" aria-describedby="basic-addon1"
           id="scan"
           ref="scan"
-          @keyup.enter ='keyupenter'
+          @keyup.enter='keyupenter'
+          @focus='fn_SelectAll'
           data-ref="InputContent" inputmode="none"
           v-model="req_param.scan">
       </div>
@@ -222,6 +223,15 @@
         // }
       }
 
+      function fn_SelectAll(e) {
+        //<input @focus="$event.target.select()" value="select me" />
+        if (e.target.id == "scan"){
+          // console.log("[Stockcount_Online/fn_SelectAll] = scan -- ");
+          e.target.select();
+        }
+      }
+
+
       function fn_SendAPI(){
         let urlPost = url.value + '/dwt/stc/pda/scan';
 
@@ -247,9 +257,11 @@
             msg.value = res.data[0].desc;
           } else{
             gridOptions.api.updateRowData({add: [res.data[0]], addIndex:0});
+            // recvData.push(res.data[0]);
           }
 
           scan.value.focus();
+          scan.value.select();
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => {
@@ -285,6 +297,7 @@
         getSelectedRows,
         keyupenter,
         scanClick,
+        fn_SelectAll,
       };
     },
   }
