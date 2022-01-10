@@ -6,7 +6,8 @@
 			<!-- :style="{ margin:'5px', border:'red' }" -->
 			<vue-horizontal :button="false">
 				<section v-for="(pro, i) in menus" :key="i">
-					<button type="button" class="btn btn-outline-dark btn-sm" border-color="white"
+					<button type="button" class="btn btn-outline-dark btn-sm"
+						:style="{border:'transparent'}"
 						:title="menus[i].name"
 						:button_id="menus[i].id"
 						@click="clickMainButton(i)">
@@ -322,28 +323,37 @@ export default {
 </script>
 <style lang="scss">
 	section{
-		padding: 0px 2px;
-		// border: white;
+		height: 40px;
+		padding: 4px 5px 0px 5px;
+		// border: yellow;
+		// border-top:1px solid blue;
+		// border-left:1px solid blue;
+		// border-right:1px solid blue;
+    // border-bottom:1px solid blue;
 	}
   .menu{
 		width:100%px;
     height:100%;
     text-align:left;
     font-size:12px;
+		// margin:0px 0px 0px 0px;
+		background:white;
 
-	// 	border-top:1px solid blue;
-	// 	border-left:1px solid blue;
-	// 	border-right:1px solid blue;
-  //   border-bottom:1px solid blue;
+		// border-top:2px solid blue;
+		// border-left:2px solid blue;
+		// border-right:2px solid blue;
+    // border-bottom:2px solid blue;
   }
 	.menu-main-btn{
 		width: 100%;
 		// width: 420px;
-		height: 33px;
-		padding: 0px 5px 0px 5px;
+		height: 40px;
+		padding: 0px 10px 0px 10px;
+		// margin:2px 2px 2px 2px;
+		background:white;
 
 		position:fixed;
-    top: 40px;
+    top: 38px;
 
 		// border-top:1px solid red;
 		// border-left:1px solid red;
@@ -360,7 +370,7 @@ export default {
 		background:gainsboro;
 
 		position:fixed;
-    top: 73px;
+    top: 75px;
 
 		// border-top:1px solid green;
 		// border-left:1px solid green;
@@ -373,7 +383,7 @@ export default {
 		// background: rgba(0,0,0,255);
 		background: white;
 		position: fixed;
-		top: 73px;
+		top: 75px;
 		padding: 1px;
 		margin: 0px 0px 0px 5px;
 		z-index: 1; //div를 최상위로 올린다.
@@ -395,7 +405,7 @@ export default {
 		margin: 2px 0px 0px 0px;
 
 		position:fixed;
-    top: 108px;
+    top: 110px;
   }
 	.tab-button {
 		font-size:14px;
