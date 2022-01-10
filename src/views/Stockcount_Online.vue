@@ -225,10 +225,7 @@
 
       function fn_SelectAll(e) {
         //<input @focus="$event.target.select()" value="select me" />
-        if (e.target.id == "scan"){
-          // console.log("[Stockcount_Online/fn_SelectAll] = scan -- ");
-          e.target.select();
-        }
+        e.target.select();
       }
 
 
