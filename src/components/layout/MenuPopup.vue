@@ -1,13 +1,11 @@
 // 팝업메뉴 생성시 창을 띄워 메뉴를 선택하도록 한다.
 <template>
 	<div class="menu">
-		<div class="menu-main-btn"
-		>
-			<!-- :style="{ margin:'5px', border:'red' }" -->
+		<div class="menu-main-btn">
 			<vue-horizontal :button="false">
 				<section v-for="(pro, i) in menus" :key="i">
 					<button type="button" class="btn btn-outline-dark btn-sm"
-						:style="{border:'transparent'}"
+						:style="{border:'transparent', 'font-weight':'bold'}"
 						:title="menus[i].name"
 						:button_id="menus[i].id"
 						@click="clickMainButton(i)">
@@ -84,6 +82,8 @@ import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import {useRouter} from 'vue-router';
 // import selectedBtn from '@/components/form/SelectedButton.vue';
 
+import $axios from 'axios';
+import { useStore } from 'vuex';
 import home2 from '@/views/Home2.vue'
 import about from '@/views/About.vue'
 import qrcode from '@/views/QRCode.vue'
@@ -126,29 +126,24 @@ export default {
 		let window_width = ref(window.innerWidth);
 		let window_height = ref(window.innerHeight);
 
+		const store = useStore();	//스토어호출
 		const router = useRouter();	//라우터호출
 
 		let index = ref(-1); 						//누른 버튼의 인덱스
 		let isOpen = ref(false); 				//버튼 클릭시 창을 보였다 안보였다 한다.
 		let isOver = ref(false);
 		let subIndex = ref(-1);
-		let menus = reactive([
-			{id:'system', name:'시스템관리'},
-			{id:'basic', name:'기준정보관리'},
-			{id:'order', name:'오더관리'},
-			{id:'label', name:'라벨발행 이력'},
-			{id:'stock', name:'재고관리'},
-			]);
+		let menus = reactive([]);
 		let menus_sub = reactive([
-			{pid: 'system', id:'usermanagement', name:'사용자관리'},
-			{pid: 'system', id:'print', name:'Print Test'},
-			{pid: 'system', id:'qrcode', name:'Barcode Test'},
-			{pid: 'system', id:'mdi', name:'MDI Test'},
-			{pid: 'basic', id:'about', name:'About'},
-			{pid: 'order', id:'room', name:'Room'},
-			{pid: 'label', id:'parents', name:'Slot 테스트'},
-			{pid: 'stock', id:'stockcount_online', name:'Stock Count(Online)'},
-			{pid: 'stock', id:'stockcount_offline', name:'Stock Count(Offline)'},
+			{pid: 'M000', id:'usermanagement', name:'사용자관리'},
+			{pid: 'M000', id:'print', name:'Print Test'},
+			{pid: 'M000', id:'qrcode', name:'Barcode Test'},
+			{pid: 'M000', id:'mdi', name:'MDI Test'},
+			{pid: 'M100', id:'about', name:'About'},
+			{pid: 'M200', id:'room', name:'Room'},
+			{pid: 'M250', id:'parents', name:'Slot 테스트'},
+			{pid: 'M520', id:'stockcount_online', name:'Stock Count(Online)'},
+			{pid: 'M520', id:'stockcount_offline', name:'Stock Count(Offline)'},
 		]);
 
 		let comp = ref(home2);
@@ -165,6 +160,7 @@ export default {
 			selectedTabs.value.push('home2');
 			// console.log("[MenuPopup] = tabs --", tabs);
 			window.addEventListener('resize', handleResize);
+			fn_Search_MainMenu();
     });
 
 		onUnmounted(() =>{
@@ -295,6 +291,35 @@ export default {
       // currentTab.value = lastsel.value;
     }
 
+		function fn_Search_MainMenu(){
+			let urlPost = process.env.VUE_APP_SERVER_URL + '/api/dw/menu/searchList';
+
+			$axios.post(urlPost, {
+				lang :"KR",
+				userid: store.state.auth.user[0].userid,
+				menuid:"",
+				menuname: "",
+				useflag: "Y"
+			})
+			.then((res) => {
+				console.log("[response data]", res.data);
+
+				if(res.data.length > 0){
+          menus.splice(0, menus.length);
+          for(var i=0; i<res.data.length; i++){
+              menus.push({id:res.data[i].menuid, name:res.data[i].menuname});
+          }
+        }
+
+
+			}) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+				//.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+			.catch(err => {
+				alert(err);
+				console.error(err)
+			})
+		}
+
     return {
 			index,
 			isOpen,
@@ -345,6 +370,8 @@ export default {
     // border-bottom:2px solid blue;
   }
 	.menu-main-btn{
+		font-size:20px;
+		font-weight:bold;
 		width: 100%;
 		// width: 420px;
 		height: 40px;
