@@ -147,7 +147,7 @@ export default {
 			{pid: 'M200', id:'room', name:'Room'},
 			{pid: 'M250', id:'parents', name:'Slot 테스트'},
 			{pid: 'M501', id:'fg_receipt', name:'Finished Goods Receipt'},
-			{pid: 'M502', id:'good_issue', name:'Good Issue'},
+			{pid: 'M520', id:'good_issue', name:'Good Issue'},
 			{pid: 'M520', id:'stockcount_online', name:'Stock Count(Online)'},
 			{pid: 'M520', id:'stockcount_offline', name:'Stock Count(Offline)'},
 		]);
