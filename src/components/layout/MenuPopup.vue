@@ -92,6 +92,8 @@ import room from '@/views/OneRoom.vue'
 import usermanagement from '@/views/UserManagement.vue'
 import mdi from '@/views/Mdi.vue'
 import parents from '@/views/Parents.vue'
+import fg_receipt from '@/views/FG_Receipt.vue'
+import good_issue from '@/views/Good_Issue.vue'
 import stockcount_online from '@/views/Stockcount_Online.vue'
 import stockcount_offline from '@/views/Stockcount_Offline.vue'
 
@@ -108,14 +110,16 @@ export default {
 
 	components: {
 		VueHorizontal,
-    home2,
+		home2,
 		about,
-    qrcode,
-    print,
+		qrcode,
+		print,
 		room,
 		usermanagement,
 		mdi,
 		parents,
+		fg_receipt,
+		good_issue,
 		stockcount_online,
 		stockcount_offline,
   },
@@ -142,12 +146,14 @@ export default {
 			{pid: 'M100', id:'about', name:'About'},
 			{pid: 'M200', id:'room', name:'Room'},
 			{pid: 'M250', id:'parents', name:'Slot 테스트'},
+			{pid: 'M501', id:'fg_receipt', name:'Finished Goods Receipt'},
+			{pid: 'M502', id:'good_issue', name:'Good Issue'},
 			{pid: 'M520', id:'stockcount_online', name:'Stock Count(Online)'},
 			{pid: 'M520', id:'stockcount_offline', name:'Stock Count(Offline)'},
 		]);
 
 		let comp = ref(home2);
-    let currentTab = ref("home2");
+		let currentTab = ref("home2");
 		let tabs =  reactive([]);
 		let selectedTabs = ref([]);
 
@@ -358,9 +364,9 @@ export default {
 	}
   .menu{
 		width:100%px;
-    height:100%;
-    text-align:left;
-    font-size:12px;
+		height:100%;
+		text-align:left;
+		font-size:12px;
 		// margin:0px 0px 0px 0px;
 		background:white;
 
@@ -378,9 +384,8 @@ export default {
 		padding: 0px 10px 0px 10px;
 		// margin:2px 2px 2px 2px;
 		background:white;
-
 		position:fixed;
-    top: 38px;
+		top: 38px;
 
 		// border-top:1px solid red;
 		// border-left:1px solid red;
@@ -395,9 +400,8 @@ export default {
 		width:100%;
 		height: 36px;
 		background:gainsboro;
-
 		position:fixed;
-    top: 75px;
+		top: 75px;
 
 		// border-top:1px solid green;
 		// border-left:1px solid green;
@@ -419,7 +423,7 @@ export default {
 		border-top:1px solid #35495e;
 		border-left:1px solid #35495e;
 		border-right:1px solid #35495e;
-    border-bottom:1px solid #35495e;
+		border-bottom:1px solid #35495e;
 
 		width: 100%;
 		height: 100%;
@@ -428,12 +432,12 @@ export default {
 		// padding: 20px;
 	}
 	.menu_body{
-    width:100%;
+		width:100%;
 		margin: 2px 0px 0px 0px;
 
 		position:fixed;
-    top: 110px;
-  }
+		top: 110px;
+	}
 	.tab-button {
 		font-size:14px;
 		height: 33px;
