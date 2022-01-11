@@ -17,58 +17,58 @@ const routes = [
     name: 'Home',
     component: () => import('../views/Home.vue')
   },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  },
-  {
-    path: '/room',
-    name: 'Room',
-    component: () => import('../views/OneRoom.vue')
-  },
-  {
-    path: '/parents',
-    name: 'Parents',
-    component: () => import('../views/Parents.vue')
-  },
-  {
-    path: '/usermanagement',
-    name: 'Usermanagement',
-    component: () => import('../views/UserManagement.vue')
-  },
-  {
-    path: '/print',
-    name: 'Print',
-    component: () => import('../views/Print.vue')
-  },
-  {
-    path: '/qrcode',
-    name: 'QRCode',
-    component: () => import('../views/QRCode.vue')
-  },
-  {
-    path: '/mdi',
-    name: 'Mdi',
-    component: () => import('../views/Mdi.vue')
-  },
   // {
-  //   path: '*',
-  //   component: () => import ('@/views/NotFoundPage.vue'),
+  //   path: '/about',
+  //   name: 'About',
+  //   // route level code-splitting
+  //   // this generates a separate chunk (about.[hash].js) for this route
+  //   // which is lazy-loaded when the route is visited.
+  //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   // },
-  {
-    path: '/stockcount_online',
-    name: 'Stockcount_Online',
-    component: () => import('../views/Stockcount_Online.vue')
-  },
-  {
-    path: '/stockcount_offline',
-    name: 'Stockcount_Offline',
-    component: () => import('../views/Stockcount_Offline.vue')
-  },
+  // {
+  //   path: '/room',
+  //   name: 'Room',
+  //   component: () => import('../views/OneRoom.vue')
+  // },
+  // {
+  //   path: '/parents',
+  //   name: 'Parents',
+  //   component: () => import('../views/Parents.vue')
+  // },
+  // {
+  //   path: '/usermanagement',
+  //   name: 'Usermanagement',
+  //   component: () => import('../views/UserManagement.vue')
+  // },
+  // {
+  //   path: '/print',
+  //   name: 'Print',
+  //   component: () => import('../views/Print.vue')
+  // },
+  // {
+  //   path: '/qrcode',
+  //   name: 'QRCode',
+  //   component: () => import('../views/QRCode.vue')
+  // },
+  // {
+  //   path: '/mdi',
+  //   name: 'Mdi',
+  //   component: () => import('../views/Mdi.vue')
+  // },
+  // // {
+  // //   path: '*',
+  // //   component: () => import ('@/views/NotFoundPage.vue'),
+  // // },
+  // {
+  //   path: '/stockcount_online',
+  //   name: 'Stockcount_Online',
+  //   component: () => import('../views/Stockcount_Online.vue')
+  // },
+  // {
+  //   path: '/stockcount_offline',
+  //   name: 'Stockcount_Offline',
+  //   component: () => import('../views/Stockcount_Offline.vue')
+  // },
 ]
 
 const router = createRouter({
