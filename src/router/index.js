@@ -10,12 +10,12 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../components/Login.vue')
+    component: () => import('@/components/Login.vue')
   },
   {
     path: '/home',
     name: 'Home',
-    component: () => import('../views/Home.vue')
+    component: () => import('@/views/Home.vue')
   },
   // {
   //   path: '/about',
@@ -55,10 +55,6 @@ const routes = [
   //   name: 'Mdi',
   //   component: () => import('../views/Mdi.vue')
   // },
-  // // {
-  // //   path: '*',
-  // //   component: () => import ('@/views/NotFoundPage.vue'),
-  // // },
   // {
   //   path: '/stockcount_online',
   //   name: 'Stockcount_Online',
@@ -69,6 +65,12 @@ const routes = [
   //   name: 'Stockcount_Offline',
   //   component: () => import('../views/Stockcount_Offline.vue')
   // },
+  {
+    path: '/*',
+    name: 'NotFoundPage',
+     component: () => import ('@/views/NotFoundPage.vue'),
+    // redirect: '/home'
+  },
 ]
 
 const router = createRouter({
