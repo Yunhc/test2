@@ -64,7 +64,7 @@
       <div class="input-group mb-3"
         :style="{height:'48px', margin:'-14px 0px 0px 0px', background:'gainsboro'}">
         <p :style="{margin:'2px 0px 0px 0px', background:'transparent'}">
-          Msg:{{msg}}
+          Msg :{{msg}}
         </p>
       </div>
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
@@ -251,10 +251,11 @@
           console.log("[response data] = eq_param.scan -- ", req_param.scan);
 
           if (res.data[0].barno != req_param.scan){
-            msg.value = res.data[0].desc;
+            msg.value = res.data[0].message;
           } else{
             gridOptions.api.updateRowData({add: [res.data[0]], addIndex:0});
             // recvData.push(res.data[0]);
+            msg.value = res.data[0].message;
           }
 
           scan.value.focus();
