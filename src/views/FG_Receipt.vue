@@ -1,0 +1,282 @@
+<template>
+  <div class="fg_receipt">
+    <div class="fg_receipt_search">
+      <div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
+        <span class="input-group-text btn-sm" id="basic-addon1"
+          :style="{width:'80px'}"
+        >Status</span>
+        <input readonly type="text" autocomplete="off" class="form-control btn-sm" placeholder="Stock Status" aria-label="Stock Status" aria-describedby="basic-addon1"
+          id="lblstatus"
+          ref="lblstatus">
+      </div>
+      <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
+        <span class="input-group-text btn-sm" id="basic-addon1"
+          :style="{width:'80px'}">S/L
+        </span>
+        <input readonly type="text" autocomplete="off" class="form-control btn-sm" placeholder="Storage Location" aria-label="Storage Location" aria-describedby="basic-addon1"
+          id="lblstorloc"
+          ref="lblstorloc">
+      </div>
+      <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
+        <span class="input-group-text btn-sm" id="basic-addon1"
+          :style="{width:'80px'}"
+        >Prod. Date</span>
+        <input readonly type="text" autocomplete="off" class="form-control btn-sm" placeholder="Production Date" aria-label="Production Date" aria-describedby="basic-addon1"
+          id="lblproddate"
+          ref="lblproddate">
+      </div>
+    </div>
+    <div class="fg_receipt_grid1"
+      :style="{
+        'height': `calc(${window_height - 109 - 98 - 123}px)`
+      }"
+    >
+      <ag-grid-vue
+        id="agGrid1"
+        class="ag-theme-alpine"
+        headerHeight='35'
+        style="width: 1910px; height:100%"
+        :rowData="recvData.value"
+        :gridOptions="gridOptions"
+        allow_unsafe_jscode="True"
+        >
+      </ag-grid-vue>
+    </div>
+    <div class= "fg_receipt_save">
+      <div class="input-group mb-3" :style="{height:'30px', margin:'2px 0px 0px 0px'}">
+        <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Scan barcode" aria-label="Scan barcode" aria-describedby="basic-addon1"
+          id="scan"
+          ref="scan"
+          @keyup.enter='keyupenter'
+          @focus='fn_SelectAll'
+          data-ref="InputContent" inputmode="none"
+          v-model="req_param.scan">
+      </div>
+      <div class="input-group mb-3"
+        :style="{height:'48px', margin:'-14px 0px 0px 0px', background:'gainsboro'}">
+        <p :style="{margin:'2px 0px 0px 0px', background:'transparent'}">
+          Msg:{{msg}}
+        </p>
+      </div>
+      <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
+        @click='saveClick'>Save</button>          
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
+        @click='scanClick'>Scan</button>
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
+        @click='closeClick'>Close</button>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import $axios from 'axios';
+  import { reactive, ref, onMounted, onUnmounted } from 'vue'
+  import 'ag-grid-community/dist/styles/ag-grid.css';
+  import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
+  import {AgGridVue} from 'ag-grid-vue3'
+  import { useStore } from 'vuex';
+  import { getdata } from '@/helper/filter.js';
+
+  export default {
+    name:'fg_receipt',
+    components:{
+      AgGridVue,
+    },
+    setup(){
+      let url = ref(process.env.VUE_APP_SERVER_URL);
+      let window_width = ref(window.innerWidth);
+      let window_height = ref(window.innerHeight);
+
+      const store = useStore();	//스토어호출
+      let options = reactive([]);
+
+      let recvData = reactive([]);
+      let gridApi = ref(null);
+      //focus 이동을 위한 변수
+      let lblstatus = ref(null);
+      let lblstorloc = ref(null);
+      let lblstorname = ref(null);
+      let lblproddate = ref(null);
+      let scan = ref(null);
+      //데이터 바인딩
+      let req_param = reactive({scan:""});
+      let msg = ref(null);
+
+      let columnDefs= reactive([
+        {headerName: 'Barcode', field: 'barno', width: 80, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'center'},
+        {headerName: 'Qty', field: 'qty', width: 40, sortable: true, pinned: 'right'},
+        {headerName: 'Unit', field: 'meins', width: 50, pinned: 'left'},
+        {headerName: 'Material', field: 'matnr', width: 100, sortable: true, pinned: 'center', filter: true},  
+        {headerName: 'Material Description', field: 'maktx', width: 200, sortable: true, pinned: 'left', filter: true},      
+        {headerName: 'Storage Location', field: 'lgort', width: 100, pinned: 'center', filter: true},
+        {headerName: 'Prod Date', field: 'proddate', width: 100, pinned: 'center'},
+        {headerName: 'Status', field: 'status', width: 100, pinned: 'center'},
+      ]);
+      var gridOptions = {
+        defaultColDef: {
+          width: 150,
+          editable: true,
+          resizable: true,
+          sortable: true,
+          lockPosition: true, //컬럼 드래그로 이동 방지
+          cellStyle: {textAlign: "left"},
+        },
+        columnDefs: columnDefs,
+        rowData: null,
+        rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
+        onGridReady: function(event) {
+          setTimeout(function () {
+            event.api.setRowData(recvData);
+          }, 1000);
+          event.api.sizeColumnsToFit();
+        },
+        getRowHeight: function() {
+          return 35;
+        },
+        onGridSizeChanged: function(event) {
+          event.api.sizeColumnsToFit();
+        },
+      };
+
+      onMounted(() => {
+        console.log("[Finished Goods Receipt] = ", "onMounted--");
+        window.addEventListener('resize', handleResize);
+      });
+
+      onUnmounted(() =>{
+        console.log("[Finished Goods Receipt] = onUnmounted -- ");
+        window.removeEventListener('resize', handleResize);
+      });
+
+      function handleResize() {
+        window_width.value = window.innerWidth;
+        window_height.value = window.innerHeight;
+      }
+
+      const getSelectedRows = () => {
+        const selectedNodes = gridApi.value.getSelectedNodes();
+        const selectedData = selectedNodes.map( node => node.data );
+        const selectedDataStringPresentation = selectedData.map( node => `${node.make} ${node.model}`).join(', ');
+        alert(`Selected nodes: ${selectedDataStringPresentation}`);
+      };
+
+      function keyupenter(e){
+        if (e.target.id == "scan"){
+          console.log(req_param.scan);
+          var txtscan = document.getElementById("scan");
+          txtscan.setAttribute('inputmode','none');
+          console.log(txtscan.inputMode);
+
+          //API전송
+          fn_SendAPI();
+        }
+      }
+
+      function fn_SelectAll(e) {
+        //<input @focus="$event.target.select()" value="select me" />
+        e.target.select();
+      }
+
+
+      function fn_SendAPI(){
+        let urlPost = url.value + '/dwt/fg_receipt/scan';
+
+        console.log("[req_param]", req_param);
+        // console.log(getdata(req_param.scan));
+
+        //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
+        $axios.post(urlPost, {
+            i_lang: "EN",
+            i_userid: store.state.auth.user[0].userid,
+            i_werks: getdata(store.state.auth.user[0].plantcd),
+            i_barno: req_param.scan,
+        })
+        .then((res) => {
+          console.log("[response data]", res.data);
+          console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
+          console.log("[response data] = eq_param.scan -- ", req_param.scan);
+
+          if (res.data[0].barno != req_param.scan){
+            msg.value = res.data[0].message;
+          } else{
+            recvData.value = res.data;
+          }
+
+          scan.value.focus();
+          scan.value.select();
+        }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+          //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+        .catch(err => {
+          alert(err);
+          console.error(err)
+        })
+      }
+
+      function scanClick() {
+        console.log(req_param.scan);
+        var txtscan = document.getElementById("scan");
+        txtscan.setAttribute('inputmode','numeric');
+        console.log(txtscan.inputMode);
+
+        scan.value.focus();
+      }
+
+      return {
+        window_width,
+        window_height,
+        lblstatus,
+        lblstorloc,
+        lblstorname,
+        lblproddate,
+        scan,
+        req_param,
+        msg,
+        scrollPostion : 0,
+        defaultColGroupDef: null,
+        columnTypes: null,
+        options,
+        recvData,
+        gridOptions,
+        getSelectedRows,
+        keyupenter,
+        scanClick,
+        fn_SelectAll,
+      };
+    },
+  }
+</script>
+<style lang="scss">
+  @import "~ag-grid-community/dist/styles/ag-grid.css";
+  @import "~ag-grid-community/dist/styles/ag-theme-alpine.css";
+
+	.fg_receipt {
+		font-family: Avenir, Helvetica, Arial, sans-serif;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		text-align: center;
+		color: #2c3e50;
+		width:100%;
+        height:100%;
+        // select:focus {
+        //   background: yellow;
+        // }
+        input:focus {
+            background: yellow;
+        }
+    }
+  .fg_receipt_search {
+    height : 98px;
+    margin : 0px 5px 0px 5px;
+  }
+  .fg_receipt_grid1 {
+    margin:0px 5px 0px 5px;
+    overflow: auto;
+  }
+  .fg_receipt_save {
+    // background: gainsboro;
+    height : 123px;
+    margin : 0px 5px 0px 5px;
+    overflow-x: auto;
+  }
+</style>
