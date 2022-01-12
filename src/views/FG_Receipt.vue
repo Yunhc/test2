@@ -104,14 +104,14 @@
       let msg = ref(null);
 
       let columnDefs= reactive([
-        {headerName: 'Barcode', field: 'barno', width: 80, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'center'},
-        {headerName: 'Qty', field: 'qty', width: 40, sortable: true, pinned: 'right'},
-        {headerName: 'Unit', field: 'meins', width: 50, pinned: 'left'},
-        {headerName: 'Material', field: 'matnr', width: 100, sortable: true, pinned: 'center', filter: true},  
-        {headerName: 'Material Description', field: 'maktx', width: 200, sortable: true, pinned: 'left', filter: true},      
-        {headerName: 'Storage Location', field: 'lgort', width: 100, pinned: 'center', filter: true},
-        {headerName: 'Prod Date', field: 'proddate', width: 100, pinned: 'center'},
-        {headerName: 'Status', field: 'status', width: 100, pinned: 'center'},
+        {headerName: 'Barcode', field: 'barno', width: 60, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        {headerName: 'Qty', field: 'qty', width: 30, sortable: true, pinned: 'left'},
+        {headerName: 'Unit', field: 'meins', width: 30, pinned: 'left'},
+        {headerName: 'Material', field: 'matnr', width: 50, sortable: true, pinned: 'left', filter: true},  
+        {headerName: 'Material Description', field: 'maktx', width: 120, sortable: true, filter: true},      
+        {headerName: 'Storage Location', field: 'lgort', width: 80, filter: true},
+        {headerName: 'Prod Date', field: 'proddate', width: 50},
+        {headerName: 'Status', field: 'status', width: 70},
       ]);
       var gridOptions = {
         defaultColDef: {
@@ -195,12 +195,51 @@
         .then((res) => {
           console.log("[response data]", res.data);
           console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
-          console.log("[response data] = eq_param.scan -- ", req_param.scan);
+          console.log("[response data] = req_param.scan -- ", req_param.scan);
 
           if (res.data[0].barno != req_param.scan){
             msg.value = res.data[0].message;
           } else{
             recvData.value = res.data;
+            document.getElementById("lblstatus").innerHTML = res.data[0].status;
+            console.log("[lblstatus]", lblstatus)
+          }
+
+          scan.value.focus();
+          scan.value.select();
+        }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+          //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+        .catch(err => {
+          alert(err);
+          console.error(err)
+        })
+      }
+
+      function saveClick() {
+        let urlPost = url.value + '/dwt/fg_receipt/save';
+
+        console.log("[req_param]", req_param);
+        // console.log(getdata(req_param.scan));
+
+        //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
+        $axios.post(urlPost, {
+            i_lang: "EN",
+            i_userid: store.state.auth.user[0].userid,
+            i_werks: getdata(store.state.auth.user[0].plantcd),
+            i_barno: req_param.scan,
+        })
+        .then((res) => {
+          console.log("[response data]", res.data);
+          console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
+          console.log("[response data] = req_param.scan -- ", req_param.scan);
+
+          if (res.data[0].barno != req_param.scan){
+            msg.value = res.data[0].message;
+          } else{
+            recvData.value = res.data;
+            document.getElementById("lblstatus").innerHTML = res.data[0].status;
+            console.log("[lblstatus]", lblstatus)
+            msg.value = "정상 처리되었습니다."
           }
 
           scan.value.focus();
@@ -240,6 +279,7 @@
         gridOptions,
         getSelectedRows,
         keyupenter,
+        saveClick,
         scanClick,
         fn_SelectAll,
       };
