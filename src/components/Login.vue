@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import {onMounted, onUnmounted, ref} from 'vue'
+import {onMounted, onUnmounted, ref,reactive} from 'vue'
 import {useStore} from 'vuex';
 import {useRouter} from 'vue-router';
 
@@ -60,7 +60,7 @@ export default {
 		// let name = ref("Login");
 		let user = ref({userid:"", password:""});
 		let chkID = ref(false);
-		let saveid = ref({chk:"", id:""});
+		let saveid = reactive([]);
 
 		let userid = ref(null);
 		let password = ref(null);
@@ -80,13 +80,15 @@ export default {
 			console.log("[login] = ", "onMounted--");
 			console.log("[login] = loggedUser --", store.state.auth.user);
 			console.log("[login] = saveid --", store.state.saveid.id);
-			console.log("[login] = saveid --", store.state.saveid.chk);
 
 			if(store.state.saveid.id != null){
-				if(store.state.saveid.chk == "true"){
-					console.log("[login] = saveid -- true", store.state.saveid.chk);
+				console.log("[login] = saveid -- exist");
+				if(store.state.saveid.id[0].chk == true){
 					chkID.value = true;
-					user.value.userid = store.state.saveid.id;
+					user.value.userid = store.state.saveid.id[0].id;
+				}
+				else{
+					console.log("[login] = store.state.saveid.id.chk -- ", store.state.saveid.id[0].chk);
 				}
 			}
     });
@@ -114,11 +116,8 @@ export default {
 						console.log("[handleLogin] = loggedIn --", store.state.auth.status.loggedIn);
 
 						if(chkID.value == true){
-							saveid.value.chk = true;
-							saveid.value.id = user.value.userid;
-
+							saveid.push({chk:true, id:user.value.userid});
 							store.dispatch("saveid/saveid", saveid);
-							console.log("[login] = saveid store.state.saveid.id --", store.state.saveid.id);
 						}
 						else{
 							store.dispatch("saveid/deleteid");
