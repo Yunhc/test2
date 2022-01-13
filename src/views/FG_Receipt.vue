@@ -3,24 +3,30 @@
     <div class="fg_receipt_search">
       <div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
-          :style="{width:'80px'}"
-        >Status</span>
-        <input readonly type="text" autocomplete="off" class="form-control btn-sm" placeholder="Stock Status" aria-label="Stock Status" aria-describedby="basic-addon1"
-          v-model="lblstatus">
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">
+          Status</span>
+        <label readonly type="text" class="form-control btn-sm" placeholder="Storage Location" aria-label="Storage Location" aria-describedby="basic-addon1"
+          align="left">
+          {{lblstatus}}
+        </label>
       </div>
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
-        <span class="input-group-text btn-sm" id="basic-addon1"
-          :style="{width:'80px'}">S/L
+        <span class="input-group-text btn-sm"
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">S/L
         </span>
-        <input readonly type="text" autocomplete="off" class="form-control btn-sm" placeholder="Storage Location" aria-label="Storage Location" aria-describedby="basic-addon1"
-          v-model="lblstorloc">
+        <label readonly type="text" class="form-control btn-sm" placeholder="Storage Location" aria-label="Storage Location" aria-describedby="basic-addon1"
+          align="left">
+          {{lblstorloc}}
+        </label>
       </div>
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
-          :style="{width:'80px'}"
-        >Prod. Date</span>
-        <input readonly type="text" autocomplete="off" class="form-control btn-sm" placeholder="Production Date" aria-label="Production Date" aria-describedby="basic-addon1"
-          v-model="lblproddate">
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">
+          Prod. Date</span>
+        <label readonly type="text" class="form-control btn-sm" placeholder="Storage Location" aria-label="Storage Location" aria-describedby="basic-addon1"
+          align="left">
+          {{lblproddate}}
+        </label>
       </div>
     </div>
     <div class="fg_receipt_grid1"
@@ -51,13 +57,17 @@
       </div>
       <div class="input-group mb-3"
         :style="{height:'48px', margin:'-14px 0px 0px 0px', background:'gainsboro'}">
-        <p :style="{margin:'2px 0px 0px 0px', background:'transparent'}">
+        <p :style="{margin:'2px 0px 0px 0px',
+                    background:'transparent',
+                    'font-size':'16px',
+                    'font-weight':'bold',
+                    color:msg_color}">
           Msg:{{msg}}
         </p>
       </div>
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
-        @click='saveClick'>Save</button>          
+        @click='saveClick'>Save</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
         @click='scanClick'>Scan</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
@@ -89,22 +99,25 @@
       let options = reactive([]);
 
       let recvData = reactive([]);
-      let gridApi = ref(null);
-      //focus 이동을 위한 변수
+
       let lblstatus = ref(null);
       let lblstorloc = ref(null);
       let lblproddate = ref(null);
+
+      //focus 이동을 위한 변수
       let scan = ref(null);
       //데이터 바인딩
       let req_param = reactive({scan:""});
+
       let msg = ref(null);
+      let msg_color = ref(null);
 
       let columnDefs= reactive([
         {headerName: 'Barcode', field: 'barno', width: 30, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
         {headerName: 'Qty', field: 'qty', width: 30, sortable: true, pinned: 'left'},
         {headerName: 'Unit', field: 'meins', width: 30, pinned: 'left'},
-        {headerName: 'Material', field: 'matnr', width: 50, sortable: true, pinned: 'left', filter: true},  
-        {headerName: 'Material Description', field: 'maktx', width: 120, sortable: true, filter: true},      
+        {headerName: 'Material', field: 'matnr', width: 50, sortable: true, pinned: 'left', filter: true},
+        {headerName: 'Material Description', field: 'maktx', width: 120, sortable: true, filter: true},
         {headerName: 'Storage Location', field: 'lgort', width: 80, filter: true},
         {headerName: 'Prod Date', field: 'proddate', width: 50},
         {headerName: 'Status', field: 'status', width: 70},
@@ -112,7 +125,7 @@
       var gridOptions = {
         defaultColDef: {
           width: 150,
-          editable: true,
+          editable: false,
           resizable: true,
           sortable: true,
           lockPosition: true, //컬럼 드래그로 이동 방지
@@ -130,8 +143,21 @@
         getRowHeight: function() {
           return 35;
         },
+        getRowNodeId: function(event){
+          return event.id;
+        },
         onGridSizeChanged: function(event) {
           event.api.sizeColumnsToFit();
+        },
+        onRowClicked : function(event){
+          var selectedRow = event.node.data;
+          // console.log('onRowClicked = selectedRow -- ', selectedRow);
+          lblstatus.value = selectedRow.barno;
+          lblstorloc.value = selectedRow.lgort;
+          lblproddate.value = selectedRow.proddate;
+
+          // scan.value.focus();
+          // scan.value.select();
         },
       };
 
@@ -150,12 +176,12 @@
         window_height.value = window.innerHeight;
       }
 
-      const getSelectedRows = () => {
-        const selectedNodes = gridApi.value.getSelectedNodes();
-        const selectedData = selectedNodes.map( node => node.data );
-        const selectedDataStringPresentation = selectedData.map( node => `${node.make} ${node.model}`).join(', ');
-        alert(`Selected nodes: ${selectedDataStringPresentation}`);
-      };
+      // const getSelectedRows = () => {
+      //   const selectedNodes = gridApi.value.getSelectedNodes();
+      //   const selectedData = selectedNodes.map( node => node.data );
+      //   const selectedDataStringPresentation = selectedData.map( node => `${node.make} ${node.model}`).join(', ');
+      //   alert(`Selected nodes: ${selectedDataStringPresentation}`);
+      // };
 
       function keyupenter(e){
         if (e.target.id == "scan"){
@@ -177,10 +203,9 @@
 
       function fn_SendAPI(){
         let urlPost = url.value + '/dwt/fg_receipt/scan';
-
         console.log("[req_param]", req_param);
-        // console.log(getdata(req_param.scan));
 
+        gridOptions.api.setRowData([]);
         //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
         $axios.post(urlPost, {
             i_lang: "EN",
@@ -194,12 +219,24 @@
           console.log("[response data] = req_param.scan -- ", req_param.scan);
 
           if (res.data[0].barno != req_param.scan){
+            msg_color.value = "red";
             msg.value = res.data[0].message;
+
+            lblstatus.value = "";
+            lblstorloc.value = "";
+            lblproddate.value = "";
           } else{
+            msg_color.value = "blue";
+            msg.value = "OK";
+
             recvData.value = res.data;
+
             lblstatus.value = res.data[0].status;
+            lblstorloc.value = res.data[0].lgort;
+            lblproddate.value = res.data[0].proddate;
           }
 
+          req_param.scan = "";
           scan.value.focus();
           scan.value.select();
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
@@ -211,41 +248,57 @@
       }
 
       function saveClick() {
-        let urlPost = url.value + '/dwt/fg_receipt/save';
+        // const rowCount = gridOptions.api.getLastDisplayedRow();
+        const rowCount = gridOptions.api.getDisplayedRowCount();
+        console.log("grid count : ", rowCount);
 
-        console.log("[req_param]", req_param);
-        console.log("Barno : ", gridOptions.api.rowData[0].barno);
-        // console.log(getdata(req_param.scan));
+        if (rowCount > 0){
+          //  const rowNode = gridOptions.api.getRowNode();
+          const rowNode = gridOptions.api.getDisplayedRowAtIndex(0);
+          //  console.log("Barno : ", rowNode);
+          console.log("Barno : ", rowNode.data);
+          //  console.log("Barno : ", rowNode.data.barno);
 
-        //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
-        $axios.post(urlPost, {
-            i_lang: "EN",
-            i_userid: store.state.auth.user[0].userid,
-            i_werks: getdata(store.state.auth.user[0].plantcd),
-            i_barno: gridOptions.api.rowData[0].barno,
-        })
-        .then((res) => {
-          console.log("[response data]", res.data);
-          console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
-          console.log("[response data] = req_param.scan -- ", req_param.scan);
+          // gridOptions.api.forEachNode((rowNode, index) => {
+          //   console.log('rowNode.data ', rowNode.data);
+          //   console.log('rowNode.data.barno ' + rowNode.data.barno + ' is in the grid -- ' + index);
+          // });
 
-          if (res.data[0].barno != req_param.scan){
-            msg.value = res.data[0].message;
-          } else{
-            recvData.value = res.data;
-            document.getElementById("lblstatus").innerHTML = res.data[0].status;
-            console.log("[lblstatus]", lblstatus)
-            msg.value = "정상 처리되었습니다."
-          }
+          let urlPost = url.value + '/dwt/fg_receipt/save';
 
-          scan.value.focus();
-          scan.value.select();
-        }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
-          //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
-        .catch(err => {
-          alert(err);
-          console.error(err)
-        })
+          //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
+          $axios.post(urlPost, {
+              i_lang: "EN",
+              i_userid: store.state.auth.user[0].userid,
+              i_werks: getdata(store.state.auth.user[0].plantcd),
+              i_barno: rowNode.data.barno,
+          })
+          .then((res) => {
+            console.log("[response data]", res.data);
+            console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
+            console.log("[response data] = req_param.scan -- ", req_param.scan);
+
+            if (res.data[0].barno != req_param.scan){
+              msg_color.value = "red";
+              msg.value = res.data[0].message;
+            } else{
+              recvData.value = res.data;
+              document.getElementById("lblstatus").innerHTML = res.data[0].status;
+              console.log("[lblstatus]", lblstatus)
+
+              msg_color.value = "blue";
+              msg.value = "정상 처리되었습니다."
+            }
+
+            scan.value.focus();
+            scan.value.select();
+          }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+            //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+          .catch(err => {
+            alert(err);
+            console.error(err)
+          })
+        }
       }
 
       function scanClick() {
@@ -266,13 +319,13 @@
         scan,
         req_param,
         msg,
+        msg_color,
         scrollPostion : 0,
         defaultColGroupDef: null,
         columnTypes: null,
         options,
         recvData,
         gridOptions,
-        getSelectedRows,
         keyupenter,
         saveClick,
         scanClick,
