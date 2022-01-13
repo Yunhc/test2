@@ -6,24 +6,21 @@
           :style="{width:'80px'}"
         >Status</span>
         <input readonly type="text" autocomplete="off" class="form-control btn-sm" placeholder="Stock Status" aria-label="Stock Status" aria-describedby="basic-addon1"
-          id="lblstatus"
-          ref="lblstatus">
+          v-model="lblstatus">
       </div>
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
           :style="{width:'80px'}">S/L
         </span>
         <input readonly type="text" autocomplete="off" class="form-control btn-sm" placeholder="Storage Location" aria-label="Storage Location" aria-describedby="basic-addon1"
-          id="lblstorloc"
-          ref="lblstorloc">
+          v-model="lblstorloc">
       </div>
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
           :style="{width:'80px'}"
         >Prod. Date</span>
         <input readonly type="text" autocomplete="off" class="form-control btn-sm" placeholder="Production Date" aria-label="Production Date" aria-describedby="basic-addon1"
-          id="lblproddate"
-          ref="lblproddate">
+          v-model="lblproddate">
       </div>
     </div>
     <div class="fg_receipt_grid1"
@@ -96,7 +93,6 @@
       //focus 이동을 위한 변수
       let lblstatus = ref(null);
       let lblstorloc = ref(null);
-      let lblstorname = ref(null);
       let lblproddate = ref(null);
       let scan = ref(null);
       //데이터 바인딩
@@ -104,7 +100,7 @@
       let msg = ref(null);
 
       let columnDefs= reactive([
-        {headerName: 'Barcode', field: 'barno', width: 60, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        {headerName: 'Barcode', field: 'barno', width: 30, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
         {headerName: 'Qty', field: 'qty', width: 30, sortable: true, pinned: 'left'},
         {headerName: 'Unit', field: 'meins', width: 30, pinned: 'left'},
         {headerName: 'Material', field: 'matnr', width: 50, sortable: true, pinned: 'left', filter: true},  
@@ -201,8 +197,7 @@
             msg.value = res.data[0].message;
           } else{
             recvData.value = res.data;
-            document.getElementById("lblstatus").innerHTML = res.data[0].status;
-            console.log("[lblstatus]", lblstatus)
+            lblstatus.value = res.data[0].status;
           }
 
           scan.value.focus();
@@ -219,6 +214,7 @@
         let urlPost = url.value + '/dwt/fg_receipt/save';
 
         console.log("[req_param]", req_param);
+        console.log("Barno : ", gridOptions.api.rowData[0].barno);
         // console.log(getdata(req_param.scan));
 
         //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
@@ -226,7 +222,7 @@
             i_lang: "EN",
             i_userid: store.state.auth.user[0].userid,
             i_werks: getdata(store.state.auth.user[0].plantcd),
-            i_barno: req_param.scan,
+            i_barno: gridOptions.api.rowData[0].barno,
         })
         .then((res) => {
           console.log("[response data]", res.data);
@@ -266,7 +262,6 @@
         window_height,
         lblstatus,
         lblstorloc,
-        lblstorname,
         lblproddate,
         scan,
         req_param,
