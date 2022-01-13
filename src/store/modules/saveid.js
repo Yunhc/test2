@@ -1,11 +1,8 @@
+const id = JSON.parse(localStorage.getItem('id'));
 
-
-// const id = JSON.parse(localStorage.getItem('id'));
-const id = localStorage.getItem('id');
-const chk = localStorage.getItem('chk');
 const initialState = id
-  ? { status: { saveflag: true }, id, chk }
-  : { status: { saveflag: false }, id : null, chk:false };
+  ? { status: { saveflag: true }, id }
+  : { status: { saveflag: false }, id : null };
 
 export const saveid = {
 	namespaced: true,
@@ -13,11 +10,7 @@ export const saveid = {
 	actions: {
 		saveid({ commit }, id) {
 			console.log("[saveid] = id -- ", id);
-			// localStorage.setItem('id', "[{\"chk\":" + id.value.chk + ",\"id\":" + id.value.id + "}]" );
-			// localStorage.setItem('id', JSON.stringify("{chk:'" + id.value.chk + "', id:'" + id.value.id + "'}"));
-
-			localStorage.setItem('chk', id.value.chk );
-			localStorage.setItem('id', id.value.id);
+			localStorage.setItem('id', JSON.stringify(id));
 
 			return id => {
 				commit('saveid', id);
