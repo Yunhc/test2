@@ -270,6 +270,9 @@
           // return 28 * (Math.floor(params.data.model.length / 60) + 1);
           return 35;
         },
+        getRowNodeId: function(event){
+          return event.barno;
+        },
         // 창 크기 변경 되었을 때 이벤트
         // onGridSizeChanged: function(event) {
         //   event.api.sizeColumnsToFit();
