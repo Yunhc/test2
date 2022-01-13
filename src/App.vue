@@ -71,7 +71,7 @@ export default {
       if (this.canLeaveSite) return;
 
       //화면 로그인 정보를 초기화 한다.
-      // localStorage.removeItem('user');
+      localStorage.removeItem('user');
 
       event.preventDefault();
       event.returnValue = '';
