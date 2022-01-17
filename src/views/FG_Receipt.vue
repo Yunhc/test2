@@ -152,7 +152,7 @@
         onRowClicked : function(event){
           var selectedRow = event.node.data;
           // console.log('onRowClicked = selectedRow -- ', selectedRow);
-          lblstatus.value = selectedRow.barno;
+          lblstatus.value = selectedRow.status;
           lblstorloc.value = selectedRow.lgort;
           lblproddate.value = selectedRow.proddate;
 
