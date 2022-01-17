@@ -1,4 +1,13 @@
 <template>
+  <!-- DO 조회 팝업화면 -->
+  <div class="Popup_DO" v-if="popupdo">
+    <div class="Popup_DO_Search">
+      <h4>일자별 DO 조회 화면임</h4>
+      <P>상세내역</P>
+      <button @click="popupdo=false">Close</button>
+    </div>
+  </div>
+
   <div class="good_issue">
     <div class="good_issue_search">
       <div align="right" :style="{height:'40px', margin:'0px 0px 0px 0px'}">
@@ -28,7 +37,8 @@
           :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Customer
         </span>
         <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Customer" 
-            aria-label="Customer" aria-describedby="basic-addon1">
+            aria-label="Customer" aria-describedby="basic-addon1"
+            :style="{'text-align':'left'}">      
             {{lblCustomer}}
         </label>
       </div>
@@ -37,7 +47,8 @@
           :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Ship No
         </span>
         <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Shipment No"
-            aria-label="Shipment No" aria-describedby="basic-addon1">
+            aria-label="Shipment No" aria-describedby="basic-addon1"
+            :style="{'text-align':'left'}">
             {{lblShipno}}
         </label>
       </div>
@@ -119,31 +130,32 @@
       let txtDO = ref(null);
       let lblCustomer = ref(null);
       let lblShipno = ref(null);
-      let txtScan = ref(null);
+      let scan = ref(null);
       //데이터 바인딩
       let req_param = reactive({txtDO:"", txtScan:""});
       let msg = ref(null);
       let msg_color = ref(null);
 
       let columnDefs= reactive([
-        {headerName: 'Material', field: 'matnr', width: 30, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-        {headerName: 'Item No', field: 'posnr', width: 30, sortable: true, pinned: 'left'},
-        {headerName: 'Order Qty', field: 'orderqtybdl', width: 30, pinned: 'left'},
-        {headerName: 'Proc Qty', field: 'procqty', width: 30},  
-        {headerName: 'Order Qty', field: 'orderqtypc', width: 30},
-        {headerName: 'PCS', field: 'umrez', width: 30},
-        {headerName: 'Material Description', field: 'maktx', width: 50},
-        {headerName: 'Status', field: 'ztype', width: 20},
-        {headerName: 'Sub Item', field: 'uepos', width: 30},
-        {headerName: 'R.Material', field: 'matnrc', width: 30},
-        {headerName: 'Customer', field: 'kunnr', width: 20},
-        {headerName: 'Customer Name', field: 'zkunnrnm', width: 50},
-        {headerName: 'Shipment No', field: 'zshipno', width: 30},
+        // {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        {headerName: 'Material', field: 'matnr', width: 20, sortable: true, pinned: 'left'},
+        {headerName: 'Item No', field: 'posnr', width: 10, sortable: true, pinned: 'left'},
+        {headerName: 'Order Qty', field: 'orderqtybdl', width: 15, pinned: 'left'},
+        {headerName: 'Proc Qty', field: 'procqty', width: 15},  
+        {headerName: 'Order Qty', field: 'orderqtypc', width: 15},
+        {headerName: 'Pcs/Pkg', field: 'umrez', width: 10},
+        {headerName: 'Material Description', field: 'maktx', width: 80},
+        {headerName: 'Status', field: 'ztype', width: 8},
+        {headerName: 'Sub Item', field: 'uepos', width: 10},
+        {headerName: 'R.Material', field: 'matnrc', width: 20},
+        {headerName: 'Customer', field: 'kunnr', width: 15},
+        {headerName: 'Customer Name', field: 'zkunnrnm', width: 60},
+        {headerName: 'Shipment No', field: 'zshipno', width: 15},
       ]);
       var gridOptions = {
         defaultColDef: {
           width: 150,
-          editable: true,
+          editable: false,
           resizable: true,
           sortable: true,
           lockPosition: true, //컬럼 드래그로 이동 방지
@@ -189,63 +201,18 @@
         alert(`Selected nodes: ${selectedDataStringPresentation}`);
       };
 
-      function displayClick(e){
-        if (e.target.id == "txtDO"){
+      function displayClick(){
+        // if (e.target.id == "txtDO"){
           console.log(req_param.txtDO);
+          //scan 버튼 누르는 경우만 키보드를 on 하므로 조회시는 다시 off 해 준다.
           var tmpscan = document.getElementById("scan");
           tmpscan.setAttribute('inputmode','none');
           console.log(tmpscan.inputMode);
 
-          //API전송
+          //DO 조회 API전송
           fn_DOSearch();
-        }
+        // }
       }
-
-      function scanEnter(e) {
-        if (e.target.id == "scan"){
-          console.log(req_param.txtScan);
-        }
-
-        let urlPost = url.value + '/dwt/good_issue/scan';
-
-        console.log("[req_param]", req_param);
-        // console.log(getdata(req_param.txtScan));
-
-        //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
-        $axios.post(urlPost, {
-            i_lang: "EN",
-            i_userid: store.state.auth.user[0].userid,
-            i_werks: getdata(store.state.auth.user[0].plantcd),
-            i_barno: req_param.txtScan,
-        })
-        .then((res) => {
-          console.log("[response data]", res.data);
-          console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
-          console.log("[response data] = req_param.txtScan -- ", req_param.txtScan);
-
-          if (res.data[0].barno != req_param.txtScan){
-            msg.value = res.data[0].message;
-          } else{
-            recvData.value = res.data;
-            lblCustomer.value = res.data[0].customer;
-          }
-
-          txtScan.value.focus();
-          txtScan.value.select();
-        }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
-          //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
-        .catch(err => {
-          alert(err);
-          console.error(err)
-        })
-
-      }
-
-      function fn_SelectAll(e) {
-        //<input @focus="$event.target.select()" value="select me" />
-        e.target.select();
-      }
-
 
       function fn_DOSearch(){
         let urlPost = url.value + '/dwt/good_issue/do_search';
@@ -269,22 +236,84 @@
             msg.value = res.data[0].message;
             lblCustomer.value = ""
             lblShipno.value = ""
+
+            // txtDO.value.focus();
+            // txtDO.value.select();           
           } else{
             msg_color.value = "blue";
             msg.value = "OK";
             recvData.value = res.data;
-            lblCustomer.value = "[" + res.data[0].customer + "] " + res.data[0].zkunnrnm;
+            lblCustomer.value = "[" + res.data[0].kunnr + "] " + res.data[0].zkunnrnm;
             lblShipno.value = res.data[0].zshipno;
+
+            scan.value.focus();
+            scan.value.select();
           }
 
-          txtScan.value.focus();
-          txtScan.value.select();
+
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => {
           alert(err);
           console.error(err)
         })
+      }
+
+
+      function scanEnter(e) {
+        if (e.target.id == "scan"){
+          console.log(req_param.txtScan);
+        }
+
+        let urlPost = url.value + '/dwt/good_issue/scan';
+
+        console.log("[req_param]", req_param);
+        // console.log(getdata(req_param.txtScan));
+
+        //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
+        $axios.post(urlPost, {
+            i_lang: "EN",
+            i_userid: store.state.auth.user[0].userid,
+            i_werks: getdata(store.state.auth.user[0].plantcd),
+            i_vbeln: req_param.txtDO,
+            i_barno: req_param.txtScan,
+            i_qty: 0,
+            i_delflag: "N"
+        })
+        .then((res) => {
+          console.log("[response data]", res.data);
+          console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
+          console.log("[response data] = req_param.txtScan -- ", req_param.txtScan);
+
+          if (res.data[0].code == "NG"){
+            msg_color.value = "red";
+            msg.value = res.data[0].message;
+          } else{
+            msg_color.value = "blue";
+            msg.value = "OK";
+            recvData.value = res.data;
+          }
+
+          scan.value.focus();
+          scan.value.select();
+        }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+          //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+        .catch(err => {
+          alert(err);
+          console.error(err)
+        })
+
+      }
+
+      function fn_SelectAll(e) {
+        //<input @focus="$event.target.select()" value="select me" />
+        e.target.select();
+      }
+
+      function DOClick(){
+        // this.popupdo = true;
+        // console.log(this.popupdo)
+        
       }
 
       function sendClick() {
@@ -314,8 +343,8 @@
             msg.value = "정상 처리되었습니다."
           }
 
-          txtScan.value.focus();
-          txtScan.value.select();
+          scan.value.focus();
+          scan.value.select();
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => {
@@ -330,7 +359,7 @@
         txtscan.setAttribute('inputmode','numeric');
         console.log(txtscan.inputMode);
 
-        txtScan.value.focus();
+        scan.value.focus();
       }
 
       return {
@@ -339,7 +368,7 @@
         txtDO,
         lblCustomer,
         lblShipno,
-        txtScan,
+        scan,
         req_param,
         msg,
         msg_color,
@@ -350,8 +379,9 @@
         recvData,
         gridOptions,
         getSelectedRows,
+        popupdo: false,
         // DetailClick,
-        // DOClick,
+        DOClick,
         displayClick,
         scanEnter,
         sendClick,
@@ -396,4 +426,15 @@
     margin : 0px 5px 0px 5px;
     overflow-x: auto;
   }
+  .Popup_DO{
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    position: fixed; padding: 20px;
+  }  
+  .Popup_DO_Search{
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+  }  
 </style>
