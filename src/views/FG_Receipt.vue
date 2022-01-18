@@ -1,5 +1,16 @@
 <template>
   <div class="fg_receipt">
+    <div class="black-bg" v-if="popupisopen">
+      <div class="white-bg">
+        <h6>Finished Goods Receipt</h6>
+        <h4>Do you want to save it?</h4>
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
+          @click='yesClick'>Yes</button>
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
+          @click='noClick'>No</button>
+      </div>
+    </div>
+
     <div class="fg_receipt_search">
       <div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
@@ -41,6 +52,7 @@
         style="width: 1910px; height:100%"
         :rowData="recvData.value"
         :gridOptions="gridOptions"
+        :enableRangeSelection="true"
         allow_unsafe_jscode="True"
         >
       </ag-grid-vue>
@@ -84,6 +96,7 @@
   import {AgGridVue} from 'ag-grid-vue3'
   import { useStore } from 'vuex';
   import { getdata } from '@/helper/filter.js';
+  // import EventBus from "@/eventBus";
 
   export default {
     name:'fg_receipt',
@@ -94,6 +107,8 @@
       let url = ref(process.env.VUE_APP_SERVER_URL);
       let window_width = ref(window.innerWidth);
       let window_height = ref(window.innerHeight);
+
+      let popupisopen = ref(false);
 
       const store = useStore();	//스토어호출
       let options = reactive([]);
@@ -112,16 +127,31 @@
       let msg = ref(null);
       let msg_color = ref(null);
 
+
+      let gridApi = ref(null);
+      let columnApi = ref(null);
+
       let columnDefs= reactive([
         {headerName: 'Barcode', field: 'barno', width: 30, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-        {headerName: 'Qty', field: 'qty', width: 30, sortable: true, pinned: 'left'},
-        {headerName: 'Unit', field: 'meins', width: 30, pinned: 'left'},
-        {headerName: 'Material', field: 'matnr', width: 50, sortable: true, pinned: 'left', filter: true},
+        {headerName: 'Qty', field: 'qty', width: 30, cellStyle: {textAlign: "right"}, sortable: true, pinned: 'left'},
+        {headerName: 'Unit', field: 'meins', width: 30, cellStyle: {textAlign: "center"}, pinned: 'left'},
+        {headerName: 'Material', field: 'matnr', width: 50, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left', filter: true},
         {headerName: 'Material Description', field: 'maktx', width: 120, sortable: true, filter: true},
         {headerName: 'Storage Location', field: 'lgort', width: 80, filter: true},
-        {headerName: 'Prod Date', field: 'proddate', width: 50},
+        {headerName: 'Prod Date', field: 'proddate', width: 50, cellStyle: {textAlign: "center"}},
         {headerName: 'Status', field: 'status', width: 70},
       ]);
+
+      // let columnDefs= reactive([
+      //   {headerName: 'Barcode', field: 'barno', cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+      //   {headerName: 'Qty', field: 'qty', sortable: true, pinned: 'left'},
+      //   {headerName: 'Unit', field: 'meins', pinned: 'left'},
+      //   {headerName: 'Material', field: 'matnr', sortable: true, pinned: 'left', filter: true},
+      //   {headerName: 'Material Description', field: 'maktx', sortable: true, filter: true},
+      //   {headerName: 'Storage Location', field: 'lgort', filter: true},
+      //   {headerName: 'Prod Date', field: 'proddate'},
+      //   {headerName: 'Status', field: 'status'},
+      // ]);
       var gridOptions = {
         defaultColDef: {
           width: 150,
@@ -129,7 +159,7 @@
           resizable: true,
           sortable: true,
           lockPosition: true, //컬럼 드래그로 이동 방지
-          cellStyle: {textAlign: "left"},
+          cellStyle: {textAlign: "left", headers :"right"},
         },
         columnDefs: columnDefs,
         rowData: null,
@@ -138,27 +168,40 @@
           setTimeout(function () {
             event.api.setRowData(recvData);
           }, 1000);
+          gridApi.value = event.api;
+          columnApi.value = event.columnApi;
           event.api.sizeColumnsToFit();
         },
         getRowHeight: function() {
           return 35;
         },
-        getRowNodeId: function(event){
-          return event.id;
-        },
-        onGridSizeChanged: function(event) {
-          event.api.sizeColumnsToFit();
-        },
+        // getRowNodeId: function(event){
+        //   return event.id;
+        // },
+        // onGridSizeChanged: function(event) {
+        //   event.api.sizeColumnsToFit();
+        // },
         onRowClicked : function(event){
           var selectedRow = event.node.data;
           // console.log('onRowClicked = selectedRow -- ', selectedRow);
           lblstatus.value = selectedRow.status;
           lblstorloc.value = selectedRow.lgort;
           lblproddate.value = selectedRow.proddate;
-
           // scan.value.focus();
           // scan.value.select();
         },
+        // onPasteStart : function(params){
+        //   console.log('Callback onPasteStart:', params);
+        // },
+        // onPasteEnd(params) {
+        //   console.log('Callback onPasteEnd:', params);
+        // },
+        // onPasteOff : function(event){
+        //   event.api.setSuppressClipboardPaste(true);
+        // },
+        // onPasteOn : function(event){
+        //   event.api.setSuppressClipboardPaste(false);
+        // },
       };
 
       onMounted(() => {
@@ -239,6 +282,10 @@
           req_param.scan = "";
           scan.value.focus();
           scan.value.select();
+
+          setTimeout(function () {
+            autoSizeAll(false);
+          }, 500);
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => {
@@ -247,7 +294,17 @@
         })
       }
 
-      function saveClick() {
+      function saveClick(){
+        popupisopen.value = true;
+      }
+
+      function noClick(){
+        popupisopen.value = false;
+      }
+
+      function yesClick() {
+        popupisopen.value = false;
+
         // const rowCount = gridOptions.api.getLastDisplayedRow();
         const rowCount = gridOptions.api.getDisplayedRowCount();
         console.log("grid count : ", rowCount);
@@ -310,9 +367,26 @@
         scan.value.focus();
       }
 
+      function closeClick(){
+        this.$emit('component_close');
+      }
+
+      function autoSizeAll(skipHeader) {
+        const allColumnIds = [];
+        columnApi.value.getAllColumns().forEach((column) => {
+          allColumnIds.push(column.colId);
+        });
+
+        columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
+      }
+
+
       return {
         window_width,
         window_height,
+        popupisopen,
+        yesClick,
+        noClick,
         lblstatus,
         lblstorloc,
         lblproddate,
@@ -330,6 +404,7 @@
         saveClick,
         scanClick,
         fn_SelectAll,
+        closeClick,
       };
     },
   }
@@ -338,6 +413,10 @@
   @import "~ag-grid-community/dist/styles/ag-grid.css";
   @import "~ag-grid-community/dist/styles/ag-theme-alpine.css";
 
+  .ag-header-cell-label {
+    justify-content: center;
+  }
+
 	.fg_receipt {
 		font-family: Avenir, Helvetica, Arial, sans-serif;
 		-webkit-font-smoothing: antialiased;
@@ -345,14 +424,26 @@
 		text-align: center;
 		color: #2c3e50;
 		width:100%;
-        height:100%;
-        // select:focus {
-        //   background: yellow;
-        // }
-        input:focus {
-            background: yellow;
-        }
+    height:100%;
+    // select:focus {
+    //   background: yellow;
+    // }
+    input:focus {
+      background: yellow;
     }
+  }
+  .black-bg{
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    position: fixed; padding: 20px;
+    z-index: 1; //div를 최상위로 올린다.
+  }
+  .white-bg{
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+  }
   .fg_receipt_search {
     height : 98px;
     margin : 0px 5px 0px 5px;
