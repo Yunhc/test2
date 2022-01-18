@@ -48,8 +48,8 @@
 				}"
 			>
 				<keep-alive :include="selectedTabs">
-						<component :is="comp" class="tab"></component>
-					</keep-alive>
+					<component :is="comp" class="tab" @component_close="exitComponent"></component>
+				</keep-alive>
 			</div>
 		</div>
 	</div>
@@ -210,7 +210,10 @@ export default {
 					tabs.splice(0, 1);
 					tabs.unshift({id:menus_sub[i].id, name:menus_sub[i].name});
 					tabs.unshift({id:'home2', name:'Home'});
-					selectedTabs.value.push(menus_sub[i].id);
+
+					selectedTabs.value.splice(0, 1);
+					selectedTabs.value.unshift(menus_sub[i].id);
+					selectedTabs.value.unshift("home2");
 				}
 				else{
 					tabs.push({id:menus_sub[i].id, name:menus_sub[i].name});
@@ -269,7 +272,8 @@ export default {
       console.log("[MenuPopup] = exitComponent -- ", selmenu.id);
 
 			var nIndex = -1;
-			for(var j=0; j<tabs.length; j++)
+			var j=0;
+			for(j=0; j<tabs.length; j++)
 			{
 				if(tabs[j].id == selmenu.id) {
 					nIndex = j;
@@ -277,9 +281,14 @@ export default {
 				}
 			}
 			if( nIndex>0 ){
+				console.log("[MenuPopup] = exitComponent - index -- ", nIndex);
+
 				tabs.splice(nIndex, 1);
 				selectedTabs.value.splice(nIndex,1);
 			}
+
+			console.log("[MenuPopup] = tabs -- ", tabs);
+			console.log("[MenuPopup] = selectedTabs -- ", selectedTabs);
 
 			// console.log("[MenuPopup] = tabs.length -- ", tabs.length);
 			// console.log("[MenuPopup] = tabs -- ", tabs);
