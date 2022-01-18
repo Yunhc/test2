@@ -136,6 +136,7 @@
             event.api.setRowData(recvData);
           }, 1000);
           event.api.sizeColumnsToFit();
+          gridApi.value = event.api;
         },
         getRowHeight: function() {
           return 35;
@@ -253,7 +254,7 @@
           if (res.data[0].barno != req_param.scan){
             msg.value = res.data[0].message;
           } else{
-            gridOptions.api.updateRowData({add: [res.data[0]], addIndex:0});
+            gridApi.value.updateRowData({add: [res.data[0]], addIndex:0});
             // recvData.push(res.data[0]);
             msg.value = res.data[0].message;
           }
