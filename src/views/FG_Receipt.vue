@@ -96,6 +96,7 @@
   import {AgGridVue} from 'ag-grid-vue3'
   import { useStore } from 'vuex';
   import { getdata } from '@/helper/filter.js';
+  import { PlaySound } from '@/helper/util.js';
   // import EventBus from "@/eventBus";
 
   export default {
@@ -272,6 +273,7 @@
           } else{
             msg_color.value = "blue";
             msg.value = "OK";
+            PlaySound("OK");
 
             recvData.value = res.data;
 
