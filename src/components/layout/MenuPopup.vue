@@ -48,7 +48,7 @@
 				}"
 			>
 				<keep-alive :include="selectedTabs">
-					<component :is="comp" class="tab" @component_close="exitComponent"></component>
+					<component :is="comp" class="tab" @component_close="component_close"></component>
 				</keep-alive>
 			</div>
 		</div>
@@ -306,6 +306,46 @@ export default {
       // currentTab.value = lastsel.value;
     }
 
+		// exitComponent와 동일한 함수이다. 파라미터 형식만 틀림
+		function component_close(selmenu) {
+      console.log("[MenuPopup] = component_close -- ", selmenu);
+
+			var nIndex = -1;
+			var j=0;
+			for(j=0; j<tabs.length; j++)
+			{
+				if(tabs[j].id == selmenu) {
+					nIndex = j;
+					break;
+				}
+			}
+			if( nIndex>0 ){
+				console.log("[MenuPopup] = exitComponent - index -- ", nIndex);
+
+				tabs.splice(nIndex, 1);
+				selectedTabs.value.splice(nIndex,1);
+			}
+
+			console.log("[MenuPopup] = tabs -- ", tabs);
+			console.log("[MenuPopup] = selectedTabs -- ", selectedTabs);
+
+			// console.log("[MenuPopup] = tabs.length -- ", tabs.length);
+			// console.log("[MenuPopup] = tabs -- ", tabs);
+			// let lastsel = ref(tabs[tabs.length - 1].id);
+			// console.log("[MenuPopup] = lastsel -- ", lastsel.value);
+
+			clickTabExit.value = true;
+			if (tabs.length > 1){
+				changeComponent(tabs[1]);
+			}else{
+				changeComponent(tabs[0]);
+			}
+
+      // comp.value = lastsel.value;
+      // currentTab.value = lastsel.value;
+    }
+
+
 		function fn_Search_MainMenu(){
 			let urlPost = process.env.VUE_APP_SERVER_URL + '/api/dw/menu/searchList';
 
@@ -354,6 +394,7 @@ export default {
 			popupleave,
 			changeComponent,
 			exitComponent,
+			component_close,
 			window_width,
 			window_height,
 			handleResize,
