@@ -79,11 +79,11 @@
       </div>
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
-        @click='saveClick'>Save</button>
+          @click='saveClick'>Save</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
-        @click='scanClick'>Scan</button>
+          @click='scanClick'>Scan</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
-        @click='closeClick'>Close</button>
+          @click='closeClick'>Close</button>
       </div>
     </div>
   </div>
@@ -103,10 +103,11 @@
     components:{
       AgGridVue,
     },
-    setup(){
+    setup(props,{emit}){
       let url = ref(process.env.VUE_APP_SERVER_URL);
       let window_width = ref(window.innerWidth);
       let window_height = ref(window.innerHeight);
+      // const emit = defineEmits(['component_close']);
 
       let popupisopen = ref(false);
 
@@ -368,7 +369,7 @@
       }
 
       function closeClick(){
-        this.$emit('component_close');
+        emit("component_close", "fg_receipt");
       }
 
       function autoSizeAll(skipHeader) {
