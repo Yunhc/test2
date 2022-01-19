@@ -91,7 +91,7 @@
     components:{
       AgGridVue,
     },
-    setup(){
+    setup(props, {emit}){
       let url = ref(process.env.VUE_APP_SERVER_URL);
       let window_width = ref(window.innerWidth);
       let window_height = ref(window.innerHeight);
@@ -278,6 +278,10 @@
         scan.value.focus();
       }
 
+      function closeClick(){
+        emit("component_close", "stockcount_online");
+      }
+
       return {
         window_width,
         window_height,
@@ -297,6 +301,7 @@
         keyupenter,
         scanClick,
         fn_SelectAll,
+        closeClick,
       };
     },
   }
