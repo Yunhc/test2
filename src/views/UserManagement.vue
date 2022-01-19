@@ -72,9 +72,11 @@
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
        @click='addClick'>추가</button>
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
-      @click='deleteClick'>삭제</button>
+        @click='deleteClick'>삭제</button>
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
+        @click='saveClick'>저장</button>
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 5px 0px 0px', width:'70px'}"
-      @click='saveClick'>저장</button>
+        @click='closeClick'>Close</button>
     </div>
 
     <!-- <div class="container">
@@ -158,7 +160,7 @@
     //     columnTypes: null,
     //   }
     // },
-    setup(){
+    setup(props, {emit}){
       console.log("[UserManagement] = ", "setup --");
       // const global = inject('global');
       // console.log("[global.server.url] --", global.server.url);
@@ -558,6 +560,10 @@
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => console.error(err))
       }
+
+      function closeClick(){
+        emit("component_close", "usermanagement");
+      }
       return {
         AA: "안녕하세요",
         BB: "반갑습니다.",
@@ -592,6 +598,7 @@
         getPhotos,
         window_width,
         window_height,
+        closeClick,
       };
     },
     computed: {
