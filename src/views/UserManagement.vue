@@ -266,15 +266,17 @@
             event.api.setRowData(recvData);
           }, 1000);
           // event.api.sizeColumnsToFit();
+
+          gridApi.value = event.api;
+          columnApi.value = event.columnApi;
         },
         getRowHeight: function() {
           // assuming 50 characters per line, working how how many lines we need
           // return 28 * (Math.floor(params.data.model.length / 60) + 1);
           return 35;
         },
-        getRowNodeId: function(event){
-          return event.barno;
-        },
+        // getRowNodeId: function(event){
+        // },
         // 창 크기 변경 되었을 때 이벤트
         // onGridSizeChanged: function(event) {
         //   event.api.sizeColumnsToFit();
@@ -314,10 +316,10 @@
         window_height.value = window.innerHeight;
       }
 
-      const onGridReady = params => {
-        gridApi = params.api;
-        columnApi.value = params.columnApi;
-      };
+      // const onGridReady = params => {
+      //   gridApi = params.api;
+      //   columnApi.value = params.columnApi;
+      // };
       const getSelectedRows = () => {
         const selectedNodes = gridApi.value.getSelectedNodes();
         const selectedData = selectedNodes.map( node => node.data );
@@ -500,7 +502,7 @@
       // }
       function saveUser2(sType) {
         var msg = "";
-        var selectedData = gridOptions.api.getSelectedRows();
+        var selectedData = gridApi.value.getSelectedRows();
 
         console.log("[checked row]", selectedData);
 
@@ -586,7 +588,7 @@
         //   cellStyle: {textAlign: "left"},
         // },
         recvData,
-        onGridReady,
+        // onGridReady,
         gridOptions,
         getSelectedRows,
         searchClick,
