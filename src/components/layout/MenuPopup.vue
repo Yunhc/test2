@@ -295,7 +295,7 @@ export default {
 			// let lastsel = ref(tabs[tabs.length - 1].id);
 			// console.log("[MenuPopup] = lastsel -- ", lastsel.value);
 
-			clickTabExit.value = true;
+			clickTabExit.value = true; //Tab에서 종료 버튼을 누르면 changeComponent 함수를 두번 탄다. 이것을 방지하기 위해 변수 사용함
 			if (tabs.length > 1){
 				changeComponent(tabs[1]);
 			}else{
@@ -334,7 +334,7 @@ export default {
 			// let lastsel = ref(tabs[tabs.length - 1].id);
 			// console.log("[MenuPopup] = lastsel -- ", lastsel.value);
 
-			clickTabExit.value = true;
+			clickTabExit.value = false;
 			if (tabs.length > 1){
 				changeComponent(tabs[1]);
 			}else{
