@@ -114,7 +114,7 @@
         {headerName: 'Barcode', field: 'barno', width: 80, sortable: true, pinned: 'left'},
         {headerName: 'Material', field: 'matnr', width: 100, sortable: true, pinned: 'left'},
         {headerName: 'Quantity', field: 'qty', width: 100, pinned: 'left'},
-        {headerName: 'Plant', field: 'werks', width: 100, cellStyle: { color: 'red', textAlign: "left", backgroundColor: "white" }},
+        {headerName: 'Plant', field: 'werks', hide: true, width: 100, cellStyle: { color: 'red', textAlign: "left", backgroundColor: "white" }},
         {headerName: 'S/L', field: 'lgort', width: 250, sortable: true, filter: true},
         {headerName: 'Row NO', field: 'rowno', width: 250},
         {headerName: 'Material Description', field: 'desc'},
