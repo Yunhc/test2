@@ -2,14 +2,65 @@
 
   <div class="good_issue">
     <!-- DO버튼 클릭시 일자별 DO조회 팝업화면 -->
-    <div class="black-bg" v-if="popupdoisopen">
-      <div class="white-bg">
-        <h6>Finished Goods Receipt</h6>
-        <h4>Do you want to save it?</h4>
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
-          @click='yesClick'>Yes</button>
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
-          @click='noClick'>No</button>
+    <div class="do_popup_black-bg" v-if="popupdoisopen">
+      <div class="do_popup_white-bg">
+        <div align="left" class="do_popup_header">
+          <p :style="{ margin:'5px 10px 0 10px'}">
+            {{"Find DO"}}
+          </p>
+        </div>
+
+        <div class="input-group mb-3" :style="{ margin:'2px 0px 0px 0px'}">
+          <!-- <span class="input-group-text btn-sm" id="basic-addon1"
+            :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Request date
+          </span> -->
+          <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="lblDate" 
+              aria-label="lblDate" aria-describedby="basic-addon1"
+              :style="{'text-align':'left'}">      
+              {{"Request date"}}
+          </label>
+
+          <input type="date" name="startdate">
+
+          <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'70px'}"
+          @click='displayClick'>Display</button>          
+        </div>
+
+
+        <div class="good_issue_grid1"
+          :style="{
+            'height': `calc(${window_height - 109 - 120 - 123}px)`
+          }"
+        >
+          <ag-grid-vue
+            id="agGrid2"
+            class="ag-theme-alpine"
+            headerHeight='35'
+            style="width: 1910px; height:100%"
+            :rowData="recvData2.value"
+            :gridOptions="gridOptions2"
+            allow_unsafe_jscode="True"
+            >
+          </ag-grid-vue>
+        </div>
+
+        <div class="input-group mb-3"
+          :style="{height:'48px', margin:'0px 0px 0px 0px', background:'gainsboro'}">
+          <p :style="{margin:'2px 5px 0px 5px',
+                      background:'transparent',
+                      'font-size':'16px',
+                      'font-weight':'bold',
+                      color:msg_color}">
+            Msg:{{msg_dopopup}}
+          </p>
+        </div>
+
+        <div align="right" :style="{height:'40px', margin:'-5px 0px 0px 0px'}">
+          <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 10px 0px 10px', width:'70px'}"
+            @click='DOselectClick'>Select</button>
+          <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 10px 0px 0px', width:'70px'}"
+            @click='DOcloseClick'>Close</button>
+        </div>
       </div>
     </div>
 
@@ -21,7 +72,7 @@
         @click='DOClick'>DO</button>
       </div>
 
-      <div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
+      <div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px', 'z-index':'1'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
           :style="{width:'80px', display:'inline-block', 'text-align':'right'}">DO
         </span>
@@ -33,7 +84,7 @@
           data-ref="InputContent" inputmode="numeric"
           v-model="req_param.txtDO">          
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'70px'}"
-        @click='displayClick'>Display</button>          
+        @click='displayClick'>Display</button>
       </div>
 
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
@@ -132,6 +183,7 @@
       let options = reactive([]);
 
       let recvData = reactive([]);
+      let recvData2 = reactive([]);
       //focus 이동을 위한 변수
       let txtDO = ref(null);
       let lblCustomer = ref(null);
@@ -140,6 +192,7 @@
       //데이터 바인딩
       let req_param = reactive({txtDO:"", txtScan:""});
       let msg = ref(null);
+      let msg_dopopup = ref(null);
       let msg_color = ref(null);
  
       let gridApi = ref(null);
@@ -149,9 +202,9 @@
         // {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
         {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
         {headerName: 'Item No', field: 'posnr', width: 10, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-        {headerName: 'Order Qty', field: 'orderqtybdl', width: 15, cellStyle: {textAlign: "right"}, pinned: 'left'},
-        {headerName: 'Proc Qty', field: 'procqty', width: 15, cellStyle: {textAlign: "right"}},  
-        {headerName: 'Order Qty', field: 'orderqtypc', width: 15, cellStyle: {textAlign: "right"}},
+        {headerName: 'Order Qty(BDL)', field: 'orderqtybdl', width: 15, cellStyle: {textAlign: "right", color: 'red'}, pinned: 'left'},
+        {headerName: 'Proc Qty', field: 'procqty', width: 15, cellStyle: {textAlign: "right", color: 'blue'}},  
+        {headerName: 'Order Qty(PC)', field: 'orderqtypc', width: 15, cellStyle: {textAlign: "right"}},
         {headerName: 'Pcs/Pkg', field: 'umrez', width: 10, cellStyle: {textAlign: "right"}},
         {headerName: 'Material Description', field: 'maktx', width: 80},
         {headerName: 'Status', field: 'ztype', width: 8, cellStyle: {textAlign: "center"}},
@@ -159,7 +212,7 @@
         {headerName: 'R.Material', field: 'matnrc', width: 20, cellStyle: {textAlign: "center"}},
         {headerName: 'Customer', field: 'kunnr', width: 15, cellStyle: {textAlign: "center"}},
         {headerName: 'Customer Name', field: 'zkunnrnm', width: 60},
-        {headerName: 'Shipment No', field: 'zshipno', width: 15, cellStyle: {textAlign: "center"}},
+        {headerName: 'Shipment No', field: 'zshipno', width: 15, hide: true, cellStyle: {textAlign: "center"}},
       ]);
       var gridOptions = {
         defaultColDef: {
@@ -176,6 +229,42 @@
         onGridReady: function(event) {
           setTimeout(function () {
             event.api.setRowData(recvData);
+          }, 1000);
+          gridApi.value = event.api;
+          columnApi.value = event.columnApi;          
+          event.api.sizeColumnsToFit();
+        },
+        getRowHeight: function() {
+          return 35;
+        },
+        onGridSizeChanged: function(event) {
+          event.api.sizeColumnsToFit();
+        },
+      };
+
+      let columnDefs2= reactive([
+        // {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        {headerName: 'Item No', field: 'posnr', width: 10, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        {headerName: 'Order Qty(BDL)', field: 'orderqtybdl', width: 15, cellStyle: {textAlign: "right", color: 'red'}, pinned: 'left'},
+        {headerName: 'Proc Qty', field: 'procqty', width: 15, cellStyle: {textAlign: "right", color: 'blue'}},  
+        {headerName: 'Shipment No', field: 'zshipno', width: 15, hide: true, cellStyle: {textAlign: "center"}},
+      ]);
+      var gridOptions2 = {
+        defaultColDef: {
+          width: 150,
+          editable: false,
+          resizable: true,
+          sortable: true,
+          lockPosition: true, //컬럼 드래그로 이동 방지
+          cellStyle: {textAlign: "left"},
+        },
+        columnDefs: columnDefs2,
+        rowData: null,
+        rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
+        onGridReady: function(event) {
+          setTimeout(function () {
+            event.api.setRowData(recvData2);
           }, 1000);
           gridApi.value = event.api;
           columnApi.value = event.columnApi;          
@@ -332,7 +421,7 @@
         console.log(popupdoisopen.value);
       }
 
-      function noClick(){
+      function DOcloseClick(){
         popupdoisopen.value = false;
       }
 
@@ -405,16 +494,19 @@
         scan,
         req_param,
         msg,
+        msg_dopopup,
         msg_color,
         scrollPostion : 0,
         defaultColGroupDef: null,
         columnTypes: null,
         options,
         recvData,
+        recvData2,
         gridOptions,
+        gridOptions2,
         getSelectedRows,
-        popupdoisopen: false,
-        noClick,
+        popupdoisopen,
+        DOcloseClick,
         // DetailClick,
         DOClick,
         displayClick,
@@ -439,26 +531,14 @@
 		text-align: center;
 		color: #2c3e50;
 		width:100%;
-        height:100%;
-        // select:focus {
-        //   background: yellow;
-        // }
-        input:focus {
-            background: yellow;
-        }
+    height:100%;
+    // select:focus {
+    //   background: yellow;
+    // }
+    input:focus {
+      background: yellow;
     }
-  .black-bg{
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    position: fixed; padding: 20px;
-    z-index: 1; //div를 최상위로 올린다.
   }
-  .white-bg{
-    width: 100%;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-  }  
   .good_issue_search {
     height : 140px;
     margin : 0px 5px 0px 5px;
@@ -472,6 +552,29 @@
     height : 123px;
     margin : 0px 5px 0px 5px;
     overflow-x: auto;
+  }
+  .do_popup_black-bg{
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    position: fixed; 
+    // padding: 20px;
+    z-index: 20; //div를 최상위로 올린다.
+  }
+  .do_popup_white-bg{
+    width: 100%; height: 100%;
+    background: white;
+    position: fixed;
+    // border-radius: 8px;
+  }  
+  .do_popup_header{
+    background:rgb(47, 96, 170);
+    width: 100%;
+    height:30px;
+    text-align:center;
+    font-size:15px;
+    // color:#41b883;
+    color:white;
+    // border-bottom:1px solid #070707;
   }
 
 </style>
