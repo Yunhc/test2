@@ -1,15 +1,11 @@
 <template>
   <div class="fg_receipt">
-    <div class="black-bg" v-if="popupisopen">
-      <div class="white-bg">
-        <h6>Finished Goods Receipt</h6>
-        <h4>Do you want to save it?</h4>
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
-          @click='yesClick'>Yes</button>
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
-          @click='noClick'>No</button>
-      </div>
-    </div>
+    <popupyn v-if="popupisopen"
+      :title="popupTitle"
+      :message="popupMsg"
+      @yesClick="yesClick"
+      @noClick="popupisopen=false">
+    </popupyn>
 
     <div class="fg_receipt_search">
       <div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
@@ -97,12 +93,13 @@
   import { useStore } from 'vuex';
   import { getdata } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
-  // import EventBus from "@/eventBus";
+  import popupyn from '@/views/PopupYN.vue';
 
   export default {
     name:'fg_receipt',
     components:{
       AgGridVue,
+      popupyn,
     },
     setup(props,{emit}){
       let url = ref(process.env.VUE_APP_SERVER_URL);
@@ -110,6 +107,8 @@
       let window_height = ref(window.innerHeight);
       // const emit = defineEmits(['component_close']);
 
+      let popupTitle = ref(null);
+      let popupMsg = ref(null);
       let popupisopen = ref(false);
 
       const store = useStore();	//스토어호출
@@ -299,6 +298,8 @@
       }
 
       function saveClick(){
+        popupTitle.value ="Finished Goods Receipt";
+        popupMsg.value = "Do you want to save it?"
         popupisopen.value = true;
       }
 
@@ -388,6 +389,8 @@
       return {
         window_width,
         window_height,
+        popupTitle,
+        popupMsg,
         popupisopen,
         yesClick,
         noClick,
@@ -435,18 +438,6 @@
     input:focus {
       background: yellow;
     }
-  }
-  .black-bg{
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    position: fixed; padding: 20px;
-    z-index: 1; //div를 최상위로 올린다.
-  }
-  .white-bg{
-    width: 100%;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
   }
   .fg_receipt_search {
     height : 98px;
