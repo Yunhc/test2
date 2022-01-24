@@ -2,7 +2,6 @@
 
   <div class="good_issue">
     <!-- DO버튼 클릭시 일자별 DO조회 팝업화면 -->
-<<<<<<< HEAD
     <div class="do_popup_black-bg" v-if="popupdoisopen">
       <div class="do_popup_white-bg">
         <div align="left" class="do_popup_header">
@@ -62,16 +61,6 @@
           <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 10px 0px 0px', width:'70px'}"
             @click='DOcloseClick'>Close</button>
         </div>
-=======
-    <div class="good_issue-black-bg" v-if="popupdoisopen">
-      <div class="good_issue-white-bg">
-        <h6>Finished Goods Receipt</h6>
-        <h4>Do you want to save it?</h4>
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
-          @click='yesClick'>Yes</button>
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
-          @click='noClick'>No</button>
->>>>>>> 7a9650516ec782d68f7b105b463f037bd8194ca4
       </div>
     </div>
 
@@ -213,15 +202,9 @@
         // {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
         {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
         {headerName: 'Item No', field: 'posnr', width: 10, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-<<<<<<< HEAD
         {headerName: 'Order Qty(BDL)', field: 'orderqtybdl', width: 15, cellStyle: {textAlign: "right", color: 'red'}, pinned: 'left'},
         {headerName: 'Proc Qty', field: 'procqty', width: 15, cellStyle: {textAlign: "right", color: 'blue'}},  
         {headerName: 'Order Qty(PC)', field: 'orderqtypc', width: 15, cellStyle: {textAlign: "right"}},
-=======
-        {headerName: 'Order Qty', field: 'orderqtybdl', width: 15, cellStyle: {textAlign: "right"}, pinned: 'left'},
-        {headerName: 'Proc Qty', field: 'procqty', width: 15, cellStyle: {textAlign: "right"}},
-        {headerName: 'Order Qty', field: 'orderqtypc', width: 15, cellStyle: {textAlign: "right"}},
->>>>>>> 7a9650516ec782d68f7b105b463f037bd8194ca4
         {headerName: 'Pcs/Pkg', field: 'umrez', width: 10, cellStyle: {textAlign: "right"}},
         {headerName: 'Material Description', field: 'maktx', width: 80},
         {headerName: 'Status', field: 'ztype', width: 8, cellStyle: {textAlign: "center"}},
@@ -523,11 +506,7 @@
         gridOptions2,
         getSelectedRows,
         popupdoisopen,
-<<<<<<< HEAD
         DOcloseClick,
-=======
-        noClick,
->>>>>>> 7a9650516ec782d68f7b105b463f037bd8194ca4
         // DetailClick,
         DOClick,
         displayClick,
@@ -557,29 +536,9 @@
     //   background: yellow;
     // }
     input:focus {
-<<<<<<< HEAD
       background: yellow;
     }
   }
-=======
-        background: yellow;
-    }
-  }
-  .good_issue-black-bg{
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    position: fixed;
-    padding: 20px;
-    z-index: 20; //div를 최상위로 올린다.
-  }
-  .good_issue-white-bg{
-    width: 100%;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-  }
->>>>>>> 7a9650516ec782d68f7b105b463f037bd8194ca4
   .good_issue_search {
     height : 140px;
     margin : 0px 5px 0px 5px;
