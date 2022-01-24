@@ -2,6 +2,7 @@
 
   <div class="good_issue">
     <!-- DO버튼 클릭시 일자별 DO조회 팝업화면 -->
+<<<<<<< HEAD
     <div class="do_popup_black-bg" v-if="popupdoisopen">
       <div class="do_popup_white-bg">
         <div align="left" class="do_popup_header">
@@ -61,13 +62,23 @@
           <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 10px 0px 0px', width:'70px'}"
             @click='DOcloseClick'>Close</button>
         </div>
+=======
+    <div class="good_issue-black-bg" v-if="popupdoisopen">
+      <div class="good_issue-white-bg">
+        <h6>Finished Goods Receipt</h6>
+        <h4>Do you want to save it?</h4>
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
+          @click='yesClick'>Yes</button>
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
+          @click='noClick'>No</button>
+>>>>>>> 7a9650516ec782d68f7b105b463f037bd8194ca4
       </div>
     </div>
 
     <div class="good_issue_search">
       <div align="right" :style="{height:'40px', margin:'0px 0px 0px 0px'}">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
-        @click='DetailClick'>Detail</button>          
+        @click='DetailClick'>Detail</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 0px 0px 0px', width:'70px'}"
         @click='DOClick'>DO</button>
       </div>
@@ -78,11 +89,11 @@
         </span>
         <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Deliver Order" aria-label="Deliver Order" aria-describedby="basic-addon1"
           id="txtDO"
-          ref="txtDO"         
+          ref="txtDO"
           @keyup.enter='displayClick'
           @focus='fn_SelectAll'
           data-ref="InputContent" inputmode="numeric"
-          v-model="req_param.txtDO">          
+          v-model="req_param.txtDO">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'70px'}"
         @click='displayClick'>Display</button>
       </div>
@@ -91,9 +102,9 @@
         <span class="input-group-text btn-sm" id="basic-addon1"
           :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Customer
         </span>
-        <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Customer" 
+        <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Customer"
             aria-label="Customer" aria-describedby="basic-addon1"
-            :style="{'text-align':'left'}">      
+            :style="{'text-align':'left'}">
             {{lblCustomer}}
         </label>
       </div>
@@ -146,11 +157,11 @@
       </div>
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
-        @click='sendClick'>Send</button>          
+        @click='sendClick'>Send</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
         @click='scanClick'>Scan</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
-        @click='clearClick'>Clear</button>            
+        @click='clearClick'>Clear</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
         @click='closeClick'>Close</button>
       </div>
@@ -165,7 +176,7 @@
   import {AgGridVue} from 'ag-grid-vue3'
   import { useStore } from 'vuex';
   import { getdata } from '@/helper/filter.js';
-  import { PlaySound } from '@/helper/util.js';  
+  import { PlaySound } from '@/helper/util.js';
 
   export default {
     name:'good_issue',
@@ -194,7 +205,7 @@
       let msg = ref(null);
       let msg_dopopup = ref(null);
       let msg_color = ref(null);
- 
+
       let gridApi = ref(null);
       let columnApi = ref(null);
 
@@ -202,9 +213,15 @@
         // {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
         {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
         {headerName: 'Item No', field: 'posnr', width: 10, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+<<<<<<< HEAD
         {headerName: 'Order Qty(BDL)', field: 'orderqtybdl', width: 15, cellStyle: {textAlign: "right", color: 'red'}, pinned: 'left'},
         {headerName: 'Proc Qty', field: 'procqty', width: 15, cellStyle: {textAlign: "right", color: 'blue'}},  
         {headerName: 'Order Qty(PC)', field: 'orderqtypc', width: 15, cellStyle: {textAlign: "right"}},
+=======
+        {headerName: 'Order Qty', field: 'orderqtybdl', width: 15, cellStyle: {textAlign: "right"}, pinned: 'left'},
+        {headerName: 'Proc Qty', field: 'procqty', width: 15, cellStyle: {textAlign: "right"}},
+        {headerName: 'Order Qty', field: 'orderqtypc', width: 15, cellStyle: {textAlign: "right"}},
+>>>>>>> 7a9650516ec782d68f7b105b463f037bd8194ca4
         {headerName: 'Pcs/Pkg', field: 'umrez', width: 10, cellStyle: {textAlign: "right"}},
         {headerName: 'Material Description', field: 'maktx', width: 80},
         {headerName: 'Status', field: 'ztype', width: 8, cellStyle: {textAlign: "center"}},
@@ -231,7 +248,7 @@
             event.api.setRowData(recvData);
           }, 1000);
           gridApi.value = event.api;
-          columnApi.value = event.columnApi;          
+          columnApi.value = event.columnApi;
           event.api.sizeColumnsToFit();
         },
         getRowHeight: function() {
@@ -338,7 +355,7 @@
             lblShipno.value = ""
 
             // txtDO.value.focus();
-            // txtDO.value.select();           
+            // txtDO.value.select();
           } else{
             msg_color.value = "blue";
             msg.value = "OK";
@@ -506,7 +523,11 @@
         gridOptions2,
         getSelectedRows,
         popupdoisopen,
+<<<<<<< HEAD
         DOcloseClick,
+=======
+        noClick,
+>>>>>>> 7a9650516ec782d68f7b105b463f037bd8194ca4
         // DetailClick,
         DOClick,
         displayClick,
@@ -536,9 +557,29 @@
     //   background: yellow;
     // }
     input:focus {
+<<<<<<< HEAD
       background: yellow;
     }
   }
+=======
+        background: yellow;
+    }
+  }
+  .good_issue-black-bg{
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    position: fixed;
+    padding: 20px;
+    z-index: 20; //div를 최상위로 올린다.
+  }
+  .good_issue-white-bg{
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+  }
+>>>>>>> 7a9650516ec782d68f7b105b463f037bd8194ca4
   .good_issue_search {
     height : 140px;
     margin : 0px 5px 0px 5px;
