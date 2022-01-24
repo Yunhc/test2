@@ -1,14 +1,18 @@
 <template>
-  <!-- DO 조회 팝업화면 -->
-  <div class="Popup_DO" v-if="popupdo">
-    <div class="Popup_DO_Search">
-      <h4>일자별 DO 조회 화면임</h4>
-      <P>상세내역</P>
-      <button @click="popupdo=false">Close</button>
-    </div>
-  </div>
 
   <div class="good_issue">
+    <!-- DO버튼 클릭시 일자별 DO조회 팝업화면 -->
+    <div class="black-bg" v-if="popupdoisopen">
+      <div class="white-bg">
+        <h6>Finished Goods Receipt</h6>
+        <h4>Do you want to save it?</h4>
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
+          @click='yesClick'>Yes</button>
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
+          @click='noClick'>No</button>
+      </div>
+    </div>
+
     <div class="good_issue_search">
       <div align="right" :style="{height:'40px', margin:'0px 0px 0px 0px'}">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
@@ -110,22 +114,24 @@
   import {AgGridVue} from 'ag-grid-vue3'
   import { useStore } from 'vuex';
   import { getdata } from '@/helper/filter.js';
+  import { PlaySound } from '@/helper/util.js';  
 
   export default {
     name:'good_issue',
     components:{
       AgGridVue,
     },
-    setup(){
+    setup(props,{emit}){
       let url = ref(process.env.VUE_APP_SERVER_URL);
       let window_width = ref(window.innerWidth);
       let window_height = ref(window.innerHeight);
+
+      let popupdoisopen = ref(false);
 
       const store = useStore();	//스토어호출
       let options = reactive([]);
 
       let recvData = reactive([]);
-      let gridApi = ref(null);
       //focus 이동을 위한 변수
       let txtDO = ref(null);
       let lblCustomer = ref(null);
@@ -135,22 +141,25 @@
       let req_param = reactive({txtDO:"", txtScan:""});
       let msg = ref(null);
       let msg_color = ref(null);
+ 
+      let gridApi = ref(null);
+      let columnApi = ref(null);
 
       let columnDefs= reactive([
         // {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-        {headerName: 'Material', field: 'matnr', width: 20, sortable: true, pinned: 'left'},
-        {headerName: 'Item No', field: 'posnr', width: 10, sortable: true, pinned: 'left'},
-        {headerName: 'Order Qty', field: 'orderqtybdl', width: 15, pinned: 'left'},
-        {headerName: 'Proc Qty', field: 'procqty', width: 15},  
-        {headerName: 'Order Qty', field: 'orderqtypc', width: 15},
-        {headerName: 'Pcs/Pkg', field: 'umrez', width: 10},
+        {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        {headerName: 'Item No', field: 'posnr', width: 10, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        {headerName: 'Order Qty', field: 'orderqtybdl', width: 15, cellStyle: {textAlign: "right"}, pinned: 'left'},
+        {headerName: 'Proc Qty', field: 'procqty', width: 15, cellStyle: {textAlign: "right"}},  
+        {headerName: 'Order Qty', field: 'orderqtypc', width: 15, cellStyle: {textAlign: "right"}},
+        {headerName: 'Pcs/Pkg', field: 'umrez', width: 10, cellStyle: {textAlign: "right"}},
         {headerName: 'Material Description', field: 'maktx', width: 80},
-        {headerName: 'Status', field: 'ztype', width: 8},
-        {headerName: 'Sub Item', field: 'uepos', width: 10},
-        {headerName: 'R.Material', field: 'matnrc', width: 20},
-        {headerName: 'Customer', field: 'kunnr', width: 15},
+        {headerName: 'Status', field: 'ztype', width: 8, cellStyle: {textAlign: "center"}},
+        {headerName: 'Sub Item', field: 'uepos', width: 10, cellStyle: {textAlign: "center"}},
+        {headerName: 'R.Material', field: 'matnrc', width: 20, cellStyle: {textAlign: "center"}},
+        {headerName: 'Customer', field: 'kunnr', width: 15, cellStyle: {textAlign: "center"}},
         {headerName: 'Customer Name', field: 'zkunnrnm', width: 60},
-        {headerName: 'Shipment No', field: 'zshipno', width: 15},
+        {headerName: 'Shipment No', field: 'zshipno', width: 15, cellStyle: {textAlign: "center"}},
       ]);
       var gridOptions = {
         defaultColDef: {
@@ -168,6 +177,8 @@
           setTimeout(function () {
             event.api.setRowData(recvData);
           }, 1000);
+          gridApi.value = event.api;
+          columnApi.value = event.columnApi;          
           event.api.sizeColumnsToFit();
         },
         getRowHeight: function() {
@@ -242,6 +253,8 @@
           } else{
             msg_color.value = "blue";
             msg.value = "OK";
+            PlaySound("OK");
+
             recvData.value = res.data;
             lblCustomer.value = "[" + res.data[0].kunnr + "] " + res.data[0].zkunnrnm;
             lblShipno.value = res.data[0].zshipno;
@@ -250,6 +263,9 @@
             scan.value.select();
           }
 
+          setTimeout(function () {
+            autoSizeAll(false);
+          }, 500);
 
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
@@ -282,7 +298,7 @@
         })
         .then((res) => {
           console.log("[response data]", res.data);
-          console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
+          console.log("[response data] = res.data[0].barno -- ", res.data[0].matnr);
           console.log("[response data] = req_param.txtScan -- ", req_param.txtScan);
 
           if (res.data[0].code == "NG"){
@@ -311,9 +327,13 @@
       }
 
       function DOClick(){
-        // this.popupdo = true;
-        // console.log(this.popupdo)
-        
+        console.log(popupdoisopen.value);
+        popupdoisopen.value = true;
+        console.log(popupdoisopen.value);
+      }
+
+      function noClick(){
+        popupdoisopen.value = false;
       }
 
       function sendClick() {
@@ -362,6 +382,20 @@
         scan.value.focus();
       }
 
+      function closeClick(){
+        emit("component_close", "good_issue");
+      }
+
+      function autoSizeAll(skipHeader) {
+        const allColumnIds = [];
+        columnApi.value.getAllColumns().forEach((column) => {
+          allColumnIds.push(column.colId);
+        });
+
+        columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
+      }
+
+
       return {
         window_width,
         window_height,
@@ -379,7 +413,8 @@
         recvData,
         gridOptions,
         getSelectedRows,
-        popupdo: false,
+        popupdoisopen: false,
+        noClick,
         // DetailClick,
         DOClick,
         displayClick,
@@ -387,7 +422,7 @@
         sendClick,
         scanClick,
         // clearClick,
-        // closeClick
+        closeClick,
         fn_SelectAll,
       };
     },
@@ -412,6 +447,18 @@
             background: yellow;
         }
     }
+  .black-bg{
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    position: fixed; padding: 20px;
+    z-index: 1; //div를 최상위로 올린다.
+  }
+  .white-bg{
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+  }  
   .good_issue_search {
     height : 140px;
     margin : 0px 5px 0px 5px;
@@ -426,15 +473,5 @@
     margin : 0px 5px 0px 5px;
     overflow-x: auto;
   }
-  .Popup_DO{
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    position: fixed; padding: 20px;
-  }  
-  .Popup_DO_Search{
-    width: 100%;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-  }  
+
 </style>
