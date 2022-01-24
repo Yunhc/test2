@@ -209,6 +209,7 @@
       onMounted(() => {
         console.log("[Finished Goods Receipt] = ", "onMounted--");
         window.addEventListener('resize', handleResize);
+        scan.value.focus();
       });
 
       onUnmounted(() =>{
