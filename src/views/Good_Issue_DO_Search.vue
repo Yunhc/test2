@@ -166,9 +166,8 @@ export default {
     //달력
     let date = reactive({start:"", end:""});
     let isDark = ref(false);
-    let isRange = ref(true);
+    let isRange = ref(false);
 
-    let req_param = reactive({dtpickDate:""});
     let strDONo = ref(null);
 
     let lblShipno = ref(null);
@@ -285,35 +284,40 @@ export default {
         console.log("displayClick_DO -- end -- ", formatDate(date.end, "YYYY-MM-DD"));
       }
       else{
-        console.log("displayClick_DO -- data -- ", formatDate(date, "YYYY-MM-DD"));
+        console.log("displayClick_DO -- data -- ", formatDate(date, "YYYYMMDD"));
       }
 
       let urlPost = url.value + '/dwt/good_issue/do_search_date';
-      console.log(dtpickDate.value);
 
       //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
       $axios.post(urlPost, {
           i_lang: "EN",
           i_userid: store.state.auth.user[0].userid,
           i_werks: getdata(store.state.auth.user[0].plantcd),
-          i_date: dtpickDate.value,
+          i_date: formatDate(date, "YYYYMMDD"),
       })
       .then((res) => {
         console.log("[response data]", res.data);
 
-        if (res.data[0].code == "NG"){
-          msg_color.value = "red";
-          msg.value = res.data[0].message;
-        } else{
-          msg_color.value = "blue";
-          msg.value = "OK";
-          PlaySound("OK");
+        if(res.data[0].zshipno != null){
+          console.log(res.data[0].code);
+          if (res.data[0].code == "NG"){
+            msg_color.value = "red";
+            msg.value = res.data[0].message;
+          } else{
+            msg_color.value = "blue";
+            msg.value = "OK";
+            PlaySound("OK");
 
-          recvData.value = res.data;
-          lblShipno.value = res.data[0].zshipno;
-          lblDONo.value = res.data[0].vbeln;
-          lblPlandate.value = res.data[0].wadat;
-          lblCustomer.value = "[" + res.data[0].kunnr + "] " + res.data[0].zkunnrnm;
+            recvData.value = res.data;
+            lblShipno.value = res.data[0].zshipno;
+            lblDONo.value = res.data[0].vbeln;
+            lblPlandate.value = res.data[0].wadat;
+            lblCustomer.value = "[" + res.data[0].kunnr + "] " + res.data[0].zkunnrnm;
+          }
+        } else{
+            msg_color.value = "red";
+            msg.value = "There is no data.";        
         }
 
         setTimeout(function () {
@@ -349,7 +353,6 @@ export default {
     return{
       window_width,
       window_height,
-      req_param,
       lblShipno,
       lblDONo,
       lblPlandate,
