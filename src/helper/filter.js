@@ -13,3 +13,9 @@ export function getdata (data){
 	}
 	return rtn;
 }
+
+//날짜형식
+import moment from "moment";
+export function formatDate (date, type){
+	return moment(date).format(type);
+}
