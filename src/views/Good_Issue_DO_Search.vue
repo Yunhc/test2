@@ -3,7 +3,7 @@
 		<div class="do_popup-white-bg">
 
       <div align="left" class="do_popup_header">
-        <p :style="{ margin:'2px 10px 0px 10px'}">Find DO
+        <p :style="{padding:'2px 0px 0px 0px', 'text-align':'center'}">Find DO
         </p>
       </div>
 
@@ -12,15 +12,49 @@
           <!-- <span class="input-group-text btn-sm" id="basic-addon1"
             :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Request date
           </span> -->
-          <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="lblDate" 
+          <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="lblDate"
               aria-label="lblDate" aria-describedby="basic-addon1"
               :style="{'margin':'0px 5px 0px 0px', 'text-align':'left'}">Request date
           </label>
 
-          <input type="date" name="startdate">
+          <!-- <input type="date" name="startdate"> -->
+
+          <v-date-picker
+            mode="date"
+            v-model="date"
+            locale="en"
+            title-position="center"
+            color="green"
+            :style="{margin:'0px 0px 0px 5px'}"
+            :is-dark="isDark"
+            :is-range="isRange"
+            :masks="{ input: ['YYYY-MM-DD', 'L'] }"
+          >
+            <template #default="{ inputValue, inputEvents }">
+              <template v-if="isRange">
+                <div class="input-group mb-3" :style="{height:'15px'}">
+                  <input class="form-control btn-sm"
+                    :style="{'text-align':'center'}"
+                    :value="inputValue.start"
+                    v-on="inputEvents.start"/>
+                  <span class="input-group-text btn-sm" :style="{background:'transparent', border:'transparent'}">~</span>
+                  <input class="form-control btn-sm"
+                    :style="{'text-align':'center'}"
+                    :value="inputValue.end"
+                    v-on="inputEvents.end"/>
+                </div>
+              </template>
+              <template v-else>
+                <input class="form-control btn-sm"
+                  :style="{'text-align':'center'}"
+                  :value="inputValue"
+                  v-on="inputEvents"/>
+              </template>
+            </template>
+          </v-date-picker>
 
           <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'70px'}"
-            @click='displayClick'>Display</button>          
+            @click='displayClick'>Display</button>
         </div>
 
         <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
@@ -65,7 +99,7 @@
               :style="{'text-align':'left'}">
               {{lblCustomer}}
           </label>
-        </div>     
+        </div>
       </div>
 
 
@@ -113,7 +147,7 @@
   import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
   import {AgGridVue} from 'ag-grid-vue3'
   import { useStore } from 'vuex';
-  import { getdata } from '@/helper/filter.js';
+  import { getdata, formatDate } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
 
 export default {
@@ -122,16 +156,21 @@ export default {
     AgGridVue,
   },
 
-  setup(props,{emit}){
-    let url = ref(process.env.VUE_APP_SERVER_URL);    
+  setup(props, {emit}){
+    let url = ref(process.env.VUE_APP_SERVER_URL);
     let window_width = ref(window.innerWidth);
     let window_height = ref(window.innerHeight);
 
     const store = useStore();	//스토어호출
 
+    //달력
+    let date = reactive({start:"", end:""});
+    let isDark = ref(false);
+    let isRange = ref(true);
+
     let req_param = reactive({dtpickDate:""});
     let strDONo = ref(null);
-   
+
     let lblShipno = ref(null);
     let lblDONo = ref(null);
     let lblPlandate = ref(null);
@@ -164,7 +203,7 @@ export default {
       {headerName: 'Customer', field: 'kunnr', width: 8, hide: true},
       {headerName: 'Customer Name', field: 'zkunnrnm', width: 8, hide: true},
       {headerName: 'KUNAG', field: 'kunag', width: 8, hide: true},
-      {headerName: 'ZKUNAGNM', field: 'zkunagnm', width: 8, hide: true},      
+      {headerName: 'ZKUNAGNM', field: 'zkunagnm', width: 8, hide: true},
       {headerName: 'Del Flag', field: 'zstatus', width: 8, hide: true},
       {headerName: 'Ztype', field: 'ztype', width: 8, hide: true},
       {headerName: 'VGBEL', field: 'vgbel', width: 8, hide: true},
@@ -204,9 +243,22 @@ export default {
     };
 
     onMounted(() => {
-      console.log("[Good Issue] = ", "onMounted--");
+      console.log("[Good Issue Do Search] = ", "onMounted--");
       window.addEventListener('resize', handleResize);
       // txtDO.value.focus();
+
+      if (isRange.value == true){
+        date.start = new Date();
+        date.end = new Date();
+        console.log("[Good Issue Do Search] = onMounted -- start --", date.start);
+        console.log("[Good Issue Do Search] = onMounted -- end --", date.end);
+      }
+      else{
+        date = new Date();
+        console.log("[Good Issue Do Search] = onMounted -- date --", date);
+      }
+
+
     });
 
     onUnmounted(() =>{
@@ -227,6 +279,15 @@ export default {
     };
 
     function displayClick(){
+      // console.log(date.value);
+      if (isRange.value == true){
+        console.log("displayClick_DO -- start -- ", formatDate(date.start, "YYYYMMDD"));
+        console.log("displayClick_DO -- end -- ", formatDate(date.end, "YYYY-MM-DD"));
+      }
+      else{
+        console.log("displayClick_DO -- data -- ", formatDate(date, "YYYY-MM-DD"));
+      }
+
       let urlPost = url.value + '/dwt/good_issue/do_search_date';
 
       //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
@@ -251,7 +312,7 @@ export default {
           lblShipno.value = res.data[0].zshipno;
           lblDONo.value = res.data[0].vbeln;
           lblPlandate.value = res.data[0].wadat;
-          lblCustomer.value = "[" + res.data[0].kunnr + "] " + res.data[0].zkunnrnm;   
+          lblCustomer.value = "[" + res.data[0].kunnr + "] " + res.data[0].zkunnrnm;
         }
 
         setTimeout(function () {
@@ -286,7 +347,7 @@ export default {
 
     return{
       window_width,
-      window_height,     
+      window_height,
       req_param,
       lblShipno,
       lblDONo,
@@ -298,10 +359,13 @@ export default {
       options,
       recvData,
       gridOptions,
-      getSelectedRows,              
+      getSelectedRows,
       DOselectClick,
       DOcloseClick,
       displayClick,
+      date,
+      isDark,
+      isRange,
     }
   },
 }
@@ -311,11 +375,11 @@ export default {
   .good_issue_do_search {
     height : 160px;
     margin : 0px 5px 0px 5px;
-  }  
+  }
   .good_issue_grid_do {
     margin:0px 5px 0px 5px;
     overflow: auto;
-  }  
+  }
   .do_popup-black-bg{
     width: 100%;
 		height: 100%;
@@ -341,5 +405,5 @@ export default {
     // color:#41b883;
     color:white;
     // border-bottom:1px solid #070707;
-  } 
+  }
 </style>
