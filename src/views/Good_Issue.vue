@@ -110,7 +110,7 @@
   import { useStore } from 'vuex';
   import { getdata } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
-  import popupdosearch from '@/views/Good_Issue_DO_Search.vue';  
+  import popupdosearch from '@/views/Good_Issue_DO_Search.vue';
 
   export default {
     name:'good_issue',
@@ -149,7 +149,7 @@
         {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
         {headerName: 'Item No', field: 'posnr', width: 10, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
         {headerName: 'Order Qty(BDL)', field: 'orderqtybdl', width: 15, cellStyle: {textAlign: "right", color: 'red'}, pinned: 'left'},
-        {headerName: 'Proc Qty', field: 'procqty', width: 15, cellStyle: {textAlign: "right", color: 'blue'}},  
+        {headerName: 'Proc Qty', field: 'procqty', width: 15, cellStyle: {textAlign: "right", color: 'blue'}},
         {headerName: 'Order Qty(PC)', field: 'orderqtypc', width: 15, cellStyle: {textAlign: "right"}},
         {headerName: 'Pcs/Pkg', field: 'umrez', width: 10, cellStyle: {textAlign: "right"}},
         {headerName: 'Material Description', field: 'maktx', width: 80},
@@ -332,7 +332,7 @@
       }
 
       function DOselectClick(strDONo){
-      // function DOselectClick(){  
+      // function DOselectClick(){
         console.log(strDONo);
         popupdoisopen.value = false;
       }
