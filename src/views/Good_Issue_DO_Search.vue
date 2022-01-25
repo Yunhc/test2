@@ -228,13 +228,14 @@ export default {
 
     function displayClick(){
       let urlPost = url.value + '/dwt/good_issue/do_search_date';
+      console.log(dtpickDate.value);
 
       //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
       $axios.post(urlPost, {
           i_lang: "EN",
           i_userid: store.state.auth.user[0].userid,
           i_werks: getdata(store.state.auth.user[0].plantcd),
-          i_vbeln: req_param.dtpickDate,
+          i_date: dtpickDate.value,
       })
       .then((res) => {
         console.log("[response data]", res.data);
