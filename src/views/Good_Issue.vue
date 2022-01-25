@@ -2,67 +2,11 @@
 
   <div class="good_issue">
     <!-- DO버튼 클릭시 일자별 DO조회 팝업화면 -->
-    <div class="do_popup_black-bg" v-if="popupdoisopen">
-      <div class="do_popup_white-bg">
-        <div align="left" class="do_popup_header">
-          <p :style="{ margin:'5px 10px 0 10px'}">
-            {{"Find DO"}}
-          </p>
-        </div>
+    <popupdosearch v-if="popupdoisopen"
+      @DOselectClick="DOselectClick"
+      @DOcloseClick="popupdoisopen=false">
+    </popupdosearch>
 
-        <div class="input-group mb-3" :style="{ margin:'2px 0px 0px 0px'}">
-          <!-- <span class="input-group-text btn-sm" id="basic-addon1"
-            :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Request date
-          </span> -->
-          <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="lblDate" 
-              aria-label="lblDate" aria-describedby="basic-addon1"
-              :style="{'text-align':'left'}">      
-              {{"Request date"}}
-          </label>
-
-          <input type="date" name="startdate">
-
-          <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'70px'}"
-          @click='displayClick'>Display</button>          
-        </div>
-
-
-        <div class="good_issue_grid1"
-          :style="{
-            'height': `calc(${window_height - 109 - 120 - 123}px)`
-          }"
-        >
-          <ag-grid-vue
-            id="agGrid2"
-            class="ag-theme-alpine"
-            headerHeight='35'
-            style="width: 1910px; height:100%"
-            :rowData="recvData2.value"
-            :gridOptions="gridOptions2"
-            allow_unsafe_jscode="True"
-            >
-          </ag-grid-vue>
-        </div>
-
-        <div class="input-group mb-3"
-          :style="{height:'48px', margin:'0px 0px 0px 0px', background:'gainsboro'}">
-          <p :style="{margin:'2px 5px 0px 5px',
-                      background:'transparent',
-                      'font-size':'16px',
-                      'font-weight':'bold',
-                      color:msg_color}">
-            Msg:{{msg_dopopup}}
-          </p>
-        </div>
-
-        <div align="right" :style="{height:'40px', margin:'-5px 0px 0px 0px'}">
-          <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 10px 0px 10px', width:'70px'}"
-            @click='DOselectClick'>Select</button>
-          <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 10px 0px 0px', width:'70px'}"
-            @click='DOcloseClick'>Close</button>
-        </div>
-      </div>
-    </div>
 
     <div class="good_issue_search">
       <div align="right" :style="{height:'40px', margin:'0px 0px 0px 0px'}">
@@ -166,11 +110,13 @@
   import { useStore } from 'vuex';
   import { getdata } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
+  import popupdosearch from '@/views/Good_Issue_DO_Search.vue';  
 
   export default {
     name:'good_issue',
     components:{
       AgGridVue,
+      popupdosearch,
     },
     setup(props,{emit}){
       let url = ref(process.env.VUE_APP_SERVER_URL);
@@ -183,7 +129,8 @@
       let options = reactive([]);
 
       let recvData = reactive([]);
-      let recvData2 = reactive([]);
+      let strDONo = ref(null);
+
       //focus 이동을 위한 변수
       let txtDO = ref(null);
       let lblCustomer = ref(null);
@@ -192,7 +139,6 @@
       //데이터 바인딩
       let req_param = reactive({txtDO:"", txtScan:""});
       let msg = ref(null);
-      let msg_dopopup = ref(null);
       let msg_color = ref(null);
 
       let gridApi = ref(null);
@@ -232,42 +178,6 @@
           }, 1000);
           gridApi.value = event.api;
           columnApi.value = event.columnApi;
-          event.api.sizeColumnsToFit();
-        },
-        getRowHeight: function() {
-          return 35;
-        },
-        onGridSizeChanged: function(event) {
-          event.api.sizeColumnsToFit();
-        },
-      };
-
-      let columnDefs2= reactive([
-        // {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-        {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-        {headerName: 'Item No', field: 'posnr', width: 10, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-        {headerName: 'Order Qty(BDL)', field: 'orderqtybdl', width: 15, cellStyle: {textAlign: "right", color: 'red'}, pinned: 'left'},
-        {headerName: 'Proc Qty', field: 'procqty', width: 15, cellStyle: {textAlign: "right", color: 'blue'}},  
-        {headerName: 'Shipment No', field: 'zshipno', width: 15, hide: true, cellStyle: {textAlign: "center"}},
-      ]);
-      var gridOptions2 = {
-        defaultColDef: {
-          width: 150,
-          editable: false,
-          resizable: true,
-          sortable: true,
-          lockPosition: true, //컬럼 드래그로 이동 방지
-          cellStyle: {textAlign: "left"},
-        },
-        columnDefs: columnDefs2,
-        rowData: null,
-        rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
-        onGridReady: function(event) {
-          setTimeout(function () {
-            event.api.setRowData(recvData2);
-          }, 1000);
-          gridApi.value = event.api;
-          columnApi.value = event.columnApi;          
           event.api.sizeColumnsToFit();
         },
         getRowHeight: function() {
@@ -416,9 +326,15 @@
       }
 
       function DOClick(){
-        console.log(popupdoisopen.value);
+        // console.log(popupdoisopen.value);
         popupdoisopen.value = true;
-        console.log(popupdoisopen.value);
+        // console.log(popupdoisopen.value);
+      }
+
+      function DOselectClick(strDONo){
+      // function DOselectClick(){  
+        console.log(strDONo);
+        popupdoisopen.value = false;
       }
 
       function DOcloseClick(){
@@ -494,18 +410,17 @@
         scan,
         req_param,
         msg,
-        msg_dopopup,
         msg_color,
         scrollPostion : 0,
         defaultColGroupDef: null,
         columnTypes: null,
         options,
         recvData,
-        recvData2,
         gridOptions,
-        gridOptions2,
         getSelectedRows,
         popupdoisopen,
+        strDONo,
+        DOselectClick,
         DOcloseClick,
         // DetailClick,
         DOClick,
@@ -552,29 +467,6 @@
     height : 123px;
     margin : 0px 5px 0px 5px;
     overflow-x: auto;
-  }
-  .do_popup_black-bg{
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    position: fixed; 
-    // padding: 20px;
-    z-index: 20; //div를 최상위로 올린다.
-  }
-  .do_popup_white-bg{
-    width: 100%; height: 100%;
-    background: white;
-    position: fixed;
-    // border-radius: 8px;
-  }  
-  .do_popup_header{
-    background:rgb(47, 96, 170);
-    width: 100%;
-    height:30px;
-    text-align:center;
-    font-size:15px;
-    // color:#41b883;
-    color:white;
-    // border-bottom:1px solid #070707;
   }
 
 </style>
