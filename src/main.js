@@ -2,7 +2,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-
+import VCalendar from 'v-calendar';
 
 // import VueHtmlToPaper from 'vue-html-to-paper';
 // import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
@@ -50,6 +50,8 @@ const app = createApp(App);
 app.use(router);
 app.use(store);
 app.use(print);
+app.use(VCalendar, {})
+
 // app.use('tabs', Tabs);
 // app.use('tab', Tab);
 
