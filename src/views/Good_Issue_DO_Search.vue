@@ -17,8 +17,6 @@
               :style="{'margin':'0px 5px 0px 0px', 'text-align':'left'}">Request date
           </label>
 
-          <!-- <input type="date" name="startdate"> -->
-
           <v-date-picker
             mode="date"
             v-model="date"
@@ -147,7 +145,7 @@
   import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
   import {AgGridVue} from 'ag-grid-vue3'
   import { useStore } from 'vuex';
-  import { getdata, formatDate } from '@/helper/filter.js';
+  import { getdata, formatDate, addDate } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
 
 export default {
@@ -164,9 +162,9 @@ export default {
     const store = useStore();	//스토어호출
 
     //달력
-    let date = reactive({start:"", end:""});
     let isDark = ref(false);
-    let isRange = ref(false);
+    let isRange = ref(true);
+    let date = ref({start:new Date(addDate("-7")), end:new Date()});
 
     let strDONo = ref(null);
 
@@ -247,17 +245,13 @@ export default {
       // txtDO.value.focus();
 
       if (isRange.value == true){
-        date.start = new Date();
-        date.end = new Date();
-        console.log("[Good Issue Do Search] = onMounted -- start --", date.start);
-        console.log("[Good Issue Do Search] = onMounted -- end --", date.end);
+        console.log("[Good Issue Do Search] = onMounted -- start --", date.value.start);
+        console.log("[Good Issue Do Search] = onMounted -- end --", date.value.end);
       }
       else{
-        date = new Date();
-        console.log("[Good Issue Do Search] = onMounted -- date --", date);
+        date.value = new Date();
+        console.log("[Good Issue Do Search] = onMounted -- date --", date.value);
       }
-
-
     });
 
     onUnmounted(() =>{
@@ -279,12 +273,14 @@ export default {
 
     function displayClick(){
       // console.log(date.value);
+      // console.log("displayClick_DO -- data -- ", formatDate(date, "YYYYMMDD"));
+
       if (isRange.value == true){
-        console.log("displayClick_DO -- start -- ", formatDate(date.start, "YYYYMMDD"));
-        console.log("displayClick_DO -- end -- ", formatDate(date.end, "YYYY-MM-DD"));
+        console.log("[Good Issue Do Search] = onMounted -- start --", formatDate(date.value.start, "YYYYMMDD"));
+        console.log("[Good Issue Do Search] = onMounted -- end --", formatDate(date.value.end, "YYYYMMDD"));
       }
       else{
-        console.log("displayClick_DO -- data -- ", formatDate(date, "YYYYMMDD"));
+        console.log("[Good Issue Do Search] = onMounted -- date --", formatDate(date.value, "YYYYMMDD"));
       }
 
       let urlPost = url.value + '/dwt/good_issue/do_search_date';
@@ -294,30 +290,34 @@ export default {
           i_lang: "EN",
           i_userid: store.state.auth.user[0].userid,
           i_werks: getdata(store.state.auth.user[0].plantcd),
-          i_date: formatDate(date, "YYYYMMDD"),
+          i_date: formatDate(date.value, "YYYYMMDD"),
       })
       .then((res) => {
         console.log("[response data]", res.data);
+        if(res.data.length > 0){
+          if(res.data[0].zshipno != null){
+            console.log(res.data[0].code);
+            if (res.data[0].code == "NG"){
+              msg_color.value = "red";
+              msg.value = res.data[0].message;
+            } else{
+              msg_color.value = "blue";
+              msg.value = "OK";
+              PlaySound("OK");
 
-        if(res.data[0].zshipno != null){
-          console.log(res.data[0].code);
-          if (res.data[0].code == "NG"){
-            msg_color.value = "red";
-            msg.value = res.data[0].message;
+              recvData.value = res.data;
+              lblShipno.value = res.data[0].zshipno;
+              lblDONo.value = res.data[0].vbeln;
+              lblPlandate.value = res.data[0].wadat;
+              lblCustomer.value = "[" + res.data[0].kunnr + "] " + res.data[0].zkunnrnm;
+            }
           } else{
-            msg_color.value = "blue";
-            msg.value = "OK";
-            PlaySound("OK");
-
-            recvData.value = res.data;
-            lblShipno.value = res.data[0].zshipno;
-            lblDONo.value = res.data[0].vbeln;
-            lblPlandate.value = res.data[0].wadat;
-            lblCustomer.value = "[" + res.data[0].kunnr + "] " + res.data[0].zkunnrnm;
+              msg_color.value = "red";
+              msg.value = "There is no data.";
           }
         } else{
-            msg_color.value = "red";
-            msg.value = "There is no data.";        
+          msg_color.value = "red";
+          msg.value = "There is no data.";
         }
 
         setTimeout(function () {
