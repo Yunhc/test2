@@ -19,3 +19,11 @@ import moment from "moment";
 export function formatDate (date, type){
 	return moment(date).format(type);
 }
+
+export function addDate (days){
+	var now = new Date();
+	var newDate = moment(moment(now).add('days', days)).format('YYYY-MM-DD');
+	return newDate;
+}
+
+
