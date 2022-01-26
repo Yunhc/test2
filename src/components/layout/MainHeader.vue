@@ -1,11 +1,11 @@
 <template>
   <div class="header">
-    <div align="left" class="left-box">
+    <div align="left" class="mainheader-left-box">
       <p :style="{ margin:'8px 0 0 10px'}">
         {{title}}
       </p>
     </div>
-    <div align="right" class="right-box">
+    <div align="right" class="mainheader-right-box">
       <button type="button" class="btn btn-outline-dark btn-sm"
         :style="{ margin:'3px', background:'transparent', border:'transparent', color:'white'}"
         @click=handleLogout>
@@ -54,7 +54,7 @@
     color:white;
     // border-bottom:1px solid #070707;
   }
-  .left-box {
+  .mainheader-left-box {
     background:rgb(97, 170, 47);
     // border-bottom:1px solid #35495e;
     // background:white;
@@ -62,7 +62,7 @@
     width: 50%;
     height: 38px;
   }
-  .right-box {
+  .mainheader-right-box {
     background:rgb(97, 170, 47);
     // border-bottom:1px solid #35495e;
     // background: white;
