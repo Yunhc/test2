@@ -163,7 +163,7 @@ export default {
 
     //달력
     let isDark = ref(false);
-    let isRange = ref(true);
+    let isRange = ref(false);
     let date = ref({start:new Date(addDate("-7")), end:new Date()});
 
     let strDONo = ref(null);
