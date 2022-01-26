@@ -1,14 +1,16 @@
 <template>
 	<!-- <div class="wrap" :style="{ height:'window_height'}"> -->
 	<div class="login">
-		<div align="left" class="left-box">
-				<div class="login_img" align="center">
-					<img class="img" alt="bg_wms" src="../assets/bg_wms.png">
+		<div align="left"
+			:class="['login-left-box', window_width>800 ? {horizontal:true}:{vertical:true}]">
+				<div class="login-img" align="center">
+					<img class="login-img-content" alt="bg_wms" src="../assets/bg_wms.png">
 				</div>
 		</div>
-		<div align="right" class="right-box">
-			<div class="wrap">
-				<div class="center_box">
+		<div align="right"
+			:class="['login-right-box', window_width>800 ? {horizontal:true}:{vertical:true}]">
+			<div class="login-wrap">
+				<div class="login-center-box">
 					<div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
 						<span class="input-group-text btn-sm" id="basic-addon1">사용자ID</span>
 						<input type="text" class="form-control btn-sm" placeholder="UserID" aria-label="UserID" aria-describedby="basic-addon1"
@@ -40,7 +42,7 @@
 						:style="{ margin:'4px 10px 0px 0px', width:'70px'}"
 						@click='handleLogin'>로그인</button>
 
-					<div align="center" class="desc">
+					<div align="center" class="login-desc">
 						<p>Copyright (C) DONGWHA CO,.LTD. reserved</p>
 					</div>
 				</div>
@@ -57,6 +59,10 @@ import {useRouter} from 'vue-router';
 export default {
 	setup(){
 		console.log("[login] = ", "setup--")
+
+		let window_width = ref(window.innerWidth);
+		let window_height = ref(window.innerHeight);
+
 		// let name = ref("Login");
 		let user = ref({userid:"", password:""});
 		let chkID = ref(false);
@@ -81,6 +87,8 @@ export default {
 			console.log("[login] = loggedUser --", store.state.auth.user);
 			console.log("[login] = saveid --", store.state.saveid.id);
 
+			window.addEventListener('resize', handleResize);
+
 			if(store.state.saveid.id != null){
 				console.log("[login] = saveid -- exist");
 				if(store.state.saveid.id[0].chk == true){
@@ -95,6 +103,7 @@ export default {
 
 		onUnmounted(() =>{
 			console.log("[login] = onUnmounted -- ");
+			window.removeEventListener('resize', handleResize);
 		});
 
 		function handleLogin() {
@@ -149,7 +158,14 @@ export default {
         }
       }
 
+		function handleResize() {
+			window_width.value = window.innerWidth;
+			window_height.value = window.innerHeight;
+    }
+
 		return {
+			window_width,
+			window_height,
 			user,
 			userid,
 			password,
@@ -185,15 +201,22 @@ export default {
 		top:0px;
 		background: rgb(235, 235, 235);
 	}
-	.left-box {
-    background:rgb(235, 235, 235);
+	.login-left-box {
+		background:rgb(235, 235, 235);
     // border-bottom:1px solid #35495e;
-    float: left;
+		float: left;
     width: 50%;
     height: 100%;
-		margin: 0% 0% 0% 0%;
   }
-  .right-box {
+	.login-left-box.horizontal {
+    width: 50%;
+    height: 100%;
+  }
+	.login-left-box.vertical {
+    width: 100%;
+    height: 50%;
+  }
+  .login-right-box {
     background:rgb(235, 235, 235);
     // border-bottom:1px solid #35495e;
     // background: white;
@@ -201,38 +224,49 @@ export default {
     width: 50%;
     height: 100%;
   }
-	.login_img{
+	.login-right-box.horizontal {
+    width: 50%;
+    height: 100%;
+  }
+  .login-right-box.vertical {
+    width: 100%;
+    height: 50%;
+  }
+	.login-img{
 		width: 99%;
 		height: 99%;
 		position: relative;
 		background: white;
-		margin:1% 0% 0% 1%
+		margin:1% 0% 0% 1%;
 	}
-	.img{
-		position: relative;
+	.login-img-content{
+		position: absolute;
 		background: white;
-		margin:25% 0% 0% 0%
+		width:435px;
+		height:350px;
+		top: 50%;
+		left: 50%;
+		margin-left: -212px;
+		margin-top: -175px;
+		// margin:25% 0% 0% 0%;
 	}
-	.wrap {
+	.login-wrap {
 		width: 100%;
 		height: 100%;
-		// height: 600px;
-		// margin-top: -80px;
 		position: relative;
 		background: rgb(235, 235, 235);
-		z-index: 1; //div를 최상위로 올린다.
 	}
-	.center_box {
-		width: 60%;
-		height: 30%;
+	.login-center-box {
 		position: absolute;
-		// background: blue;
+		width: 60%;
+		height: 260px;
+		background: rgb(235, 235, 235);
 		top: 50%;
 		left: 50%;
 		margin-left: -30%;
-		margin-top: -10%;
+		margin-top: -130px;
 	}
-	.desc{
+	.login-desc{
 		font-family: Avenir, Helvetica, Arial, sans-serif;
 		font-size:16px;
 		color:rgb(34, 33, 33);
