@@ -33,11 +33,13 @@
                 <div class="input-group mb-3" :style="{height:'15px'}">
                   <input class="form-control btn-sm"
                     :style="{'text-align':'center'}"
+                    data-ref="InputContent" inputmode="none"
                     :value="inputValue.start"
                     v-on="inputEvents.start"/>
                   <span class="input-group-text btn-sm" :style="{background:'transparent', border:'transparent'}">~</span>
                   <input class="form-control btn-sm"
                     :style="{'text-align':'center'}"
+                    data-ref="InputContent" inputmode="none"
                     :value="inputValue.end"
                     v-on="inputEvents.end"/>
                 </div>
@@ -45,6 +47,7 @@
               <template v-else>
                 <input class="form-control btn-sm"
                   :style="{'text-align':'center'}"
+                  data-ref="InputContent" inputmode="none"
                   :value="inputValue"
                   v-on="inputEvents"/>
               </template>
