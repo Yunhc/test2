@@ -3,6 +3,7 @@
   <div class="window-main">
     <!-- Detail버튼 클릭시 스캔한 바코드 리스트 조회(삭제) 팝업화면 -->
     <popupbarsearch v-if="popupbarisopen"
+      :strDO="req_param.txtDO"
       @BarcloseClick="popupbarisopen=false">
     </popupbarsearch>
 
@@ -239,6 +240,7 @@
         // console.log(getdata(req_param.txtScan));
 
         gridApi.value.setRowData([]);
+
         //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
         $axios.post(urlPost, {
             i_lang: "EN",
@@ -336,6 +338,7 @@
 
       function DetailClick(){
         popupbarisopen.value = true;
+        console.log("TXTDO => ", req_param.txtDO);
       }
 
       function DOClick(){
