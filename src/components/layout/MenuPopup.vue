@@ -91,6 +91,7 @@ import print from '@/views/Print.vue'
 import room from '@/views/OneRoom.vue'
 import usermanagement from '@/views/UserManagement.vue'
 import mdi from '@/views/Mdi.vue'
+import label_print_hist from '@/views/Label_Print_Hist.vue'
 import parents from '@/views/Parents.vue'
 import fg_receipt from '@/views/FG_Receipt.vue'
 import good_issue from '@/views/Good_Issue.vue'
@@ -117,6 +118,7 @@ export default {
 		room,
 		usermanagement,
 		mdi,
+		label_print_hist,
 		parents,
 		fg_receipt,
 		good_issue,
@@ -145,6 +147,7 @@ export default {
 			{pid: 'M000', id:'mdi', name:'MDI Test'},
 			{pid: 'M100', id:'about', name:'About'},
 			{pid: 'M200', id:'room', name:'Room'},
+			{pid: 'M250', id:'label_print_hist', name:'라벨 발행 이력'},
 			{pid: 'M250', id:'parents', name:'Slot 테스트'},
 			{pid: 'M520', id:'fg_receipt', name:'Finished Goods Receipt'},
 			{pid: 'M520', id:'good_issue', name:'Good Issue'},
