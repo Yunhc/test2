@@ -40,7 +40,7 @@
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'80px'}"
           @click='selectAllClick'>Select All</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'90px'}"
-          @click='deleteClick'>Delete Item</button>      
+          @click='deleteClick'>Delete Item</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 0px 0px 0px', width:'70px'}"
           @click='BarcloseClick'>Close</button>
       </div>
@@ -55,12 +55,12 @@
   import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
   import {AgGridVue} from 'ag-grid-vue3'
   import { useStore } from 'vuex';
-  import { getdata} from '@/helper/filter.js';  
+  import { getdata} from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
 
 export default {
   name:'popupbarsearch',
-  props:['strDO'],  
+  props:['strDO'],
   components:{
     AgGridVue,
   },
@@ -84,18 +84,18 @@ export default {
     let columnApi = ref(null);
 
     let columnDefs= reactive([
-      {headerName: '', field: 'sel', width: 5, cellStyle: {textAlign: "center"},
-            headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'},      
+      {headerName: '', field: 'sel', width: 10, cellStyle: {textAlign: "center"},
+        headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'},
       {headerName: 'Barcode', field: 'barno', width: 15, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-      {headerName: 'Qty', field: 'qty', width: 10, cellStyle: {textAlign: "right"}, pinned: 'left'},      
+      {headerName: 'Qty', field: 'qty', width: 10, cellStyle: {textAlign: "right"}, pinned: 'left'},
       {headerName: 'Unit', field: 'meins', width: 6},
       {headerName: 'Material', field: 'matnr', width: 15, cellStyle: {textAlign: "center"}},
-      {headerName: 'Material Description', field: 'maktx', width: 80},                
+      {headerName: 'Material Description', field: 'maktx', width: 80},
       {headerName: 'BdlQty(SO)', field: 'sobdqty', width: 10, cellStyle: {textAlign: "center"}},
     ]);
     var gridOptions = {
       defaultColDef: {
-        width: 80,
+        width: 10,
         editable: false,
         resizable: true,
         sortable: true,
@@ -112,21 +112,19 @@ export default {
         }, 100);
         gridApi.value = event.api;
         columnApi.value = event.columnApi;
-        event.api.sizeColumnsToFit();
+        // event.api.sizeColumnsToFit();
       },
       getRowHeight: function() {
         return 35;
       },
-      onGridSizeChanged: function(event) {
-        event.api.sizeColumnsToFit();
-      },
+      // onGridSizeChanged: function(event) {
+      //   event.api.sizeColumnsToFit();
+      // },
     };
 
     onMounted(() => {
       console.log("[Good Issue Bar Search] = ", "onMounted--");
       window.addEventListener('resize', handleResize);
-
-      // fn_BarcodeList();
     });
 
     onUnmounted(() =>{
@@ -191,7 +189,7 @@ export default {
       .catch(err => {
         alert(err);
         console.error(err)
-      })  
+      })
     }
 
     function selectAllClick(){
@@ -201,9 +199,11 @@ export default {
     }
 
     function autoSizeAll(skipHeader) {
+      console.log("[Good Issue Bar Search] = autoSizeAll -- ");
       const allColumnIds = [];
       columnApi.value.getAllColumns().forEach((column) => {
         if (column.colId != 'sel'){
+          // console.log("[Good Issue Bar Search] = autoSizeAll -- ", column.colId);
           allColumnIds.push(column.colId);
         }
       });
