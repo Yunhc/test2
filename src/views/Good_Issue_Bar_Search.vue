@@ -49,13 +49,14 @@
 
 </template>
 <script>
-  // import $axios from 'axios';
+  import $axios from 'axios';
   import { reactive, ref, onMounted, onUnmounted } from 'vue'
   import 'ag-grid-community/dist/styles/ag-grid.css';
   import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
   import {AgGridVue} from 'ag-grid-vue3'
-  // import { useStore } from 'vuex';
-  // import { PlaySound } from '@/helper/util.js';
+  import { useStore } from 'vuex';
+  import { getdata} from '@/helper/filter.js';  
+  import { PlaySound } from '@/helper/util.js';
 
 export default {
   name:'popupbarsearch',
@@ -64,14 +65,16 @@ export default {
   },
 
   setup(props, {emit}){
-    // let url = ref(process.env.VUE_APP_SERVER_URL);
+    let url = ref(process.env.VUE_APP_SERVER_URL);
     let window_width = ref(window.innerWidth);
     let window_height = ref(window.innerHeight);
 
-    // const store = useStore();	//스토어호출
+    const store = useStore();	//스토어호출
 
     let msg = ref(null);
     let msg_color = ref(null);
+
+    let strDONo = ref(null);
 
     let options = reactive([]);
 
@@ -120,6 +123,8 @@ export default {
     onMounted(() => {
       console.log("[Good Issue Bar Search] = ", "onMounted--");
       window.addEventListener('resize', handleResize);
+
+      fn_BarcodeList();
     });
 
     onUnmounted(() =>{
@@ -144,18 +149,62 @@ export default {
       emit("BarcloseClick");
     }
 
-    // function autoSizeAll(skipHeader) {
-    //   const allColumnIds = [];
-    //   columnApi.value.getAllColumns().forEach((column) => {
-    //     allColumnIds.push(column.colId);
-    //   });
+    function fn_BarcodeList(strDONo){
+      console.log("DO No", strDONo);
+      let urlPost = url.value + '/dwt/good_issue/bar_search';
 
-    //   columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
-    // }
+      //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
+      $axios.post(urlPost, {
+          i_lang: "EN",
+          i_userid: store.state.auth.user[0].userid,
+          i_werks: getdata(store.state.auth.user[0].plantcd),
+          i_vbeln: strDONo.value,
+      })
+      .then((res) => {
+        console.log("[response data]", res.data);
+        if(res.data.length > 0){
+          console.log(res.data[0].code);
+          if (res.data[0].code == "NG"){
+            msg_color.value = "red";
+            msg.value = res.data[0].message;
+          } else{
+            msg_color.value = "blue";
+            msg.value = "OK";
+            PlaySound("OK");
+
+            recvData.value = res.data;
+          }
+        } else{
+          recvData.value = res.data;
+          msg_color.value = "red";
+          msg.value = "There is no data.";
+        }
+
+        setTimeout(function () {
+          autoSizeAll(false);
+        }, 500);
+
+      }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+        //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+      .catch(err => {
+        alert(err);
+        console.error(err)
+      })  
+    }
+
+    function autoSizeAll(skipHeader) {
+      const allColumnIds = [];
+      columnApi.value.getAllColumns().forEach((column) => {
+        allColumnIds.push(column.colId);
+      });
+
+      columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
+    }
 
     return{
       window_width,
       window_height,
+      strDONo,
       msg,
       msg_color,
       options,
@@ -163,6 +212,7 @@ export default {
       gridOptions,
       getSelectedRows,
       BarcloseClick,
+      fn_BarcodeList,
     }
   },
 }
