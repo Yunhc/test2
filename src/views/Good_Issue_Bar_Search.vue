@@ -84,7 +84,7 @@ export default {
     let columnApi = ref(null);
 
     let columnDefs= reactive([
-      {headerName: 'Sel', field: 'sel', width: 5, cellStyle: {textAlign: "center"},
+      {headerName: '', field: 'sel', width: 5, cellStyle: {textAlign: "center"},
             headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'},      
       {headerName: 'Barcode', field: 'barno', width: 15, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
       {headerName: 'Qty', field: 'qty', width: 10, cellStyle: {textAlign: "right"}, pinned: 'left'},      
@@ -195,13 +195,17 @@ export default {
     }
 
     function selectAllClick(){
-        fn_BarcodeList();
+        // fn_BarcodeList();
+      // gridapi.value.checkboxSelection = true
+
     }
 
     function autoSizeAll(skipHeader) {
       const allColumnIds = [];
       columnApi.value.getAllColumns().forEach((column) => {
-        allColumnIds.push(column.colId);
+        if (column.colId != 'sel'){
+          allColumnIds.push(column.colId);
+        }
       });
 
       columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
