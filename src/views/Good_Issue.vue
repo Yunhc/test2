@@ -40,7 +40,7 @@
         <span class="input-group-text btn-sm" id="basic-addon1"
           :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Customer
         </span>
-        <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Customer"
+        <label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Customer"
             aria-label="Customer" aria-describedby="basic-addon1"
             :style="{'text-align':'left'}">
             {{lblCustomer}}
@@ -238,6 +238,7 @@
         console.log("[req_param]", req_param);
         // console.log(getdata(req_param.txtScan));
 
+        gridApi.value.setRowData([]);
         //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
         $axios.post(urlPost, {
             i_lang: "EN",
