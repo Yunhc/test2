@@ -1,6 +1,6 @@
 <template>
 
-  <div class="good_issue">
+  <div class="window-main">
     <!-- Detail버튼 클릭시 스캔한 바코드 리스트 조회(삭제) 팝업화면 -->
     <popupbarsearch v-if="popupbarisopen"
       @BarcloseClick="popupbarisopen=false">
@@ -13,7 +13,7 @@
     </popupdosearch>
 
 
-    <div class="good_issue_search">
+    <div class="window-search">
       <div align="right" :style="{height:'40px', margin:'0px 0px 0px 0px'}">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
         @click='DetailClick'>Detail</button>
@@ -57,7 +57,7 @@
         </label>
       </div>
     </div>
-    <div class="good_issue_grid1"
+    <div class="window-grid-1"
       :style="{
         'height': `calc(${window_height - 109 - 140 - 123}px)`
       }"
@@ -73,7 +73,7 @@
         >
       </ag-grid-vue>
     </div>
-    <div class= "good_issue_save">
+    <div class= "window-save-1">
       <div class="input-group mb-3" :style="{height:'30px', margin:'2px 0px 0px 0px'}">
         <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Scan barcode" aria-label="Scan barcode" aria-describedby="basic-addon1"
           id="scan"
@@ -453,35 +453,4 @@
 <style lang="scss">
   @import "~ag-grid-community/dist/styles/ag-grid.css";
   @import "~ag-grid-community/dist/styles/ag-theme-alpine.css";
-
-	.good_issue {
-		font-family: Avenir, Helvetica, Arial, sans-serif;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-		text-align: center;
-		color: #2c3e50;
-		width:100%;
-    height:100%;
-    // select:focus {
-    //   background: yellow;
-    // }
-    input:focus {
-      background: yellow;
-    }
-  }
-  .good_issue_search {
-    height : 140px;
-    margin : 0px 5px 0px 5px;
-  }
-  .good_issue_grid1 {
-    margin:0px 5px 0px 5px;
-    overflow: auto;
-  }
-  .good_issue_save {
-    // background: gainsboro;
-    height : 123px;
-    margin : 0px 5px 0px 5px;
-    overflow-x: auto;
-  }
-
 </style>
