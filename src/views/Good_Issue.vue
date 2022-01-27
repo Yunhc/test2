@@ -1,6 +1,11 @@
 <template>
 
   <div class="good_issue">
+    <!-- Detail버튼 클릭시 스캔한 바코드 리스트 조회(삭제) 팝업화면 -->
+    <popupbarsearch v-if="popupbarisopen"
+      @BarcloseClick="popupbarisopen=false">
+    </popupbarsearch>
+
     <!-- DO버튼 클릭시 일자별 DO조회 팝업화면 -->
     <popupdosearch v-if="popupdoisopen"
       @DOselectClick="DOselectClick"
@@ -111,18 +116,21 @@
   import { getdata } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
   import popupdosearch from '@/views/Good_Issue_DO_Search.vue';
+  import popupbarsearch from '@/views/Good_Issue_Bar_Search.vue';
 
   export default {
     name:'good_issue',
     components:{
       AgGridVue,
       popupdosearch,
+      popupbarsearch,
     },
     setup(props,{emit}){
       let url = ref(process.env.VUE_APP_SERVER_URL);
       let window_width = ref(window.innerWidth);
       let window_height = ref(window.innerHeight);
 
+      let popupbarisopen = ref(false);
       let popupdoisopen = ref(false);
 
       const store = useStore();	//스토어호출
@@ -325,20 +333,25 @@
         e.target.select();
       }
 
+      function DetailClick(){
+        popupbarisopen.value = true;
+      }
+
       function DOClick(){
-        // console.log(popupdoisopen.value);
         popupdoisopen.value = true;
-        // console.log(popupdoisopen.value);
       }
 
       function DOselectClick(strDONo){
-      // function DOselectClick(){
         console.log(strDONo);
         popupdoisopen.value = false;
       }
 
       function DOcloseClick(){
         popupdoisopen.value = false;
+      }
+
+      function BarcloseClick(){
+        popupbarisopen.value = false;
       }
 
       function sendClick() {
@@ -418,11 +431,13 @@
         recvData,
         gridOptions,
         getSelectedRows,
+        popupbarisopen,
         popupdoisopen,
         strDONo,
         DOselectClick,
         DOcloseClick,
-        // DetailClick,
+        BarcloseClick,
+        DetailClick,
         DOClick,
         displayClick,
         scanEnter,
