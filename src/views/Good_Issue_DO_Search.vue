@@ -1,128 +1,127 @@
 <template>
-	<div class="do_popup-black-bg">
-		<div class="do_popup-white-bg">
+	<div class="pop-up-window-main">
+    <div class="pop-up-window-header"
+      align="left">
+      <p :style="{padding:'2px 0px 0px 0px', 'text-align':'center'}">Find DO
+      </p>
+    </div>
 
-      <div align="left" class="do_popup_header">
-        <p :style="{padding:'2px 0px 0px 0px', 'text-align':'center'}">Find DO
-        </p>
-      </div>
+    <div class="pop-up-window-search">
+      <div class="input-group mb-3" :style="{ margin:'3px 5px 0px 0px'}">
+        <!-- <span class="input-group-text btn-sm" id="basic-addon1"
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Request date
+        </span> -->
+        <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="lblDate"
+            aria-label="lblDate" aria-describedby="basic-addon1"
+            :style="{'margin':'0px 5px 0px 0px', 'text-align':'left'}">Request date
+        </label>
 
-      <div class="good_issue_do_search">
-        <div class="input-group mb-3" :style="{ margin:'3px 5px 0px 0px'}">
-          <!-- <span class="input-group-text btn-sm" id="basic-addon1"
-            :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Request date
-          </span> -->
-          <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="lblDate"
-              aria-label="lblDate" aria-describedby="basic-addon1"
-              :style="{'margin':'0px 5px 0px 0px', 'text-align':'left'}">Request date
-          </label>
-
-          <v-date-picker
-            mode="date"
-            v-model="date"
-            locale="en"
-            title-position="center"
-            color="green"
-            :style="{margin:'0px 0px 0px 5px'}"
-            :is-dark="isDark"
-            :is-range="isRange"
-            :masks="{ input: ['YYYY-MM-DD', 'L'] }"
-          >
-            <template #default="{ inputValue, inputEvents }">
-              <template v-if="isRange">
-                <div class="input-group mb-3" :style="{height:'15px'}">
-                  <input class="form-control btn-sm"
-                    :style="{'text-align':'center'}"
-                    data-ref="InputContent" inputmode="none"
-                    :value="inputValue.start"
-                    v-on="inputEvents.start"/>
-                  <span class="input-group-text btn-sm" :style="{background:'transparent', border:'transparent'}">~</span>
-                  <input class="form-control btn-sm"
-                    :style="{'text-align':'center'}"
-                    data-ref="InputContent" inputmode="none"
-                    :value="inputValue.end"
-                    v-on="inputEvents.end"/>
-                </div>
-              </template>
-              <template v-else>
+        <v-date-picker
+          mode="date"
+          v-model="date"
+          locale="en"
+          title-position="center"
+          color="green"
+          :style="{margin:'0px 0px 0px 5px'}"
+          :is-dark="isDark"
+          :is-range="isRange"
+          :masks="{ input: ['YYYY-MM-DD', 'L'] }"
+        >
+          <template #default="{ inputValue, inputEvents }">
+            <template v-if="isRange">
+              <div class="input-group mb-3" :style="{height:'15px'}">
                 <input class="form-control btn-sm"
                   :style="{'text-align':'center'}"
                   data-ref="InputContent" inputmode="none"
-                  :value="inputValue"
-                  v-on="inputEvents"/>
-              </template>
+                  :value="inputValue.start"
+                  v-on="inputEvents.start"/>
+                <span class="input-group-text btn-sm" :style="{background:'transparent', border:'transparent'}">~</span>
+                <input class="form-control btn-sm"
+                  :style="{'text-align':'center'}"
+                  data-ref="InputContent" inputmode="none"
+                  :value="inputValue.end"
+                  v-on="inputEvents.end"/>
+              </div>
             </template>
-          </v-date-picker>
+            <template v-else>
+              <input class="form-control btn-sm"
+                :style="{'text-align':'center'}"
+                data-ref="InputContent" inputmode="none"
+                :value="inputValue"
+                v-on="inputEvents"/>
+            </template>
+          </template>
+        </v-date-picker>
 
-          <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'70px'}"
-            @click='displayClick'>Display</button>
-        </div>
-
-        <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
-          <span class="input-group-text btn-sm" id="basic-addon1"
-            :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Ship No
-          </span>
-          <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Shipment No"
-              aria-label="Shipment No" aria-describedby="basic-addon1"
-              :style="{'text-align':'left'}">
-              {{lblShipno}}
-          </label>
-        </div>
-
-        <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
-          <span class="input-group-text btn-sm" id="basic-addon1"
-            :style="{width:'80px', display:'inline-block', 'text-align':'right'}">DO No
-          </span>
-          <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="DO No"
-              aria-label="DO No" aria-describedby="basic-addon1"
-              :style="{'text-align':'left'}">
-              {{lblDONo}}
-          </label>
-        </div>
-
-        <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
-          <span class="input-group-text btn-sm" id="basic-addon1"
-            :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Plan Date
-          </span>
-          <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Plan Date"
-              aria-label="Plan Date" aria-describedby="basic-addon1"
-              :style="{'text-align':'left'}">
-              {{lblPlandate}}
-          </label>
-        </div>
-
-        <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
-          <span class="input-group-text btn-sm" id="basic-addon1"
-            :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Customer
-          </span>
-          <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Customer"
-              aria-label="Customer" aria-describedby="basic-addon1"
-              :style="{'text-align':'left'}">
-              {{lblCustomer}}
-          </label>
-        </div>
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'70px'}"
+          @click='displayClick'>Display</button>
       </div>
 
-
-      <div class="good_issue_grid_do"
-        :style="{
-          'height': `calc(${window_height - 109 - 40 - 160 - 123}px)`
-        }"
-      >
-        <ag-grid-vue
-          id="agGrid1"
-          class="ag-theme-alpine"
-          headerHeight='35'
-          style="width: 1000px; height:100%"
-          :rowData="recvData.value"
-          :gridOptions="gridOptions"
-          allow_unsafe_jscode="True"
-          >
-        </ag-grid-vue>
+      <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
+        <span class="input-group-text btn-sm" id="basic-addon1"
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Ship No
+        </span>
+        <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Shipment No"
+            aria-label="Shipment No" aria-describedby="basic-addon1"
+            :style="{'text-align':'left'}">
+            {{lblShipno}}
+        </label>
       </div>
 
+      <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
+        <span class="input-group-text btn-sm" id="basic-addon1"
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">DO No
+        </span>
+        <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="DO No"
+            aria-label="DO No" aria-describedby="basic-addon1"
+            :style="{'text-align':'left'}">
+            {{lblDONo}}
+        </label>
+      </div>
+
+      <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
+        <span class="input-group-text btn-sm" id="basic-addon1"
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Plan Date
+        </span>
+        <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Plan Date"
+            aria-label="Plan Date" aria-describedby="basic-addon1"
+            :style="{'text-align':'left'}">
+            {{lblPlandate}}
+        </label>
+      </div>
+
+      <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
+        <span class="input-group-text btn-sm" id="basic-addon1"
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Customer
+        </span>
+        <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Customer"
+            aria-label="Customer" aria-describedby="basic-addon1"
+            :style="{'text-align':'left'}">
+            {{lblCustomer}}
+        </label>
+      </div>
+    </div>
+
+    <div class="pop-up-window-grid-1"
+      :style="{
+        'height': `calc(${window_height - 109 - 28 - 160 - 95}px)`
+      }"
+    >
+      <ag-grid-vue
+        id="agGrid1"
+        class="ag-theme-alpine"
+        headerHeight='35'
+        style="width: 1000px; height:100%"
+        :rowData="recvData.value"
+        :gridOptions="gridOptions"
+        allow_unsafe_jscode="True"
+        >
+      </ag-grid-vue>
+    </div>
+
+    <div class= "pop-up-window-save">
       <div class="input-group mb-3"
-        :style="{height:'48px', margin:'2px 10px 0px 10px', background:'gainsboro'}">
+        :style="{height:'48px', margin:'2px 0px 0px 0px', background:'gainsboro'}">
         <p :style="{margin:'2px 5px 0px 5px',
                     background:'transparent',
                     'font-size':'16px',
@@ -133,9 +132,9 @@
       </div>
 
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 10px', width:'70px'}"
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
           @click='DOselectClick'>Select</button>
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 10px', width:'70px'}"
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 0px 0px 0px', width:'70px'}"
           @click='DOcloseClick'>Close</button>
       </div>
     </div>
@@ -298,27 +297,23 @@ export default {
       .then((res) => {
         console.log("[response data]", res.data);
         if(res.data.length > 0){
-          if(res.data[0].zshipno != null){
-            console.log(res.data[0].code);
-            if (res.data[0].code == "NG"){
-              msg_color.value = "red";
-              msg.value = res.data[0].message;
-            } else{
-              msg_color.value = "blue";
-              msg.value = "OK";
-              PlaySound("OK");
-
-              recvData.value = res.data;
-              lblShipno.value = res.data[0].zshipno;
-              lblDONo.value = res.data[0].vbeln;
-              lblPlandate.value = res.data[0].wadat;
-              lblCustomer.value = "[" + res.data[0].kunnr + "] " + res.data[0].zkunnrnm;
-            }
+          console.log(res.data[0].code);
+          if (res.data[0].code == "NG"){
+            msg_color.value = "red";
+            msg.value = res.data[0].message;
           } else{
-              msg_color.value = "red";
-              msg.value = "There is no data.";
+            msg_color.value = "blue";
+            msg.value = "OK";
+            PlaySound("OK");
+
+            recvData.value = res.data;
+            lblShipno.value = res.data[0].zshipno;
+            lblDONo.value = res.data[0].vbeln;
+            lblPlandate.value = res.data[0].wadat;
+            lblCustomer.value = "[" + res.data[0].kunnr + "] " + res.data[0].zkunnrnm;
           }
         } else{
+          recvData.value = res.data;
           msg_color.value = "red";
           msg.value = "There is no data.";
         }
@@ -378,39 +373,4 @@ export default {
 }
 </script>
 <style lang="scss">
-  //화면마다 이름을 다르게 주자. 아니면 css파일에 넣고 공통사용.
-  .good_issue_do_search {
-    height : 160px;
-    margin : 0px 5px 0px 5px;
-  }
-  .good_issue_grid_do {
-    margin:0px 5px 0px 5px;
-    overflow: auto;
-  }
-  .do_popup-black-bg{
-    width: 100%;
-		height: 100%;
-    background: rgba(0,0,0,0.5);
-    position: fixed;
-		// padding: 20px;
-    z-index: 100; //div를 최상위로 올린다.
-  }
-  .do_popup-white-bg{
-    width: 100%;
-    height: 100%;
-    background: white;
-    position: fixed;
-    // border-radius: 8px;
-    // padding: 20px;
-  }
-  .do_popup_header{
-    background:rgb(47, 96, 170);
-    width: 100%;
-    height:28px;
-    text-align:center;
-    font-size:16px;
-    // color:#41b883;
-    color:white;
-    // border-bottom:1px solid #070707;
-  }
 </style>
