@@ -10,6 +10,7 @@ import VCalendar from 'v-calendar';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+import './assets/style/index.scss';
 
 import axios from 'axios';
 import print from 'vue3-print-nb';
