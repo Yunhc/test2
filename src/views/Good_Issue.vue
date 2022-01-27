@@ -359,6 +359,8 @@
 
       function BarcloseClick(){
         popupbarisopen.value = false;
+        console.log("[req_param]", req_param);
+        fn_DOSearch();
       }
 
       function sendClick() {
