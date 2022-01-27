@@ -6,16 +6,11 @@
       </p>
     </div>
 
-    <div class="pop-up-window-search">
+    <div class="pop-up-window-search-5">
       <div class="input-group mb-3" :style="{ margin:'3px 5px 0px 0px'}">
-        <!-- <span class="input-group-text btn-sm" id="basic-addon1"
-          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Request date
-        </span> -->
-        <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="lblDate"
-            aria-label="lblDate" aria-describedby="basic-addon1"
-            :style="{'margin':'0px 5px 0px 0px', 'text-align':'left'}">Request date
-        </label>
-
+        <span class="input-group-text btn-sm" id="basic-addon1"
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Req.Date
+        </span>
         <v-date-picker
           mode="date"
           v-model="date"
@@ -52,9 +47,12 @@
             </template>
           </template>
         </v-date-picker>
-
+        <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="lblDate"
+            aria-label="lblDate" aria-describedby="basic-addon1"
+            :style="{'margin':'0px 5px 0px 0px', border:'transparent'}"></label>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'70px'}"
-          @click='displayClick'>Display</button>
+          @click='displayClick'>Display
+        </button>
       </div>
 
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
@@ -168,8 +166,6 @@ export default {
     let isRange = ref(false);
     let date = ref({start:new Date(addDate("-7")), end:new Date()});
 
-    let strDONo = ref(null);
-
     let lblShipno = ref(null);
     let lblDONo = ref(null);
     let lblPlandate = ref(null);
@@ -239,6 +235,15 @@ export default {
       onGridSizeChanged: function(event) {
         event.api.sizeColumnsToFit();
       },
+      onRowClicked : function(event){
+          var selectedRow = event.node.data;
+          // console.log('onRowClicked = selectedRow -- ', selectedRow);
+
+          lblShipno.value = selectedRow.zshipno;
+          lblDONo.value = selectedRow.vbeln;
+          lblPlandate.value = selectedRow.wadat;
+          lblCustomer.value = "[" + selectedRow.kunnr + "] " + selectedRow.zkunnrnm;
+        },
     };
 
     onMounted(() => {
@@ -331,8 +336,7 @@ export default {
     }
 
     function DOselectClick(){
-      strDONo = "0080001234"
-      emit("DOselectClick", strDONo);
+      emit("DOselectClick", lblDONo.value);
       // emit("DOselectClick");
     }
     function DOcloseClick(){
@@ -355,7 +359,6 @@ export default {
       lblDONo,
       lblPlandate,
       lblCustomer,
-      strDONo,
       msg,
       msg_color,
       options,

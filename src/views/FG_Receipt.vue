@@ -1,5 +1,5 @@
 <template>
-  <div class="fg_receipt">
+  <div class="window-main">
     <popupyn v-if="popupisopen"
       :title="popupTitle"
       :message="popupMsg"
@@ -7,7 +7,7 @@
       @noClick="popupisopen=false">
     </popupyn>
 
-    <div class="fg_receipt_search">
+    <div class="window-search-3">
       <div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
           :style="{width:'80px', display:'inline-block', 'text-align':'right'}">
@@ -36,7 +36,7 @@
         </label>
       </div>
     </div>
-    <div class="fg_receipt_grid1"
+    <div class="window-grid-1"
       :style="{
         'height': `calc(${window_height - 109 - 98 - 123}px)`
       }"
@@ -53,7 +53,7 @@
         >
       </ag-grid-vue>
     </div>
-    <div class= "fg_receipt_save">
+    <div class= "window-save-1">
       <div class="input-group mb-3" :style="{height:'30px', margin:'2px 0px 0px 0px'}">
         <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Scan barcode" aria-label="Scan barcode" aria-describedby="basic-addon1"
           id="scan"
@@ -422,35 +422,5 @@
 
   .ag-header-cell-label {
     justify-content: center;
-  }
-
-	.fg_receipt {
-		font-family: Avenir, Helvetica, Arial, sans-serif;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-		text-align: center;
-		color: #2c3e50;
-		width:100%;
-    height:100%;
-    // select:focus {
-    //   background: yellow;
-    // }
-    input:focus {
-      background: yellow;
-    }
-  }
-  .fg_receipt_search {
-    height : 98px;
-    margin : 0px 5px 0px 5px;
-  }
-  .fg_receipt_grid1 {
-    margin:0px 5px 0px 5px;
-    overflow: auto;
-  }
-  .fg_receipt_save {
-    // background: gainsboro;
-    height : 123px;
-    margin : 0px 5px 0px 5px;
-    overflow-x: auto;
   }
 </style>
