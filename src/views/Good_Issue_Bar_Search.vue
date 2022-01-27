@@ -60,6 +60,7 @@
 
 export default {
   name:'popupbarsearch',
+  props:['strDO'],  
   components:{
     AgGridVue,
   },
@@ -74,7 +75,7 @@ export default {
     let msg = ref(null);
     let msg_color = ref(null);
 
-    let strDONo = ref(null);
+    let strDO_No = ref(props.strDO);
 
     let options = reactive([]);
 
@@ -83,8 +84,8 @@ export default {
     let columnApi = ref(null);
 
     let columnDefs= reactive([
-      // {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-      {headerName: 'Sel', field: 'sel', width: 5, cellStyle: {textAlign: "center"}, pinned: 'left'},
+      {headerName: 'Sel', field: 'sel', width: 5, cellStyle: {textAlign: "center"},
+            headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'},      
       {headerName: 'Barcode', field: 'barno', width: 15, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
       {headerName: 'Qty', field: 'qty', width: 10, cellStyle: {textAlign: "right"}, pinned: 'left'},      
       {headerName: 'Unit', field: 'meins', width: 6},
@@ -106,8 +107,9 @@ export default {
       rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
       onGridReady: function(event) {
         setTimeout(function () {
-          event.api.setRowData(recvData);
-        }, 1000);
+          // event.api.setRowData(recvData);
+          fn_BarcodeList();
+        }, 100);
         gridApi.value = event.api;
         columnApi.value = event.columnApi;
         event.api.sizeColumnsToFit();
@@ -124,7 +126,7 @@ export default {
       console.log("[Good Issue Bar Search] = ", "onMounted--");
       window.addEventListener('resize', handleResize);
 
-      fn_BarcodeList();
+      // fn_BarcodeList();
     });
 
     onUnmounted(() =>{
@@ -149,8 +151,8 @@ export default {
       emit("BarcloseClick");
     }
 
-    function fn_BarcodeList(strDONo){
-      console.log("DO No", strDONo);
+    function fn_BarcodeList(){
+      console.log("DO No", strDO_No.value);
       let urlPost = url.value + '/dwt/good_issue/bar_search';
 
       //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
@@ -158,7 +160,7 @@ export default {
           i_lang: "EN",
           i_userid: store.state.auth.user[0].userid,
           i_werks: getdata(store.state.auth.user[0].plantcd),
-          i_vbeln: strDONo.value,
+          i_vbeln: strDO_No.value,
       })
       .then((res) => {
         console.log("[response data]", res.data);
@@ -192,6 +194,10 @@ export default {
       })  
     }
 
+    function selectAllClick(){
+        fn_BarcodeList();
+    }
+
     function autoSizeAll(skipHeader) {
       const allColumnIds = [];
       columnApi.value.getAllColumns().forEach((column) => {
@@ -204,7 +210,6 @@ export default {
     return{
       window_width,
       window_height,
-      strDONo,
       msg,
       msg_color,
       options,
@@ -213,6 +218,7 @@ export default {
       getSelectedRows,
       BarcloseClick,
       fn_BarcodeList,
+      selectAllClick,
     }
   },
 }
