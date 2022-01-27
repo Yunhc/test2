@@ -344,6 +344,9 @@
       function DOselectClick(strDONo){
         console.log(strDONo);
         popupdoisopen.value = false;
+        req_param.txtDO = strDONo;
+
+        fn_DOSearch();
       }
 
       function DOcloseClick(){
