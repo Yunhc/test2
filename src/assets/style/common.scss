@@ -71,3 +71,18 @@
 	margin : 0px 5px 0px 5px;
 	overflow-x : auto;
 }
+
+/* 텍스트가 영역을 넘치도록 하는 속성 */
+.white-space {
+  white-space: nowrap;
+}
+
+/* 영역에 넘치는 요소를 숨겨주는 속성 */
+.overflow {
+  overflow: hidden;
+}
+
+/* 말줄임표 적용 */
+.ellipsis {
+  text-overflow: ellipsis;
+}
