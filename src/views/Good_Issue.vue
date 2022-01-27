@@ -4,7 +4,7 @@
     <!-- Detail버튼 클릭시 스캔한 바코드 리스트 조회(삭제) 팝업화면 -->
     <popupbarsearch v-if="popupbarisopen"
       :strDO="req_param.txtDO"
-      @BarcloseClick="popupbarisopen=false">
+      @BarcloseClick="BarcloseClick">
     </popupbarsearch>
 
     <!-- DO버튼 클릭시 일자별 DO조회 팝업화면 -->
@@ -359,7 +359,7 @@
 
       function BarcloseClick(){
         popupbarisopen.value = false;
-        console.log("[req_param]", req_param);
+        console.log("BarcloseClick -- ", req_param.txtDO);
         fn_DOSearch();
       }
 
