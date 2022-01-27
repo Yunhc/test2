@@ -457,19 +457,4 @@
 <style lang="scss">
   @import "~ag-grid-community/dist/styles/ag-grid.css";
   @import "~ag-grid-community/dist/styles/ag-theme-alpine.css";
-
-/* 텍스트가 영역을 넘치도록 하는 속성 */
-.white-space {
-  white-space: nowrap;
-}
-
-/* 영역에 넘치는 요소를 숨겨주는 속성 */
-.overflow {
-  overflow: hidden;
-}
-
-/* 말줄임표 적용 */
-.ellipsis {
-  text-overflow: ellipsis;
-}
 </style>
