@@ -40,7 +40,7 @@
         <span class="input-group-text btn-sm" id="basic-addon1"
           :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Customer
         </span>
-        <label type="text" autocomplete="off" class="form-control btn-sm white-space overflow ellipsis" placeholder="Customer"
+        <label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Customer"
             aria-label="Customer" aria-describedby="basic-addon1"
             :style="{'text-align':'left'}">
             {{lblCustomer}}
