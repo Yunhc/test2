@@ -14,7 +14,7 @@
     </popupdosearch>
 
 
-    <div class="window-search">
+    <div class="window-search-4">
       <div align="right" :style="{height:'40px', margin:'0px 0px 0px 0px'}">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
         @click='DetailClick'>Detail</button>

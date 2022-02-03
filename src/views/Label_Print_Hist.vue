@@ -1,79 +1,158 @@
 <template>
 	<div class="window-main">
-		<div class="window-search">
-			<form class="d-flex" :style="{height:'37px'}" >
-        <div class="input-group mb-3" :style="{ margin:'5px 5px 0px 5px'}">
-          <span class="input-group-text btn-sm" id="basic-addon1"
-						:style="{width:'80px'}">
-						플랜트
-					</span>
-          <input type="text" class="form-control btn-sm" placeholder="UserID" aria-label="UserID" aria-describedby="basic-addon1"
-					>
-					<span class="input-group-text btn-sm" id="basic-addon1"
-						:style="{width:'80px', margin:'0px 0px 0px 5px'}">
-						저장위치
-					</span>
-          <input type="text" class="form-control btn-sm" placeholder="UserName" aria-label="UserID" aria-describedby="basic-addon1"
-					>
-        </div>
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 10px', height:'32px'}"
-          @click='searchClick_post' >Search</button>
-      </form>
-			<form class="d-flex" :style="{height:'37px'}" >
-        <div class="input-group mb-3" :style="{ margin:'5px 5px 0px 5px'}">
-          <span class="input-group-text btn-sm" id="basic-addon1"
-						:style="{width:'80px'}">
-						발행일자
-					</span>
-          <v-date-picker
-						mode="date"
-						v-model="date"
-						locale="en"
-						title-position="center"
-						color="green"
-						:style="{margin:'0px 0px 0px 0px'}"
-						:is-dark="isDark"
-						:is-range="isRange"
-						:masks="{ input: ['YYYY-MM-DD', 'L'] }"
-					>
-						<template #default="{ inputValue, inputEvents }">
-							<template v-if="isRange">
-								<div class="input-group mb-3" :style="{height:'15px'}">
+		<div class="window-search-div-3">
+			<div class="window-div-left">
+				<form class="d-flex" :style="{height:'37px'}" >
+					<div class="input-group mb-3" :style="{ margin:'5px 0px 0px 0px'}">
+						<span class="input-group-text btn-sm" id="basic-addon1"
+							:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+							플랜트
+						</span>
+						<select class="form-select btn-sm" aria-label="Default select example"
+							id="cboPlant"
+							ref="cboPlant"
+							@change ='keyupenter'
+							v-model="req_param.cboPlant">
+							<option disabled value="">Select plant</option>
+							<option v-for="(d, i) in optionPlant" :key="i" :value="d.id">{{ d.id }}</option>
+						</select>
+					</div>
+				</form>
+				<form class="d-flex" :style="{height:'37px'}" >
+					<div class="input-group mb-3" :style="{margin:'5px 0px 0px 0px'}">
+						<v-date-picker
+							mode="date"
+							v-model="date"
+							locale="en"
+							title-position="center"
+							color="green"
+							:style="{margin:'0px 0px 0px 0px'}"
+							:is-dark="isDark"
+							:is-range="isRange"
+							:masks="{ input: ['YYYY-MM-DD', 'L'] }"
+						>
+							<template #default="{ inputValue, inputEvents }">
+								<template v-if="isRange">
+									<div class="input-group mb-3" :style="{height:'15px'}">
+										<span class="input-group-text btn-sm" id="basic-addon1"
+											:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+											발행일자
+										</span>
+										<input class="form-control btn-sm"
+											:style="{'text-align':'center'}"
+											data-ref="InputContent" inputmode="none"
+											:value="inputValue.start"
+											v-on="inputEvents.start"/>
+										<span class="input-group-text btn-sm" :style="{background:'transparent', border:'transparent'}">~</span>
+										<input class="form-control btn-sm"
+											:style="{'text-align':'center'}"
+											data-ref="InputContent" inputmode="none"
+											:value="inputValue.end"
+											v-on="inputEvents.end"/>
+									</div>
+								</template>
+								<template v-else>
+									<span class="input-group-text btn-sm" id="basic-addon1"
+										:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+										발행일자
+									</span>
 									<input class="form-control btn-sm"
 										:style="{'text-align':'center'}"
 										data-ref="InputContent" inputmode="none"
-										:value="inputValue.start"
-										v-on="inputEvents.start"/>
-									<span class="input-group-text btn-sm" :style="{background:'transparent', border:'transparent'}">~</span>
-									<input class="form-control btn-sm"
-										:style="{'text-align':'center'}"
-										data-ref="InputContent" inputmode="none"
-										:value="inputValue.end"
-										v-on="inputEvents.end"/>
-								</div>
+										:value="inputValue"
+										v-on="inputEvents"/>
+								</template>
 							</template>
-							<template v-else>
-								<input class="form-control btn-sm"
-									:style="{'text-align':'center'}"
-									data-ref="InputContent" inputmode="none"
-									:value="inputValue"
-									v-on="inputEvents"/>
-							</template>
-						</template>
-					</v-date-picker>
-					<span class="input-group-text btn-sm" id="basic-addon1"
-						:style="{ margin:'0px 0px 0px 5px'}">
-						바코드NO
-					</span>
-          <input type="text" class="form-control btn-sm" placeholder="UserName" aria-label="UserID" aria-describedby="basic-addon1"
-					>
-        </div>
-      </form>
+						</v-date-picker>
+					</div>
+				</form>
+				<form class="d-flex" :style="{height:'37px'}" >
+					<div class="input-group mb-3" :style="{ margin:'5px 0px 0px 0px'}">
+						<span class="input-group-text btn-sm" id="basic-addon1"
+							:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+							자재코드
+						</span>
+						<input type="text" class="form-control btn-sm" placeholder="Material" aria-label="UserID" aria-describedby="basic-addon1"
+							v-model="req_param.matnr"
+						>
+					</div>
+				</form>
+			</div>
+			<div class="window-div-left">
+				<form class="d-flex" :style="{height:'37px'}" >
+					<div class="input-group mb-3" :style="{ margin:'5px 0px 0px 0px'}">
+						<span class="input-group-text btn-sm" id="basic-addon1"
+							:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+							저장위치
+						</span>
+						<select class="form-select btn-sm" aria-label="Default select example"
+							id="cboLgort"
+							ref="cboLgort"
+							@change ='keyupenter'
+							v-model="req_param.cboLgort">
+							<option disabled value="">Select location</option>
+							<option v-for="(d, i) in optionLgort" :key="i" :value="d.id">{{ d.id }}</option>
+						</select>
+					</div>
+				</form>
+				<form class="d-flex" :style="{height:'37px'}" >
+					<div class="input-group mb-3" :style="{ margin:'5px 0px 0px 0px'}">
+						<span class="input-group-text btn-sm" id="basic-addon1"
+							:style="{ margin:'0px 0px 0px 5px'}">
+							바코드NO
+						</span>
+						<input type="text" class="form-control btn-sm" placeholder="barcode No" aria-label="UserID" aria-describedby="basic-addon1"
+							id="barno"
+							ref="barno_f"
+							v-model="req_param.barno"
+						>
+					</div>
+				</form>
+				<form class="d-flex" :style="{height:'37px'}" >
+					<div class="input-group mb-3" :style="{ margin:'5px 0px 0px 0px'}">
+						<span class="input-group-text btn-sm" id="basic-addon1"
+							:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+							자재내역
+						</span>
+						<input type="text" class="form-control btn-sm" placeholder="Description" aria-label="UserID" aria-describedby="basic-addon1"
+							v-model="req_param.maktx"
+						>
+					</div>
+				</form>
+			</div>
+			<div class="window-div-left">
+				<form class="d-flex" :style="{height:'37px'}" >
+				</form>
+				<form class="d-flex" :style="{height:'37px'}" >
+				</form>
+				<form class="d-flex" :style="{height:'37px'}" >
+					<div class="input-group mb-3" :style="{ margin:'5px 0px 0px 0px'}">
+						<span class="input-group-text btn-sm" id="basic-addon1"
+							:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+							오더번호
+						</span>
+						<input type="text" class="form-control btn-sm" placeholder="Order No" aria-label="UserID" aria-describedby="basic-addon1"
+							v-model="req_param.orderno"
+						>
+					</div>
+				</form>
+			</div>
+			<div class="window-div-right">
+				<form class="d-flex" :style="{height:'37px'}" >
+				</form>
+				<form class="d-flex" :style="{height:'37px'}" >
+				</form>
+				<div :style="{ margin:'5px 0px 0px 0px'}"
+					div align="right">
+					<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 5px 0px 10px', height:'32px'}"
+						@click='searchClick' >Search</button>
+				</div>
+			</div>
 		</div>
 
 		<div class="window-grid-1"
       :style="{
-        'height': `calc(${window_height - 109 - 140 - 123}px)`
+        'height': `calc(${window_height - 109 - 115 - 123}px)`
       }"
     >
       <ag-grid-vue
@@ -94,7 +173,10 @@
 <script>
 import { reactive, ref, onMounted, onUnmounted } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3'
-// import { addDate } from '@/helper/filter.js';
+import { useStore } from 'vuex';
+import { getdata } from '@/helper/filter.js';
+import { searchSelectBox } from '@/helper/sql.js';
+
 
 export default {
 	name:'label_print_hist',
@@ -105,11 +187,30 @@ export default {
 		// let url = ref(process.env.VUE_APP_SERVER_URL);
 		let window_width = ref(window.innerWidth);
 		let window_height = ref(window.innerHeight);
+		const store = useStore();	//스토어호출
 
 		//달력
     let isDark = ref(false);
     let isRange = ref(true);
     let date = ref({start:new Date(), end:new Date()});
+
+		//조회조건 데이터 바인딩
+		let req_param = reactive({cboPlant:"",
+															cboLgort:"",
+															fromdate:"",
+															todate:"",
+															barno:"",
+															matnr:"",
+															maktx:"",
+															orderno:""});
+
+		let optionPlant = reactive([]);
+		let optionLgort = reactive([]);
+
+		//focus 이동을 위한 변수
+		let cboPlant = ref(null);
+		let cboLgort = ref(null);
+		let barno = ref(null);
 
 
 		// ag-grid 데이터 변수
@@ -144,9 +245,6 @@ export default {
 			getRowHeight: function() {
 				return 35;
 			},
-			onGridSizeChanged: function(event) {
-				event.api.sizeColumnsToFit();
-			},
 		};
 
 		onMounted(() => {
@@ -154,13 +252,15 @@ export default {
 			window.addEventListener('resize', handleResize);
 
 			if (isRange.value == true){
-        console.log("[Good Issue Do Search] = onMounted -- start --", date.value.start);
-        console.log("[Good Issue Do Search] = onMounted -- end --", date.value.end);
+        console.log("[label_print_hist] = onMounted -- start --", date.value.start);
+        console.log("[label_print_hist] = onMounted -- end --", date.value.end);
       }
       else{
         date.value = new Date();
-        console.log("[Good Issue Do Search] = onMounted -- date --", date.value);
+        console.log("[label_print_hist] = onMounted -- date --", date.value);
       }
+
+			initSelectBox();
 		});
 
 		onUnmounted(() =>{
@@ -173,6 +273,80 @@ export default {
 			window_height.value = window.innerHeight;
 		}
 
+		function initSelectBox(){
+			initSelectBox_plant();
+			initSelectBox_lgort();
+		}
+
+		async function initSelectBox_plant() {
+			let req_param = reactive(
+				{	lang:"KR",
+					userid:store.state.auth.user[0].userid,
+					plantcd:getdata(store.state.auth.user[0].plantcd),
+					type1:"PLANT_MWMS_2",
+					type2:"",
+					type3:"",
+					type4:"",
+					space:"Y",
+				}
+			);
+
+			// console.log("[label_print_hist/initSelectBox_plant] = req_param -- ", req_param);
+			let res = reactive([]);
+			res = await searchSelectBox(req_param);
+			// console.log("[res] = ", res);
+
+			if(res.data.length > 0){
+				optionPlant.splice(0, optionPlant.length);
+				for(var i=0; i<res.data.length; i++){
+						optionPlant.push({id:res.data[i].id, name:res.data[i].name});
+				}
+			}
+			// console.log("[optionPlant data]= ", optionPlant);
+		}
+
+		async function initSelectBox_lgort(sPlant) {
+			console.log("[req_param] = ", req_param);
+			console.log("[req_param.cboPlant] =  -- ", sPlant);
+			let req_param = reactive(
+				{	lang:"KR",
+					userid:store.state.auth.user[0].userid,
+					plantcd:getdata(req_param.cboPlant),
+					// plantcd:getdata(sPlant),
+					type1:"LGORT_MWMS",
+					type2:"",
+					type3:"",
+					type4:"",
+					space:"Y",
+				}
+			);
+			let res = reactive([]);
+			res = await searchSelectBox(req_param);
+			// console.log("[req_param] = ", req_param);
+
+			if(res.data.length > 0){
+				optionLgort.splice(0, optionLgort.length);
+				for(var i=0; i<res.data.length; i++){
+						optionLgort.push({id:res.data[i].id, name:res.data[i].name});
+				}
+			}
+			// console.log("[optionLgort data] = ", optionLgort);
+		}
+		function keyupenter(e){
+			if (e.target.id == "cboPlant"){
+				// console.log("[req_param.cboPlant] =  -- ", req_param.cboPlant);
+				initSelectBox_lgort(req_param.cboPlant);
+				cboLgort.value.focus();
+			}
+			else if (e.target.id == "cboLgort"){
+				barno.value.focus();
+			}
+		}
+
+		function searchClick(){
+
+		}
+
 		return {
 			window_width,
 			window_height,
@@ -181,6 +355,14 @@ export default {
 			isDark,
 			isRange,
 			date,
+			req_param,
+			cboPlant,
+			optionPlant,
+			cboLgort,
+			optionLgort,
+			barno,
+			keyupenter,
+			searchClick,
 		}
 	},
 }

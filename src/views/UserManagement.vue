@@ -423,7 +423,8 @@
         // gridOptions.api.updateRowData({add: [newItem]});
 
         // 특정위치에 추가
-        gridOptions.api.updateRowData({add: [newItem],addIndex:0});
+        gridApi.value.updateRowData({add:[newItem], addIndex:0});
+        // gridApi.value.selectRows(0);
         //printResult(res);
       }
       function deleteClick() {
