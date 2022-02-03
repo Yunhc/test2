@@ -303,8 +303,9 @@
             i_werks: getdata(store.state.auth.user[0].plantcd),
             i_vbeln: req_param.txtDO,
             i_barno: req_param.txtScan,
-            i_qty: 0,
-            i_delflag: "N"
+            i_qty: "0",
+            i_delflag: "N",   //신규 스캔시 N, 삭제시 Y (이미 스캔한 바코드를 다시 스캔할 경우 삭제여부 문의하고 삭제 선택시) 
+            i_calltype: "S"   //스캔화면 호출시 S, 바코드 삭제화면 호출시 D
         })
         .then((res) => {
           console.log("[response data]", res.data);
@@ -328,7 +329,6 @@
           alert(err);
           console.error(err)
         })
-
       }
 
       function fn_SelectAll(e) {
