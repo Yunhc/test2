@@ -117,9 +117,9 @@ export default {
       getRowHeight: function() {
         return 35;
       },
-      onGridSizeChanged: function(event) {
-        event.api.sizeColumnsToFit();
-      },
+      // onGridSizeChanged: function(event) {
+      //   event.api.sizeColumnsToFit();
+      // },
     };
 
     onMounted(() => {
