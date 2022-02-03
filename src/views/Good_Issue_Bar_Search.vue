@@ -198,6 +198,44 @@ export default {
 
     }
 
+    function deleteClick(){
+      var selectedData = gridApi.value.getSelectedRows();
+
+      console.log("[checked row]", selectedData);
+
+      // 스캔화면에서 스캔시 호출 프로시저 사용. 
+      let urlPost = url.value + '/dwt/good_issue/scan';
+      $axios.post(urlPost, {
+            i_lang: "EN",
+            i_userid: store.state.auth.user[0].userid,
+            i_werks: getdata(store.state.auth.user[0].plantcd),
+            i_vbeln: strDO_No.value,
+            i_qty: "0",
+            i_delflag: "Y",   //신규 스캔시 N, 삭제시 Y (스캔화면에서는 이미 스캔한 바코드를 다시 스캔할 경우 삭제여부 문의하고 삭제 선택시) 
+                              //본화면 (바코드 삭제화면)에서는 항상 Y
+            i_calltype: "D",   //스캔화면 호출시 S, 바코드 삭제화면 호출시 D
+            data:       selectedData,
+      })
+      .then((res) => {
+        console.log("[response data]", res.data);
+        console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
+
+        if (res.data[0].code == "NG"){
+          msg_color.value = "red";
+          msg.value = res.data[0].message;
+        } else{
+          msg_color.value = "blue";
+          msg.value = "OK";
+          recvData.value = res.data;
+        }
+      }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+        //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+      .catch(err => {
+        alert(err);
+        console.error(err)
+      })
+    }
+
     function autoSizeAll(skipHeader) {
       console.log("[Good Issue Bar Search] = autoSizeAll -- ");
       const allColumnIds = [];
@@ -223,6 +261,7 @@ export default {
       BarcloseClick,
       fn_BarcodeList,
       selectAllClick,
+      deleteClick,
     }
   },
 }
