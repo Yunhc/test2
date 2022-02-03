@@ -13,30 +13,30 @@
 }
 
 .window-search-3 {
-	height : 98px;
-	margin : 0px 5px 0px 5px;
+	height:98px;
+	margin:0px 5px 0px 5px;
 }
 
 .window-search {
-	height : 140px;
-	margin : 0px 5px 0px 5px;
+	height:140px;
+	margin:0px 5px 0px 5px;
 }
 
 .window-grid-1 {
 	margin:0px 5px 0px 5px;
-	overflow: auto;
+	overflow:auto;
 }
 
 .window-save {
-	height : 95px;
-	margin : 0px 5px 0px 5px;
-	overflow-x : auto;
+	height:95px;
+	margin:0px 5px 0px 5px;
+	overflow-x:auto;
 }
 
 .window-save-1 {
-	height : 123px;
-	margin : 0px 5px 0px 5px;
-	overflow-x: auto;
+	height:123px;
+	margin:0px 5px 0px 5px;
+	overflow-x:auto;
 }
 
 .pop-up-window-main{
@@ -79,4 +79,8 @@
 	overflow: hidden;
 	/* 말줄임표 적용 */
   text-overflow: ellipsis;
+}
+
+.height_row{
+	height:30px;
 }

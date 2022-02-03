@@ -359,7 +359,7 @@
 
       function BarcloseClick(){
         popupbarisopen.value = false;
-        console.log("[req_param]", req_param);
+        console.log("BarcloseClick -- ", req_param.txtDO);
         fn_DOSearch();
       }
 
