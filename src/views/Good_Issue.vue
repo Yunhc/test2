@@ -10,7 +10,7 @@
     <!-- DO버튼 클릭시 일자별 DO조회 팝업화면 -->
     <popupdosearch v-if="popupdoisopen"
       @DOselectClick="DOselectClick"
-      @DOcloseClick="popupdoisopen=false">
+      @DOcloseClick="DOcloseClick">
     </popupdosearch>
 
 
@@ -223,13 +223,23 @@
       function displayClick(){
         // if (e.target.id == "txtDO"){
           console.log(req_param.txtDO);
-          //scan 버튼 누르는 경우만 키보드를 on 하므로 조회시는 다시 off 해 준다.
-          var tmpscan = document.getElementById("scan");
-          tmpscan.setAttribute('inputmode','none');
-          console.log(tmpscan.inputMode);
 
-          //DO 조회 API전송
-          fn_DOSearch();
+          if (req_param.txtDO) {  //DO가 입력된 경우만 조회를 한다.
+            //scan 버튼 누르는 경우만 키보드를 on 하므로 조회시는 다시 off 해 준다.
+            var tmpscan = document.getElementById("scan");
+            tmpscan.setAttribute('inputmode','none');
+            console.log(tmpscan.inputMode);
+
+            //DO 조회 API전송
+            fn_DOSearch();
+          }
+          else {
+            // alert("Please input D/O number first.")
+            msg_color.value = "red";
+            msg.value = "Please input D/O number first.";
+            // PlaySound("OK");            
+            txtDO.value.focus();
+          }
         // }
       }
 
@@ -291,44 +301,53 @@
           console.log(req_param.txtScan);
         }
 
-        let urlPost = url.value + '/dwt/good_issue/scan';
+        if (lblCustomer.value) {  //DO가 입력된 경우만 스캔을 허용 한다.
+                                //DO입력없이 바코드 스캔시 스캔이력이 있으면 해당 DO정보 불러오는 기능 추가 검토.
+          let urlPost = url.value + '/dwt/good_issue/scan';
 
-        console.log("[req_param]", req_param);
-        // console.log(getdata(req_param.txtScan));
+          console.log("[req_param]", req_param);
+          // console.log(getdata(req_param.txtScan));
 
-        //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
-        $axios.post(urlPost, {
-            i_lang: "EN",
-            i_userid: store.state.auth.user[0].userid,
-            i_werks: getdata(store.state.auth.user[0].plantcd),
-            i_vbeln: req_param.txtDO,
-            i_barno: req_param.txtScan,
-            i_qty: "0",
-            i_delflag: "N",   //신규 스캔시 N, 삭제시 Y (이미 스캔한 바코드를 다시 스캔할 경우 삭제여부 문의하고 삭제 선택시) 
-            i_calltype: "S"   //스캔화면 호출시 S, 바코드 삭제화면 호출시 D
-        })
-        .then((res) => {
-          console.log("[response data]", res.data);
-          console.log("[response data] = res.data[0].barno -- ", res.data[0].matnr);
-          console.log("[response data] = req_param.txtScan -- ", req_param.txtScan);
+          //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
+          $axios.post(urlPost, {
+              i_lang: "EN",
+              i_userid: store.state.auth.user[0].userid,
+              i_werks: getdata(store.state.auth.user[0].plantcd),
+              i_vbeln: req_param.txtDO,
+              i_barno: req_param.txtScan,
+              i_qty: "0",
+              i_delflag: "N",   //신규 스캔시 N, 삭제시 Y (이미 스캔한 바코드를 다시 스캔할 경우 삭제여부 문의하고 삭제 선택시) 
+              i_calltype: "S"   //스캔화면 호출시 S, 바코드 삭제화면 호출시 D
+          })
+          .then((res) => {
+            console.log("[response data]", res.data);
+            console.log("[response data] = res.data[0].barno -- ", res.data[0].matnr);
+            console.log("[response data] = req_param.txtScan -- ", req_param.txtScan);
 
-          if (res.data[0].code == "NG"){
+            if (res.data[0].code == "NG"){
+              msg_color.value = "red";
+              msg.value = res.data[0].message;
+            } else{
+              msg_color.value = "blue";
+              msg.value = "OK";
+              recvData.value = res.data;
+            }
+
+            scan.value.focus();
+            scan.value.select();
+          }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+            //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+          .catch(err => {
+            alert(err);
+            console.error(err)
+          })
+        }
+        else {
             msg_color.value = "red";
-            msg.value = res.data[0].message;
-          } else{
-            msg_color.value = "blue";
-            msg.value = "OK";
-            recvData.value = res.data;
-          }
-
-          scan.value.focus();
-          scan.value.select();
-        }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
-          //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
-        .catch(err => {
-          alert(err);
-          console.error(err)
-        })
+            msg.value = "Please search D/O information first.";
+            // PlaySound("OK");
+            txtDO.value.focus();
+        }
       }
 
       function fn_SelectAll(e) {
@@ -355,6 +374,15 @@
 
       function DOcloseClick(){
         popupdoisopen.value = false;
+        console.log("[Customer] : ", lblCustomer.value);
+        if (lblCustomer.value) {
+          scan.value.focus();
+          // scan.value.select();
+        }
+        else {
+          txtDO.value.focus();
+          // txtDO.value.select();
+        }
       }
 
       function BarcloseClick(){
@@ -367,7 +395,7 @@
         let urlPost = url.value + '/dwt/good_issue/save';
 
         console.log("[req_param]", req_param);
-        console.log("Barno : ", gridOptions.api.rowData[0].barno);
+        console.log("Barno : ", this.gridOptions.api.rowData[0].barno);
         // console.log(getdata(req_param.txtScan));
 
         //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
@@ -387,7 +415,7 @@
           } else{
             recvData.value = res.data;
             console.log("[lblCustomer]", lblCustomer)
-            msg.value = "정상 처리되었습니다."
+            msg.value = "Processed successfully."
           }
 
           scan.value.focus();
@@ -407,6 +435,21 @@
         console.log(txtscan.inputMode);
 
         scan.value.focus();
+      }
+
+      function clearClick(){
+        // txtDO.value = "";
+        req_param.txtDO = "";
+        lblCustomer.value = "";
+        lblShipno.value = "";
+        // scan.value = "";
+        req_param.txtScan = "";
+        msg.value = "";
+
+        //grid clear
+        this.gridOptions.api.setRowData([]);
+
+        txtDO.value.focus();
       }
 
       function closeClick(){
@@ -452,7 +495,7 @@
         scanEnter,
         sendClick,
         scanClick,
-        // clearClick,
+        clearClick,
         closeClick,
         fn_SelectAll,
       };
