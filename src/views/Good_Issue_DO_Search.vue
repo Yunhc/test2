@@ -312,10 +312,10 @@ export default {
             PlaySound("OK");
 
             recvData.value = res.data;
-            lblShipno.value = res.data[0].zshipno;
-            lblDONo.value = res.data[0].vbeln;
-            lblPlandate.value = res.data[0].wadat;
-            lblCustomer.value = "[" + res.data[0].kunnr + "] " + res.data[0].zkunnrnm;
+            // lblShipno.value = res.data[0].zshipno;
+            // lblDONo.value = res.data[0].vbeln;
+            // lblPlandate.value = res.data[0].wadat;
+            // lblCustomer.value = "[" + res.data[0].kunnr + "] " + res.data[0].zkunnrnm;
           }
         } else{
           recvData.value = res.data;
@@ -336,7 +336,12 @@ export default {
     }
 
     function DOselectClick(){
-      emit("DOselectClick", lblDONo.value);
+      if (lblDONo.value){
+        emit("DOselectClick", lblDONo.value);
+      }
+      else {
+        alert("Please search DO information and select one DO with tapping a row first")
+      }
       // emit("DOselectClick");
     }
     function DOcloseClick(){
