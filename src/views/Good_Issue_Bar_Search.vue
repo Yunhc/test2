@@ -193,9 +193,8 @@ export default {
     }
 
     function selectAllClick(){
-        // fn_BarcodeList();
-      // gridapi.value.checkboxSelection = true
-
+      gridApi.value.selectAll();
+      // gridApi.value.deselectAll();
     }
 
     function deleteClick(){
