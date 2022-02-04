@@ -103,7 +103,7 @@
 						</span>
 						<input type="text" class="form-control btn-sm" placeholder="barcode No" aria-label="UserID" aria-describedby="basic-addon1"
 							id="barno"
-							ref="barno_f"
+							ref="barno"
 							v-model="req_param.barno"
 						>
 					</div>
@@ -122,6 +122,16 @@
 			</div>
 			<div class="window-div-left">
 				<form class="d-flex" :style="{height:'37px'}" >
+					<div align="left">
+						<input class="form-check-input" type="checkbox" id="defaultCheck1"
+							:style="{width:'20px', height:'20px', margin:'10px 0px 0px 5px'}"
+							v-model="chkStock">
+						<label class="form-check-label" for="defaultCheck1"
+							:style="{ margin:'10px 0px 0px 5px', color:'rgb(34, 33, 33)', 'font-size':'14px'}"
+						>
+							재고유무
+						</label>
+					</div>
 				</form>
 				<form class="d-flex" :style="{height:'37px'}" >
 				</form>
@@ -152,11 +162,11 @@
 
 		<div class="window-grid-1"
       :style="{
-        'height': `calc(${window_height - 109 - 115 - 123}px)`
+        'height': `calc(${window_height - 109 - 115 - 75}px)`
       }"
     >
       <ag-grid-vue
-        class="ag-theme-alpine"
+        class="ag-theme-balham"
         headerHeight='35'
         style="width: 1910px; height:100%"
         :rowData="recvData.value"
@@ -166,15 +176,31 @@
       </ag-grid-vue>
 		</div>
 
-		<div class= "window-save-1">
-		</div>
+		<div class= "window-save-b">
+      <div class="input-group mb-3" :style="{ padding:'2px 0px 0px 0px'}">
+				<label type="text" autocomplete="off" class="form-control btn-sm ellipsis"
+            aria-label="Customer" aria-describedby="basic-addon1"
+            :style="{'text-align':'left',
+											border:'transparent',
+											background:'gainsboro',
+											color:msg_color}">
+            Msg :&nbsp;{{msg}}
+        </label>
+      </div>
+      <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 0px 0px 0px', width:'80px'}"
+          @click='printClick'>라벨발행</button>
+      </div>
+    </div>
+
 	</div>
 </template>
 <script>
+import $axios from 'axios';
 import { reactive, ref, onMounted, onUnmounted } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3'
 import { useStore } from 'vuex';
-import { getdata } from '@/helper/filter.js';
+import { getdata, formatDate } from '@/helper/filter.js';
 import { searchSelectBox } from '@/helper/sql.js';
 
 
@@ -188,21 +214,27 @@ export default {
 		let window_width = ref(window.innerWidth);
 		let window_height = ref(window.innerHeight);
 		const store = useStore();	//스토어호출
+		const $url_rest = process.env.VUE_APP_SERVER_URL;
+    let url = ref($url_rest);
 
 		//달력
     let isDark = ref(false);
     let isRange = ref(true);
     let date = ref({start:new Date(), end:new Date()});
 
+		//check box
+		let chkStock = ref(false);
+
 		//조회조건 데이터 바인딩
 		let req_param = reactive({cboPlant:"",
 															cboLgort:"",
-															fromdate:"",
-															todate:"",
+															f_date:"",
+															t_date:"",
 															barno:"",
 															matnr:"",
 															maktx:"",
-															orderno:""});
+															stock:"N",
+															order:""});
 
 		let optionPlant = reactive([]);
 		let optionLgort = reactive([]);
@@ -218,22 +250,42 @@ export default {
 		let gridApi = ref(null);
     let columnApi = ref(null);
 		let columnDefs= reactive([
-			{headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-			{headerName: 'Order Qty(BDL)', field: 'orderqtybdl', width: 15, cellStyle: {textAlign: "right", color: 'red'}, pinned: 'left'},
-			{headerName: 'Status', field: 'ztype', width: 8, cellStyle: {textAlign: "center"}},
+			{headerName: '플랜트', field: 'werks', width: 80, cellStyle: {textAlign: "center"}, pinned: 'left'},
+			{headerName: '플랜트명', field: 'plant', width: 80, cellStyle: {textAlign: "left"}, pinned: 'left'},
+			{headerName: '', field: 'sel', width: 35, cellStyle: {textAlign: "center"}, pinned: 'left',
+				headerCheckboxSelection: true, checkboxSelection: true},
+			{headerName: '바코드', field: 'barno', width: 80, cellStyle: {textAlign: "center"}, pinned: 'left'},
+			{headerName: '저장위치', field: 'lgort', width: 80, cellStyle: {textAlign: "center"}},
+			{headerName: '저장위치명', field: 'slname', width: 80, cellStyle: {textAlign: "left"}},
+			{headerName: '자재코드', field: 'matnr', width: 80, cellStyle: {textAlign: "center"}},
+			{headerName: '자재내역', field: 'maktx', width: 80, cellStyle: {textAlign: "left"}},
+			{headerName: '기본단위', field: 'meins', width: 80, cellStyle: {textAlign: "center"}},
+			{headerName: '수량', field: 'qty', width: 80, cellStyle: {textAlign: "right"}},
+			{headerName: '발행횟수', field: 'prtcnt', width: 80, cellStyle: {textAlign: "right"}},
+			{headerName: '구매오더', field: 'ebeln', width: 80, cellStyle: {textAlign: "center"}},
+			{headerName: '구매품번', field: 'ebelp', width: 80, cellStyle: {textAlign: "center"}},
+			{headerName: '예정오더', field: 'rsnum', width: 80, cellStyle: {textAlign: "center"}},
+			{headerName: '예정품번', field: 'rspos', width: 80, cellStyle: {textAlign: "center"}},
+			{headerName: '생산오더', field: 'aufnr', width: 80, cellStyle: {textAlign: "center"}},
+			{headerName: '계획오더', field: 'plnum', width: 80, cellStyle: {textAlign: "center"}},
+			{headerName: 'S/O', field: 'kdauf', width: 80, cellStyle: {textAlign: "center"}},
+			{headerName: 'S/O품번', field: 'kdpos', width: 80, cellStyle: {textAlign: "center"}},
+			{headerName: '발행일자', field: 'prodate', width: 80, cellStyle: {textAlign: "center"}},
+			{headerName: '갱신일자', field: 'upddate1', width: 80, cellStyle: {textAlign: "center"}},
 		]);
 		var gridOptions = {
 			defaultColDef: {
-				width: 150,
-				editable: false,
-				resizable: true,
-				sortable: true,
-				lockPosition: true, //컬럼 드래그로 이동 방지
+				width:150,
+				editable:false,
+				resizable:true,
+				sortable:true,
+				lockPosition:true, //컬럼 드래그로 이동 방지
 				cellStyle: {textAlign: "left"},
 			},
-			columnDefs: columnDefs,
-			rowData: null,
+			columnDefs:columnDefs,
+			rowData:null,
 			rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
+			suppressRowClickSelection:true,
 			onGridReady: function(event) {
 				setTimeout(function () {
 					event.api.setRowData(recvData);
@@ -279,7 +331,7 @@ export default {
 		}
 
 		async function initSelectBox_plant() {
-			let req_param = reactive(
+			let send_param = reactive(
 				{	lang:"KR",
 					userid:store.state.auth.user[0].userid,
 					plantcd:getdata(store.state.auth.user[0].plantcd),
@@ -293,7 +345,7 @@ export default {
 
 			// console.log("[label_print_hist/initSelectBox_plant] = req_param -- ", req_param);
 			let res = reactive([]);
-			res = await searchSelectBox(req_param);
+			res = await searchSelectBox(send_param);
 			// console.log("[res] = ", res);
 
 			if(res.data.length > 0){
@@ -305,14 +357,12 @@ export default {
 			// console.log("[optionPlant data]= ", optionPlant);
 		}
 
-		async function initSelectBox_lgort(sPlant) {
-			console.log("[req_param] = ", req_param);
-			console.log("[req_param.cboPlant] =  -- ", sPlant);
-			let req_param = reactive(
+		async function initSelectBox_lgort() {
+			// console.log("[req_param] = ", req_param);
+			let send_param = reactive(
 				{	lang:"KR",
 					userid:store.state.auth.user[0].userid,
 					plantcd:getdata(req_param.cboPlant),
-					// plantcd:getdata(sPlant),
 					type1:"LGORT_MWMS",
 					type2:"",
 					type3:"",
@@ -321,8 +371,7 @@ export default {
 				}
 			);
 			let res = reactive([]);
-			res = await searchSelectBox(req_param);
-			// console.log("[req_param] = ", req_param);
+			res = await searchSelectBox(send_param);
 
 			if(res.data.length > 0){
 				optionLgort.splice(0, optionLgort.length);
@@ -332,10 +381,11 @@ export default {
 			}
 			// console.log("[optionLgort data] = ", optionLgort);
 		}
+
 		function keyupenter(e){
 			if (e.target.id == "cboPlant"){
 				// console.log("[req_param.cboPlant] =  -- ", req_param.cboPlant);
-				initSelectBox_lgort(req_param.cboPlant);
+				initSelectBox_lgort();
 				cboLgort.value.focus();
 			}
 			else if (e.target.id == "cboLgort"){
@@ -344,7 +394,76 @@ export default {
 		}
 
 		function searchClick(){
+			let urlPost = url.value + '/dw_labelhistsearch_p_j';
 
+			req_param.f_date = formatDate(date.value.start, "YYYYMMDD");
+			req_param.t_date = formatDate(date.value.end, "YYYYMMDD");
+			if (chkStock.value == true)
+				req_param.stock = "Y";
+			else
+				req_param.stock = "N";
+
+			console.log("[req_param] = ", req_param);
+
+			$axios.post(urlPost, {
+				lang:"KR",
+				userid:store.state.auth.user[0].userid,
+				werks: req_param.cboPlant,
+				lgort: req_param.cboLgort,
+				matnr: req_param.matnr,
+				maktx: req_param.maktx,
+				barno: req_param.barno,
+				order: req_param.order,
+				stock: req_param.stock,
+				f_date: req_param.f_date,
+				t_date: req_param.t_date
+			})
+			.then((res) => {
+				console.log("[response data]", res.data);
+				recvData.value = res.data;
+
+				setTimeout(function () {
+            autoSizeAll(false);
+          }, 500);
+			}) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+				//.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+			.catch(err => {
+				alert(err);
+				console.error(err)
+			})
+		}
+
+		function autoSizeAll(skipHeader) {
+			const allColumnIds = [];
+			columnApi.value.getAllColumns().forEach((column) => {
+				if (column.colId != 'sel'){
+          allColumnIds.push(column.colId);
+        }
+			});
+			columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
+		}
+
+		function printClick(){
+			var selectedData = gridApi.value.getSelectedRows();
+			// console.log("[checked row]", selectedData);
+
+			for(var i=0; i<selectedData.length; i++ ){
+				console.log("[checked barno]", selectedData[i].barno);
+			}
+
+			// var newWin = window.open("");// 새로운 빈 창을 엽니 다
+      // for (var i = 0; i < this.items.length; i++) {
+      //   var imageToPrint = document.getElementById("printDiv" + i); // 인쇄하는 데 필요한 콘텐츠를
+      //   newWin.document.write(imageToPrint.outerHTML);// 컨텐츠를 추가하면 새 창에 인쇄해야
+      // }
+      // const styleSheet = '<style>li{list-style==none; border: 1px solid #e8e8e8;}</style>';
+      // newWin.document.head.innerHTML = styleSheet;
+      // newWin.document.close();
+      // newWin.focus();
+      // setTimeout(function() {
+      //   newWin.print();//인쇄
+      //   newWin.close();//창을 닫습니다
+      // }, 100);
 		}
 
 		return {
@@ -355,6 +474,7 @@ export default {
 			isDark,
 			isRange,
 			date,
+			chkStock,
 			req_param,
 			cboPlant,
 			optionPlant,
@@ -363,12 +483,11 @@ export default {
 			barno,
 			keyupenter,
 			searchClick,
+			printClick
 		}
 	},
 }
 </script>
 
 <style lang="scss">
-@import "~ag-grid-community/dist/styles/ag-grid.css";
-@import "~ag-grid-community/dist/styles/ag-theme-alpine.css";
 </style>
