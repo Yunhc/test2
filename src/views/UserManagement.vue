@@ -47,7 +47,7 @@
     >
       <ag-grid-vue
         id="agGrid1"
-        class="ag-theme-alpine"
+        class="ag-theme-balham"
         style="width: 1910px; height:100%"
         headerHeight='35'
         :rowData="recvData.value"
@@ -260,6 +260,7 @@
         columnDefs: columnDefs,
         rowData: null,
         rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
+        suppressRowClickSelection: true,
         // GRID READY 이벤트, 사이즈 자동조정
         onGridReady: function(event) {
           setTimeout(function () {
@@ -424,7 +425,23 @@
 
         // 특정위치에 추가
         gridApi.value.updateRowData({add:[newItem], addIndex:0});
-        // gridApi.value.selectRows(0);
+        // console.log("[node.length]", gridApi.value.getDisplayedRowCount());
+
+        const rowNode = gridApi.value.getDisplayedRowAtIndex(0);
+        rowNode.setSelected(true);
+
+        // gridApi.value.forEachNode( (node) => {
+        //     if (node.rowIndex === 0) {
+        //         node.setSelected(true);
+        //     }
+        // });
+
+        // gridApi.value.forEachNodeAfterFilter( function(node) {
+        //   console.log("[node.rowIndex]", node.rowIndex);
+        //   if (node.rowIndex === 0){
+        //     node.setSelected(true);
+        //   }
+        // });
         //printResult(res);
       }
       function deleteClick() {
@@ -682,10 +699,7 @@
   }
 </script>
 <style lang="scss">
-  @import "~ag-grid-community/dist/styles/ag-grid.css";
-  @import "~ag-grid-community/dist/styles/ag-theme-alpine.css";
-
-	.mng {
+  .mng {
 		font-family: Avenir, Helvetica, Arial, sans-serif;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
