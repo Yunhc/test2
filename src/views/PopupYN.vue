@@ -2,7 +2,8 @@
 	<div class="popup-black-bg">
 		<div class="popup-white-bg">
 			<h6>{{strTitle}}</h6>
-			<h4>{{strMsg}}</h4>
+			<!-- <h4>{{strMsg}}</h4> -->
+      <h4 v-html="strMessage"></h4>
 			<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
 				@click='yesClick'>Yes</button>
 			<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
@@ -33,6 +34,12 @@ export default {
       noClick
     }
   },
+
+  computed: {
+    strMessage(){
+      return this.strMsg.replace("\n", "<br /n>")
+    }
+  }
 }
 </script>
 <style lang="scss">
