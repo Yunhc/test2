@@ -299,13 +299,14 @@
 
       function saveClick(){
         console.log("[Barcode Status] : ", lblstatus.value);
-        if (lblstatus.value == "" || lblstatus.value == null){
+        // if (lblstatus.value == "" || lblstatus.value == null){
+        if (!lblstatus.value) {
           alert("Please scan barcode first.")
         }
         else{
-        popupTitle.value ="Finished Goods Receipt";
-        popupMsg.value = "Do you want to save it?"
-        popupisopen.value = true;
+          popupTitle.value ="Finished Goods Receipt";
+          popupMsg.value = "Do you want to save it?";
+          popupisopen.value = true;
         }
       }
 
