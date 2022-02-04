@@ -1,6 +1,14 @@
 <template>
 
   <div class="window-main">
+    <!-- Send버튼 클릭후 오더수량보다 스캔수량이 적을 경우 처리 여부 문의 팝업화면 -->
+     <popupyn v-if="popupisopen"
+      :title="popupTitle"
+      :message="popupMsg"
+      @yesClick="yesClick"
+      @noClick="popupisopen=false">
+    </popupyn>
+
     <!-- Detail버튼 클릭시 스캔한 바코드 리스트 조회(삭제) 팝업화면 -->
     <popupbarsearch v-if="popupbarisopen"
       :strDO="req_param.txtDO"
@@ -96,7 +104,7 @@
       </div>
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
-        @click='sendClick'>Send</button>
+        @click='sendClick("N")'>Send</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
         @click='scanClick'>Scan</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
@@ -116,6 +124,7 @@
   import { useStore } from 'vuex';
   import { getdata } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
+  import popupyn from '@/views/PopupYN.vue';  
   import popupdosearch from '@/views/Good_Issue_DO_Search.vue';
   import popupbarsearch from '@/views/Good_Issue_Bar_Search.vue';
 
@@ -123,6 +132,7 @@
     name:'good_issue',
     components:{
       AgGridVue,
+      popupyn,
       popupdosearch,
       popupbarsearch,
     },
@@ -131,6 +141,10 @@
       let window_width = ref(window.innerWidth);
       let window_height = ref(window.innerHeight);
 
+      let popupTitle = ref(null);
+      let popupMsg = ref(null);
+      let popupisopen = ref(false);
+    
       let popupbarisopen = ref(false);
       let popupdoisopen = ref(false);
 
@@ -332,9 +346,9 @@
               msg.value = "OK";
               recvData.value = res.data;
             }
-
+            req_param.txtScan = "";
             scan.value.focus();
-            scan.value.select();
+            // scan.value.select();
           }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
             //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
           .catch(err => {
@@ -391,41 +405,60 @@
         fn_DOSearch();
       }
 
-      function sendClick() {
-        let urlPost = url.value + '/dwt/good_issue/save';
+      function sendClick(procflag) {
+        console.log("[ProcFlag] : ", procflag);
+        console.log("[D/O No] : ", req_param.txtDO);
+        if ((!req_param.txtDO) || (!lblCustomer.value)) {    //DO가 조회된 경우만 처리. 
+          alert("Please search D/O information first");
+        }
+        else {
+          let urlPost = url.value + '/dwt/good_issue/do_save';
 
-        console.log("[req_param]", req_param);
-        console.log("Barno : ", this.gridOptions.api.rowData[0].barno);
-        // console.log(getdata(req_param.txtScan));
+          //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
+          $axios.post(urlPost, {
+              i_lang: "EN",
+              i_userid: store.state.auth.user[0].userid,
+              i_werks: getdata(store.state.auth.user[0].plantcd),
+              i_vbeln: req_param.txtDO,
+              i_procflag: procflag
+          })
+          .then((res) => {
+            console.log("[response data]", res.data);
 
-        //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
-        $axios.post(urlPost, {
-            i_lang: "EN",
-            i_userid: store.state.auth.user[0].userid,
-            i_werks: getdata(store.state.auth.user[0].plantcd),
-            i_barno: req_param.txtScan,
-        })
-        .then((res) => {
-          console.log("[response data]", res.data);
-          console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
-          console.log("[response data] = req_param.txtScan -- ", req_param.txtScan);
+            if(res.data.length > 0) {
+              if (res.data[0].code == "NG") {
+                if (res.data[0].subcode == "Confirm") {
+                  popupTitle.value ="Good Issue";
+                  popupMsg.value = res.data[0].message + "\n" + "Do you want to process? ";
+                  popupisopen.value = true;
+                } else {
+                  msg_color.value = "red";
+                  msg.value = res.data[0].message;
+                }
+              } else if (res.data[0].code == "OK") {
+                clearClick();
+                msg_color.value = "blue";
+                msg.value = res.data[0].message;
+                PlaySound("OK");
+              }
+            }
+            txtDO.value.focus();
+          }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+            //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+          .catch(err => {
+            alert(err);
+            console.error(err)
+          })
+        }
+      }
 
-          if (res.data[0].barno != req_param.txtScan){
-            msg.value = res.data[0].message;
-          } else{
-            recvData.value = res.data;
-            console.log("[lblCustomer]", lblCustomer)
-            msg.value = "Processed successfully."
-          }
+      function noClick(){
+        popupisopen.value = false;
+      }
 
-          scan.value.focus();
-          scan.value.select();
-        }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
-          //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
-        .catch(err => {
-          alert(err);
-          console.error(err)
-        })
+      function yesClick() {
+        popupisopen.value = false;
+        sendClick("Y");
       }
 
       function scanClick() {
@@ -447,7 +480,7 @@
         msg.value = "";
 
         //grid clear
-        this.gridOptions.api.setRowData([]);
+        gridApi.value.setRowData([]);
 
         txtDO.value.focus();
       }
@@ -469,6 +502,11 @@
       return {
         window_width,
         window_height,
+        popupTitle,
+        popupMsg,
+        popupisopen,
+        yesClick,
+        noClick,    
         txtDO,
         lblCustomer,
         lblShipno,
