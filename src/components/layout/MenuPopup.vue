@@ -84,19 +84,20 @@ import {useRouter} from 'vue-router';
 
 import $axios from 'axios';
 import { useStore } from 'vuex';
-import home2 from '@/views/Home2.vue'
-import about from '@/views/About.vue'
-import qrcode from '@/views/QRCode.vue'
-import print from '@/views/Print.vue'
-import room from '@/views/OneRoom.vue'
-import usermanagement from '@/views/UserManagement.vue'
-import mdi from '@/views/Mdi.vue'
-import label_print_hist from '@/views/Label_Print_Hist.vue'
-import parents from '@/views/Parents.vue'
-import fg_receipt from '@/views/FG_Receipt.vue'
-import good_issue from '@/views/Good_Issue.vue'
-import stockcount_online from '@/views/Stockcount_Online.vue'
-import stockcount_offline from '@/views/Stockcount_Offline.vue'
+import home2 from '@/views/Home2.vue';
+import about from '@/views/About.vue';
+import qrcode from '@/views/QRCode.vue';
+import print from '@/views/Print.vue';
+import room from '@/views/OneRoom.vue';
+import usermanagement from '@/views/UserManagement.vue';
+import mdi from '@/views/Mdi.vue';
+import label_print_hist from '@/views/Label_Print_Hist.vue';
+import parents from '@/views/Parents.vue';
+import fg_receipt from '@/views/FG_Receipt.vue';
+import good_issue from '@/views/Good_Issue.vue';
+import good_issue_cancel from '@/views/Good_Issue_Cancel.vue';
+import stockcount_online from '@/views/Stockcount_Online.vue';
+import stockcount_offline from '@/views/Stockcount_Offline.vue';
 
 export default {
 	name:'menupopup',
@@ -122,6 +123,7 @@ export default {
 		parents,
 		fg_receipt,
 		good_issue,
+		good_issue_cancel,
 		stockcount_online,
 		stockcount_offline,
   },
@@ -151,6 +153,7 @@ export default {
 			{pid: 'M250', id:'parents', name:'Slot 테스트'},
 			{pid: 'M520', id:'fg_receipt', name:'Finished Goods Receipt'},
 			{pid: 'M520', id:'good_issue', name:'Good Issue'},
+			{pid: 'M520', id:'good_issue_cancel', name:'Issue Cancel'},
 			{pid: 'M520', id:'stockcount_online', name:'Stock Count(Online)'},
 			{pid: 'M520', id:'stockcount_offline', name:'Stock Count(Offline)'},
 		]);
