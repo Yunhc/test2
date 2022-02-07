@@ -194,6 +194,8 @@
     </div>
 
 	</div>
+	<div id='print_me'>
+	</div>
 </template>
 <script>
 import $axios from 'axios';
@@ -298,6 +300,30 @@ export default {
 				return 35;
 			},
 		};
+
+		// const printObj = {
+    //     // url: 'http://localhost:8080/',
+    //     id:'printMe',
+    //     preview: false,
+    //     previewPrintBtnLabel:'인쇄',
+    //     previewTitle: '인쇄 미리 보기', // The title of the preview window. The default is 打印预览
+    //     popTitle: 'Print Test',
+    //     previewBeforeOpenCallback () {
+    //       console.log('previewBeforeOpenCallback')
+    //     },
+    //     previewOpenCallback () {
+    //       console.log('previewOpenCallback')
+    //     },
+    //     beforeOpenCallback () {
+    //       console.log('beforeOpenCallback')
+    //     },
+    //     openCallback () {
+    //       console.log('openCallback')
+    //     },
+    //     closeCallback () {
+    //       console.log('closeCallback')
+    //     }
+    //   };
 
 		onMounted(() => {
 			console.log("[label_print_hist] = ", "onMounted--");
@@ -447,23 +473,28 @@ export default {
 			var selectedData = gridApi.value.getSelectedRows();
 			// console.log("[checked row]", selectedData);
 
+			var newWin = window.open("");// 새로운 빈 창을 엽니 다
+
 			for(var i=0; i<selectedData.length; i++ ){
 				console.log("[checked barno]", selectedData[i].barno);
+
+				// var imageToPrint = document.getElementById("print_me"); // 인쇄하는 데 필요한 콘텐츠를
+        newWin.document.write("test print");							// 컨텐츠를 추가하면 새 창에 인쇄해야
 			}
 
-			// var newWin = window.open("");// 새로운 빈 창을 엽니 다
+
       // for (var i = 0; i < this.items.length; i++) {
       //   var imageToPrint = document.getElementById("printDiv" + i); // 인쇄하는 데 필요한 콘텐츠를
       //   newWin.document.write(imageToPrint.outerHTML);// 컨텐츠를 추가하면 새 창에 인쇄해야
       // }
-      // const styleSheet = '<style>li{list-style==none; border: 1px solid #e8e8e8;}</style>';
-      // newWin.document.head.innerHTML = styleSheet;
-      // newWin.document.close();
-      // newWin.focus();
-      // setTimeout(function() {
-      //   newWin.print();//인쇄
-      //   newWin.close();//창을 닫습니다
-      // }, 100);
+      const styleSheet = '<style>li{list-style==none; border: 1px solid #e8e8e8;}</style>';
+      newWin.document.head.innerHTML = styleSheet;
+      newWin.document.close();
+      newWin.focus();
+      setTimeout(function() {
+        newWin.print();//인쇄
+        newWin.close();//창을 닫습니다
+      }, 100);
 		}
 
 		return {
