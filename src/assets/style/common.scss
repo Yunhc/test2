@@ -37,7 +37,7 @@
 .window-search-4 {
 	width:100%;
 	height:140px;
-	margin:0px 5px 0px 5px;
+	padding:0px 5px 0px 5px;
 }
 
 .window-grid-1 {
@@ -138,4 +138,24 @@
 	background:white;
 	float: right;
 	width: 50%;
+}
+
+.pda-panel-7{
+	width:100%;
+	height:180px;
+	background-color: gainsboro;
+	padding:0px 5px 0px 5px;
+	span{
+		background:transparent;
+		border-color:transparent;
+		height:29px;
+	}
+	input{
+		background:transparent;
+		border-color:transparent;
+		height:29px;
+	}
+}
+.pda-panel-div{
+	margin:-20px 0px 0px 0px;
 }
