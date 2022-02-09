@@ -1,0 +1,36 @@
+.print-mdf-1 {
+	background:white;
+	height: 380px;
+	width: 389px;
+	padding: 3px;
+	margin: 2px 0px 0px 2px;
+	// border: 1px solid red;
+}
+.textdiv {
+	z-index: 11;
+	// border: 1px solid red;
+}
+.bardiv-normal {
+	background:transparent;
+	height: 80px;
+	width: 260px;
+	z-index: 21;
+	// border: 1px solid red;
+}
+.bardiv-rotation-90 {
+	background:transparent;
+	height: 80px;
+	width: 260px;
+	transform: rotate(90deg);
+	z-index: 21;
+	// border: 1px solid red;
+}
+
+.print-test{
+	position: fixed;
+	top:100px;
+	left:100px;
+	background: white;
+	z-index:100;
+	border: 1px solid red;
+}
