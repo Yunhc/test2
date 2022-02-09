@@ -24,12 +24,12 @@ export default {
     let window_height = ref(window.innerHeight);
 
     onMounted(() => {
-      console.log("[Home2] = ", "onMounted--");
+      // console.log("[Home2] = ", "onMounted--");
       window.addEventListener('resize', handleResize);
     });
 
     onUnmounted(() =>{
-      console.log("[Home2] = onUnmounted -- ");
+      // console.log("[Home2] = onUnmounted -- ");
       window.removeEventListener('resize', handleResize);
     });
 
