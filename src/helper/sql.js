@@ -31,8 +31,7 @@ export async function searchSelectBox_1(req_param) {
 }
 
 export async function searchSelectBox(req_param) {
-	console.log("[searchSelectBox] = req_param -- ", req_param);
-
+	// console.log("[searchSelectBox] = req_param -- ", req_param);
 	let url = ref(process.env.VUE_APP_SERVER_URL);
 	let urlPost = url.value + '/api/dw/selectboxList';
 	// let res_param = reactive([]);
