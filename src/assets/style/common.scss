@@ -143,24 +143,50 @@
 
 .pda-panel-7{
 	width:100%;
-	height:180px;
-	background-color: gainsboro;
-	padding:0px 5px 0px 5px;
+	height:190px;
+	// background-color:rgb(226, 203, 173);
+	background-color:floralwhite;
+	padding:2px 5px 0px 5px;
 	span{
 		background:transparent;
 		border-color:transparent;
-		height:29px;
+		font-weight: bold;
+		height:30px;
 	}
 	input{
 		background:transparent;
 		border-color:transparent;
-		height:29px;
+		height:26px;
 	}
 	label{
+		// background:transparent;
+		background:beige;
+		border-color:transparent;
+		height:26px;
 		text-align: left;
+	}
+}
+.pda-panel-4{
+	width:100%;
+	height:110px;
+	background-color:darkkhaki;
+	padding:2px 5px 0px 5px;
+	span{
 		background:transparent;
 		border-color:transparent;
-		height:29px;
+		font-weight: bold;
+		height:30px;
+	}
+	input{
+		background:transparent;
+		border-color:transparent;
+		height:26px;
+	}
+	label{
+		// background:transparent;
+		border-color:transparent;
+		height:26px;
+		text-align: left;
 	}
 }
 .pda-panel-div{
