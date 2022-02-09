@@ -42,13 +42,13 @@ import global from "@/global";
 export default {
   name: 'App',
   setup() {
-    console.log("[App] = setup -- ");
+    // console.log("[App] = setup -- ");
 
     let window_width = ref(window.innerWidth);
 		let window_height = ref(window.innerHeight);
 
 		onMounted(() => {
-			console.log("[App] = ", "onMounted--");
+			// console.log("[App] = ", "onMounted--");
 			window.addEventListener('resize', handleResize);
       window.addEventListener('beforeunload', unLoadEvent);
 
@@ -57,7 +57,7 @@ export default {
     });
 
 		onUnmounted(() =>{
-			console.log("[App] = onUnmounted -- ");
+			// console.log("[App] = onUnmounted -- ");
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('beforeunload', unLoadEvent);
 		});
@@ -83,7 +83,7 @@ export default {
 		};
   },
   created () {
-    console.log("[App] = process.env -- ", process.env);
+    // console.log("[App] = process.env -- ", process.env);
   },
   components: {
     // MainHeader,
