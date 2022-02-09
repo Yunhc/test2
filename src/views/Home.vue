@@ -18,7 +18,7 @@ import global from "@/global";
 export default {
   name: 'home',
   setup() {
-    console.log("[Home] = setup -- ");
+    // console.log("[Home] = setup -- ");
     return {
 		};
   },
