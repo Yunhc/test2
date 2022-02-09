@@ -342,7 +342,7 @@ export default {
       };
 
 		onMounted(() => {
-			console.log("[label_print_hist] = ", "onMounted--");
+			// console.log("[label_print_hist] = ", "onMounted--");
 			window.addEventListener('resize', handleResize);
 
 			if (isRange.value == true){
@@ -358,7 +358,7 @@ export default {
 		});
 
 		onUnmounted(() =>{
-			console.log("[label_print_hist] = onUnmounted -- ");
+			// console.log("[label_print_hist] = onUnmounted -- ");
 			window.removeEventListener('resize', handleResize);
 		});
 
@@ -445,7 +445,7 @@ export default {
 			else
 				req_param.stock = "N";
 
-			console.log("[req_param] = ", req_param);
+			// console.log("[req_param] = ", req_param);
 
 			$axios.post(urlPost, {
 				lang:"KR",
@@ -538,7 +538,7 @@ export default {
 									"toolbars=no, scrollbars=no, status=no, resizable=no, location=no");// 새로운 빈 창을 엽니 다
 
 			for(var i=0; i<selectedData.length; i++ ){
-				console.log("[checked barno]", selectedData[i].barno);
+				// console.log("[checked barno]", selectedData[i].barno);
 
 				// var imageToPrint = document.getElementById("print_me"); // 인쇄하는 데 필요한 콘텐츠를
         // newWin.document.write(imageToPrint.outerHTML);					// 컨텐츠를 추가하면 새 창에 인쇄해야
