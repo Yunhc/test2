@@ -1,57 +1,36 @@
 <template>
 	<div class="window-main">
 		<div class="window-search-div-3">
-			<div class="window-div-left">
-				<form class="d-flex" :style="{height:'37px'}" >
-					<div class="input-group mb-3" :style="{ margin:'5px 0px 0px 0px'}">
-						<span class="input-group-text btn-sm" id="basic-addon1"
-							:style="{width:'80px', margin:'0px 0px 0px 5px'}">
-							플랜트
-						</span>
-						<select class="form-select btn-sm" aria-label="Default select example"
-							id="cboPlant"
-							ref="cboPlant"
-							@change ='keyupenter'
-							v-model="req_param.cboPlant">
-							<option disabled value="">Select plant</option>
-							<option v-for="(d, i) in optionPlant" :key="i" :value="d.id">{{ d.id }}</option>
-						</select>
-					</div>
-				</form>
-				<form class="d-flex" :style="{height:'37px'}" >
-					<div class="input-group mb-3" :style="{margin:'5px 0px 0px 0px'}">
-						<v-date-picker
-							mode="date"
-							v-model="date"
-							locale="en"
-							title-position="center"
-							color="green"
-							:style="{margin:'0px 0px 0px 0px'}"
-							:is-dark="isDark"
-							:is-range="isRange"
-							:masks="{ input: ['YYYY-MM-DD', 'L'] }"
-						>
-							<template #default="{ inputValue, inputEvents }">
-								<template v-if="isRange">
-									<div class="input-group mb-3" :style="{height:'15px'}">
-										<span class="input-group-text btn-sm" id="basic-addon1"
-											:style="{width:'80px', margin:'0px 0px 0px 5px'}">
-											발행일자
-										</span>
-										<input class="form-control btn-sm"
-											:style="{'text-align':'center'}"
-											data-ref="InputContent" inputmode="none"
-											:value="inputValue.start"
-											v-on="inputEvents.start"/>
-										<span class="input-group-text btn-sm" :style="{background:'transparent', border:'transparent'}">~</span>
-										<input class="form-control btn-sm"
-											:style="{'text-align':'center'}"
-											data-ref="InputContent" inputmode="none"
-											:value="inputValue.end"
-											v-on="inputEvents.end"/>
-									</div>
-								</template>
-								<template v-else>
+			<div class="window-div-left" :style="{height:'114px'}">
+				<div class="input-group mb-3 window-div-left-top" >
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+						플랜트
+					</span>
+					<select class="form-select btn-sm" aria-label="Default select example"
+						id="cboPlant"
+						ref="cboPlant"
+						@change ='keyupenter'
+						v-model="req_param.cboPlant">
+						<option disabled value="">Select plant</option>
+						<option v-for="(d, i) in optionPlant" :key="i" :value="d.id">{{ d.id }}</option>
+					</select>
+				</div>
+				<div class="input-group mb-3 window-div-left-center">
+					<v-date-picker
+						mode="date"
+						v-model="date"
+						locale="en"
+						title-position="center"
+						color="green"
+						:style="{margin:'0px 0px 0px 0px'}"
+						:is-dark="isDark"
+						:is-range="isRange"
+						:masks="{ input: ['YYYY-MM-DD', 'L'] }"
+					>
+						<template #default="{ inputValue, inputEvents }">
+							<template v-if="isRange">
+								<div class="input-group mb-3" :style="{height:'36px'}">
 									<span class="input-group-text btn-sm" id="basic-addon1"
 										:style="{width:'80px', margin:'0px 0px 0px 5px'}">
 										발행일자
@@ -59,102 +38,111 @@
 									<input class="form-control btn-sm"
 										:style="{'text-align':'center'}"
 										data-ref="InputContent" inputmode="none"
-										:value="inputValue"
-										v-on="inputEvents"/>
-								</template>
+										:value="inputValue.start"
+										v-on="inputEvents.start"/>
+									<span class="input-group-text btn-sm" :style="{background:'transparent', border:'transparent'}">~</span>
+									<input class="form-control btn-sm"
+										:style="{'text-align':'center'}"
+										data-ref="InputContent" inputmode="none"
+										:value="inputValue.end"
+										v-on="inputEvents.end"/>
+								</div>
 							</template>
-						</v-date-picker>
-					</div>
-				</form>
-				<form class="d-flex" :style="{height:'37px'}" >
-					<div class="input-group mb-3" :style="{ margin:'5px 0px 0px 0px'}">
-						<span class="input-group-text btn-sm" id="basic-addon1"
-							:style="{width:'80px', margin:'0px 0px 0px 5px'}">
-							자재코드
-						</span>
-						<input type="text" class="form-control btn-sm" placeholder="Material" aria-label="UserID" aria-describedby="basic-addon1"
-							v-model="req_param.matnr"
-						>
-					</div>
-				</form>
+							<template v-else>
+								<span class="input-group-text btn-sm" id="basic-addon1"
+									:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+									발행일자
+								</span>
+								<input class="form-control btn-sm"
+									:style="{'text-align':'center'}"
+									data-ref="InputContent" inputmode="none"
+									:value="inputValue"
+									v-on="inputEvents"/>
+							</template>
+						</template>
+					</v-date-picker>
+				</div>
+				<div class="input-group mb-3 window-div-left-center">
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+						자재코드
+					</span>
+					<input type="text" class="form-control btn-sm" placeholder="Material" aria-label="UserID" aria-describedby="basic-addon1"
+						autocomplete="off"
+						v-model="req_param.matnr"
+					>
+				</div>
 			</div>
-			<div class="window-div-left">
-				<form class="d-flex" :style="{height:'37px'}" >
-					<div class="input-group mb-3" :style="{ margin:'5px 0px 0px 0px'}">
-						<span class="input-group-text btn-sm" id="basic-addon1"
-							:style="{width:'80px', margin:'0px 0px 0px 5px'}">
-							저장위치
-						</span>
-						<select class="form-select btn-sm" aria-label="Default select example"
-							id="cboLgort"
-							ref="cboLgort"
-							@change ='keyupenter'
-							v-model="req_param.cboLgort">
-							<option disabled value="">Select location</option>
-							<option v-for="(d, i) in optionLgort" :key="i" :value="d.id">{{ d.id }}</option>
-						</select>
-					</div>
-				</form>
-				<form class="d-flex" :style="{height:'37px'}" >
-					<div class="input-group mb-3" :style="{ margin:'5px 0px 0px 0px'}">
-						<span class="input-group-text btn-sm" id="basic-addon1"
-							:style="{ margin:'0px 0px 0px 5px'}">
-							바코드NO
-						</span>
-						<input type="text" class="form-control btn-sm" placeholder="barcode No" aria-label="UserID" aria-describedby="basic-addon1"
-							id="barno"
-							ref="barno"
-							v-model="req_param.barno"
-						>
-					</div>
-				</form>
-				<form class="d-flex" :style="{height:'37px'}" >
-					<div class="input-group mb-3" :style="{ margin:'5px 0px 0px 0px'}">
-						<span class="input-group-text btn-sm" id="basic-addon1"
-							:style="{width:'80px', margin:'0px 0px 0px 5px'}">
-							자재내역
-						</span>
-						<input type="text" class="form-control btn-sm" placeholder="Description" aria-label="UserID" aria-describedby="basic-addon1"
-							v-model="req_param.maktx"
-						>
-					</div>
-				</form>
+			<div class="window-div-left" :style="{height:'114px'}">
+				<div class="input-group mb-3 window-div-left-top">
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+						저장위치
+					</span>
+					<select class="form-select btn-sm" aria-label="Default select example"
+						id="cboLgort"
+						ref="cboLgort"
+						@change ='keyupenter'
+						v-model="req_param.cboLgort">
+						<option disabled value="">Select location</option>
+						<option v-for="(d, i) in optionLgort" :key="i" :value="d.id">{{ d.id }}</option>
+					</select>
+				</div>
+				<div class="input-group mb-3 window-div-left-center">
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{ margin:'0px 0px 0px 5px'}">
+						바코드NO
+					</span>
+					<input type="text" class="form-control btn-sm" placeholder="barcode No" aria-label="UserID" aria-describedby="basic-addon1"
+						autocomplete="off"
+						id="barno"
+						ref="barno"
+						v-model="req_param.barno"
+					>
+				</div>
+				<div class="input-group mb-3 window-div-left-center">
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+						자재내역
+					</span>
+					<input type="text" class="form-control btn-sm" placeholder="Description" aria-label="UserID" aria-describedby="basic-addon1"
+						autocomplete="off"
+						v-model="req_param.maktx"
+					>
+				</div>
 			</div>
-			<div class="window-div-left">
-				<form class="d-flex" :style="{height:'37px'}" >
-					<div align="left">
-						<input class="form-check-input" type="checkbox" id="defaultCheck1"
-							:style="{width:'20px', height:'20px', margin:'10px 0px 0px 5px'}"
-							v-model="chkStock">
-						<label class="form-check-label" for="defaultCheck1"
-							:style="{ margin:'10px 0px 0px 5px', color:'rgb(34, 33, 33)', 'font-size':'14px'}"
-						>
-							재고유무
-						</label>
-					</div>
-				</form>
-				<form class="d-flex" :style="{height:'37px'}" >
-				</form>
-				<form class="d-flex" :style="{height:'37px'}" >
-					<div class="input-group mb-3" :style="{ margin:'5px 0px 0px 0px'}">
-						<span class="input-group-text btn-sm" id="basic-addon1"
-							:style="{width:'80px', margin:'0px 0px 0px 5px'}">
-							오더번호
-						</span>
-						<input type="text" class="form-control btn-sm" placeholder="Order No" aria-label="UserID" aria-describedby="basic-addon1"
-							v-model="req_param.orderno"
-						>
-					</div>
-				</form>
+			<div class="window-div-left" :style="{height:'114px'}">
+				<div class="input-group mb-3 window-div-left-top" align="left">
+					<input class="form-check-input" type="checkbox" id="defaultCheck1"
+						:style="{width:'20px', height:'20px', margin:'10px 0px 0px 5px'}"
+						v-model="chkStock">
+					<label class="form-check-label" for="defaultCheck1"
+						:style="{ margin:'10px 0px 0px 5px', color:'rgb(34, 33, 33)', 'font-size':'14px'}"
+					>
+						재고유무
+					</label>
+				</div>
+				<div class="input-group mb-3 window-div-left-center" align="left">
+				</div>
+				<div class="input-group mb-3 window-div-left-center">
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+						오더번호
+					</span>
+					<input type="text" class="form-control btn-sm" placeholder="Order No" aria-label="UserID" aria-describedby="basic-addon1"
+						autocomplete="off"
+						v-model="req_param.orderno"
+					>
+				</div>
 			</div>
-			<div class="window-div-right">
-				<form class="d-flex" :style="{height:'37px'}" >
-				</form>
-				<form class="d-flex" :style="{height:'37px'}" >
-				</form>
-				<div :style="{ margin:'5px 0px 0px 0px'}"
-					div align="right">
-					<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 5px 0px 10px', height:'32px'}"
+			<div class="window-div-right" :style="{height:'114px'}">
+				<div class= "input-group mb-3 window-div-left-top">
+				</div>
+				<div class= "input-group mb-3 window-div-left-center">
+				</div>
+				<div class= "window-div-left-center"
+					align="right">
+					<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'2px 5px 0px 0px', height:'32px'}"
 						@click='searchClick' >Search</button>
 				</div>
 			</div>
@@ -190,84 +178,26 @@
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'100px'}"
           @click='printClick_1'>라벨발행-1</button>
-				<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 0px 0px 0px', width:'100px'}"
+				<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'100px'}"
 					v-print="printObj"
 					@click='printClick'>
 					라벨발행
 				</button>
+				<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 0px 0px 0px', width:'100px'}"
+					@click='closeClick'>
+					종료
+				</button>
 			</div>
     </div>
-	</div>
 
-
-	<div class="print" id="print_me">
-		<div v-for="(item, index) in printData" :key="index"
-			:id="'print_me' + index" style="page-break-after:always;">
-			<!-- <div>
-				<p>{{item.barno}}</p>
-			</div> -->
-			<div id="print_obj"
-				class="print-mdf-1"
-			>
-				<div class="input-group mb-3 textdiv" :style="{ margin:'0px 0px 0px 0px'}">
-					<input type="text" class="form-control btn-sm" aria-label="UserID" aria-describedby="basic-addon1"
-						:style="{
-							'text-align':'center',
-							border:'transparent'
-						}"
-						value="Dongwha Label Test"
-					>
-				</div>
-				<div class="input-group mb-3 textdiv" :style="{ margin:'-17px 0px 0px 0px'}">
-					<span class="input-group-text btn-sm" id="basic-addon1"
-						:style="{width:'80px', margin:'0px 0px 0px 0px'}">
-						Barcode
-					</span>
-					<input type="text" class="form-control btn-sm" aria-label="UserID" aria-describedby="basic-addon1"
-						v-model="item.barno"
-					>
-				</div>
-				<div class="input-group mb-3 textdiv" :style="{ margin:'-17px 0px 0px 0px'}">
-					<span class="input-group-text btn-sm" id="basic-addon1"
-						:style="{width:'80px', margin:'0px 0px 0px 0px'}">
-						수량
-					</span>
-					<input type="text" class="form-control btn-sm" aria-label="UserID" aria-describedby="basic-addon1"
-						v-model="item.qty"
-					>
-				</div>
-				<div class="bardiv-normal">
-					<div class="bardiv-normal"
-						align='center'
-						:style="{ margin:'-20px 0px 0px 100px'}">
-						<BarcodeGenerator
-						:value="item.barno"
-						:format="'CODE128'"
-						:background="'transparent'"
-						:lineColor="'#000'"
-						:width="1.5"
-						:height="30"
-						:fontSize="12"
-						:elementTag="'svg'"
-						/>
-					</div>
-				</div>
-				<div class="bardiv-normal" align='left'>
-					<div class="bardiv-rotation-90"
-						:style="{ margin:'50px 0px 0px -100px'}">
-						<BarcodeGenerator
-						:value="item.barno"
-						:format="'CODE128'"
-						:background="'transparent'"
-						:lineColor="'#000'"
-						:width="1.5"
-						:height="30"
-						:fontSize="12"
-						:elementTag="'svg'"
-						/>
-					</div>
-				</div>
-			</div>
+		<!--라벨 발행 포맷 -->
+		<div class="print" id="print_me" v-if="print_yn_1">
+			<section class="print-mdf-1" v-for="(item, index) in printData" :key="index"
+				:id="'print_me' + index" style="page-break-after:always;">
+					<LabelFormat
+					:barno="item.barno"
+					:qty="item.qty"/>
+			</section>
 		</div>
 	</div>
 </template>
@@ -278,15 +208,15 @@ import { AgGridVue } from 'ag-grid-vue3'
 import { useStore } from 'vuex';
 import { getdata, formatDate, addDate } from '@/helper/filter.js';
 import { searchSelectBox } from '@/helper/sql.js';
-import BarcodeGenerator from "@/components/BarcodeGenerator.vue";
+import LabelFormat from "@/components/LabelFormat.vue";
 
 export default {
 	name:'label_print_hist',
 	components:{
     AgGridVue,
-		BarcodeGenerator,
+		LabelFormat
 	},
-	setup() {
+	setup(props, {emit}) {
 		// let url = ref(process.env.VUE_APP_SERVER_URL);
 		let window_width = ref(window.innerWidth);
 		let window_height = ref(window.innerHeight);
@@ -297,7 +227,7 @@ export default {
 		//달력
     let isDark = ref(false);
     let isRange = ref(true);
-    let date = ref({start:new Date(addDate("-5")), end:new Date()});
+    let date = ref({start:new Date(addDate("-6")), end:new Date()});
 
 		//check box
 		let chkStock = ref(false);
@@ -320,6 +250,9 @@ export default {
 		let cboPlant = ref(null);
 		let cboLgort = ref(null);
 		let barno = ref(null);
+
+		let msg = ref(null);
+    let msg_color = ref(null);
 
 
 		// ag-grid 데이터 변수
@@ -376,6 +309,7 @@ export default {
 			},
 		};
 
+		let print_yn_1 = ref(false);
 		let printData = reactive([]);
 		const printObj = {
         // url: 'http://localhost:8080/',
@@ -383,25 +317,27 @@ export default {
         preview: true,
         previewPrintBtnLabel:'인쇄',
         previewTitle: '인쇄 미리 보기', // The title of the preview window. The default is 打印预览
-        popTitle: 'Print Test',
+        popTitle: 'Print Label',
         previewBeforeOpenCallback () {
-          console.log('previewBeforeOpenCallback')
+          console.log('previewBeforeOpenCallback');
         },
         previewOpenCallback () {
+					print_yn_1.value = false;
 					printData.splice(0, printData.length); //프린터 미리보기 창 종료시 선택한 데이터를 삭제한다.
 					gridApi.value.deselectAll();
-          console.log('previewOpenCallback')
+          console.log('previewOpenCallback');
         },
         beforeOpenCallback () {
-          console.log('beforeOpenCallback')
+          console.log('beforeOpenCallback');
         },
         openCallback () {
-          console.log('openCallback')
+          console.log('openCallback');
         },
         closeCallback () {
+					print_yn_1.value = false;
 					printData.splice(0, printData.length); //프린터 미리보기 창 종료시 선택한 데이터를 삭제한다.
 					gridApi.value.deselectAll();
-          console.log('closeCallback')
+          console.log('closeCallback');
         }
       };
 
@@ -410,12 +346,12 @@ export default {
 			window.addEventListener('resize', handleResize);
 
 			if (isRange.value == true){
-        console.log("[label_print_hist] = onMounted -- start --", date.value.start);
-        console.log("[label_print_hist] = onMounted -- end --", date.value.end);
+        // console.log("[label_print_hist] = onMounted -- start --", date.value.start);
+        // console.log("[label_print_hist] = onMounted -- end --", date.value.end);
       }
       else{
         date.value = new Date();
-        console.log("[label_print_hist] = onMounted -- date --", date.value);
+        // console.log("[label_print_hist] = onMounted -- date --", date.value);
       }
 
 			initSelectBox();
@@ -525,17 +461,23 @@ export default {
 				t_date: req_param.t_date
 			})
 			.then((res) => {
-				console.log("[response data]", res.data);
+				// console.log("[response data]", res.data);
 				recvData.value = res.data;
 
 				setTimeout(function () {
             autoSizeAll(false);
-          }, 500);
+          }, 1000);
+
+					msg_color.value = "blue";
+					msg.value = "Total Count : " + recvData.value.length ;
 			}) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
 				//.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
 			.catch(err => {
 				alert(err);
 				console.error(err)
+
+				msg_color.value = "red";
+        msg.value = err;
 			})
 		}
 
@@ -550,38 +492,40 @@ export default {
 		}
 
 		function printClick(){
+			print_yn_1.value = true;
 			var selectedData = gridApi.value.getSelectedRows();
-
 			if(selectedData.length>0){
+				// print_yn_1.value = true;
 				printData.splice(0, printData.length);
 				for(var j=0; j<selectedData.length; j++ ){
 					printData.push({barno:selectedData[j].barno, qty:selectedData[j].qty});
 				}
-				console.log("[printData]", printData);
+				// console.log("[printData]", printData);
 			}
 		}
 
 		function printClick_1(){
 			printClick();
 
+			if(printData.length>0){
+				var newWin = window.open('', "PrintWindow",
+										"toolbars=no, scrollbars=no, status=no, resizable=no, location=no");// 새로운 빈 창을 엽니 다
 
-			var newWin = window.open('', "PrintWindow",
-									"toolbars=no, scrollbars=no, status=no, resizable=no, location=no");// 새로운 빈 창을 엽니 다
+				for(var i=0; i<printData.length; i++ ){
 
-			for(var i=0; i<printData.length; i++ ){
+					var imageToPrint = document.getElementById("print_me" + i); // 인쇄하는 데 필요한 콘텐츠를
+					newWin.document.write(imageToPrint.outerHTML);					// 컨텐츠를 추가하면 새 창에 인쇄해야
+				}
+				// const styleSheet = '<style>li{list-style==none; border: 1px solid #e8e8e8;}</style>';
+				// newWin.document.head.innerHTML = styleSheet;
+				newWin.document.close();
 
-				var imageToPrint = document.getElementById("print_me" + i); // 인쇄하는 데 필요한 콘텐츠를
-        newWin.document.write(imageToPrint.outerHTML);					// 컨텐츠를 추가하면 새 창에 인쇄해야
+				newWin.focus();
+				setTimeout(function() {
+					newWin.print();//인쇄
+					newWin.close();//창을 닫습니다
+				}, 500);
 			}
-			const styleSheet = '<style>li{list-style==none; border: 1px solid #e8e8e8;}</style>';
-			newWin.document.head.innerHTML = styleSheet;
-			newWin.document.close();
-
-      newWin.focus();
-      setTimeout(function() {
-        newWin.print();//인쇄
-        newWin.close();//창을 닫습니다
-      }, 500);
 		}
 
 		function printClick_2(){
@@ -652,6 +596,10 @@ export default {
 			window.print();
 		}
 
+		function closeClick(){
+			emit("component_close", "label_print_hist");
+		}
+
 		return {
 			window_width,
 			window_height,
@@ -669,12 +617,16 @@ export default {
 			barno,
 			keyupenter,
 			searchClick,
+			msg,
+			msg_color,
+			print_yn_1,
 			printClick,
 			printClick_1,
 			printClick_2,
 			printClick_3,
 			printData,
 			printObj,
+			closeClick
 		}
 	},
 }
