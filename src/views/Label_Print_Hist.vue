@@ -188,13 +188,87 @@
         </label>
       </div>
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 0px 0px 0px', width:'80px'}"
-          @click='printClick'>라벨발행</button>
-      </div>
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'100px'}"
+          @click='printClick_1'>라벨발행-1</button>
+				<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 0px 0px 0px', width:'100px'}"
+					v-print="printObj"
+					@click='printClick'>
+					라벨발행
+				</button>
+			</div>
     </div>
-
 	</div>
-	<div id='print_me'>
+
+
+	<div class="print" id="print_me">
+		<div v-for="(item, index) in printData" :key="index"
+			:id="'print_me' + index" style="page-break-after:always;">
+			<!-- <div>
+				<p>{{item.barno}}</p>
+			</div> -->
+			<div id="print_obj"
+				class="print-mdf-1"
+			>
+				<div class="input-group mb-3 textdiv" :style="{ margin:'0px 0px 0px 0px'}">
+					<input type="text" class="form-control btn-sm" aria-label="UserID" aria-describedby="basic-addon1"
+						:style="{
+							'text-align':'center',
+							border:'transparent'
+						}"
+						value="Dongwha Label Test"
+					>
+				</div>
+				<div class="input-group mb-3 textdiv" :style="{ margin:'-17px 0px 0px 0px'}">
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{width:'80px', margin:'0px 0px 0px 0px'}">
+						Barcode
+					</span>
+					<input type="text" class="form-control btn-sm" aria-label="UserID" aria-describedby="basic-addon1"
+						v-model="item.barno"
+					>
+				</div>
+				<div class="input-group mb-3 textdiv" :style="{ margin:'-17px 0px 0px 0px'}">
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{width:'80px', margin:'0px 0px 0px 0px'}">
+						수량
+					</span>
+					<input type="text" class="form-control btn-sm" aria-label="UserID" aria-describedby="basic-addon1"
+						v-model="item.qty"
+					>
+				</div>
+				<div class="bardiv-normal">
+					<div class="bardiv-normal"
+						align='center'
+						:style="{ margin:'-20px 0px 0px 100px'}">
+						<BarcodeGenerator
+						:value="item.barno"
+						:format="'CODE128'"
+						:background="'transparent'"
+						:lineColor="'#000'"
+						:width="1.5"
+						:height="30"
+						:fontSize="12"
+						:elementTag="'svg'"
+						/>
+					</div>
+				</div>
+				<div class="bardiv-normal" align='left'>
+					<div class="bardiv-rotation-90"
+						:style="{ margin:'50px 0px 0px -100px'}">
+						<BarcodeGenerator
+						:value="item.barno"
+						:format="'CODE128'"
+						:background="'transparent'"
+						:lineColor="'#000'"
+						:width="1.5"
+						:height="30"
+						:fontSize="12"
+						:elementTag="'svg'"
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 <script>
@@ -202,14 +276,15 @@ import $axios from 'axios';
 import { reactive, ref, onMounted, onUnmounted } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3'
 import { useStore } from 'vuex';
-import { getdata, formatDate } from '@/helper/filter.js';
+import { getdata, formatDate, addDate } from '@/helper/filter.js';
 import { searchSelectBox } from '@/helper/sql.js';
-
+import BarcodeGenerator from "@/components/BarcodeGenerator.vue";
 
 export default {
 	name:'label_print_hist',
 	components:{
     AgGridVue,
+		BarcodeGenerator,
 	},
 	setup() {
 		// let url = ref(process.env.VUE_APP_SERVER_URL);
@@ -222,7 +297,7 @@ export default {
 		//달력
     let isDark = ref(false);
     let isRange = ref(true);
-    let date = ref({start:new Date(), end:new Date()});
+    let date = ref({start:new Date(addDate("-5")), end:new Date()});
 
 		//check box
 		let chkStock = ref(false);
@@ -287,7 +362,7 @@ export default {
 			columnDefs:columnDefs,
 			rowData:null,
 			rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
-			suppressRowClickSelection:true,
+			suppressRowClickSelection:false,
 			onGridReady: function(event) {
 				setTimeout(function () {
 					event.api.setRowData(recvData);
@@ -301,29 +376,34 @@ export default {
 			},
 		};
 
-		// const printObj = {
-    //     // url: 'http://localhost:8080/',
-    //     id:'printMe',
-    //     preview: false,
-    //     previewPrintBtnLabel:'인쇄',
-    //     previewTitle: '인쇄 미리 보기', // The title of the preview window. The default is 打印预览
-    //     popTitle: 'Print Test',
-    //     previewBeforeOpenCallback () {
-    //       console.log('previewBeforeOpenCallback')
-    //     },
-    //     previewOpenCallback () {
-    //       console.log('previewOpenCallback')
-    //     },
-    //     beforeOpenCallback () {
-    //       console.log('beforeOpenCallback')
-    //     },
-    //     openCallback () {
-    //       console.log('openCallback')
-    //     },
-    //     closeCallback () {
-    //       console.log('closeCallback')
-    //     }
-    //   };
+		let printData = reactive([]);
+		const printObj = {
+        // url: 'http://localhost:8080/',
+        id:'print_me',
+        preview: true,
+        previewPrintBtnLabel:'인쇄',
+        previewTitle: '인쇄 미리 보기', // The title of the preview window. The default is 打印预览
+        popTitle: 'Print Test',
+        previewBeforeOpenCallback () {
+          console.log('previewBeforeOpenCallback')
+        },
+        previewOpenCallback () {
+					printData.splice(0, printData.length); //프린터 미리보기 창 종료시 선택한 데이터를 삭제한다.
+					gridApi.value.deselectAll();
+          console.log('previewOpenCallback')
+        },
+        beforeOpenCallback () {
+          console.log('beforeOpenCallback')
+        },
+        openCallback () {
+          console.log('openCallback')
+        },
+        closeCallback () {
+					printData.splice(0, printData.length); //프린터 미리보기 창 종료시 선택한 데이터를 삭제한다.
+					gridApi.value.deselectAll();
+          console.log('closeCallback')
+        }
+      };
 
 		onMounted(() => {
 			console.log("[label_print_hist] = ", "onMounted--");
@@ -471,30 +551,105 @@ export default {
 
 		function printClick(){
 			var selectedData = gridApi.value.getSelectedRows();
+
+			if(selectedData.length>0){
+				printData.splice(0, printData.length);
+				for(var j=0; j<selectedData.length; j++ ){
+					printData.push({barno:selectedData[j].barno, qty:selectedData[j].qty});
+				}
+				console.log("[printData]", printData);
+			}
+		}
+
+		function printClick_1(){
+			printClick();
+
+
+			var newWin = window.open('', "PrintWindow",
+									"toolbars=no, scrollbars=no, status=no, resizable=no, location=no");// 새로운 빈 창을 엽니 다
+
+			for(var i=0; i<printData.length; i++ ){
+
+				var imageToPrint = document.getElementById("print_me" + i); // 인쇄하는 데 필요한 콘텐츠를
+        newWin.document.write(imageToPrint.outerHTML);					// 컨텐츠를 추가하면 새 창에 인쇄해야
+			}
+			const styleSheet = '<style>li{list-style==none; border: 1px solid #e8e8e8;}</style>';
+			newWin.document.head.innerHTML = styleSheet;
+			newWin.document.close();
+
+      newWin.focus();
+      setTimeout(function() {
+        newWin.print();//인쇄
+        newWin.close();//창을 닫습니다
+      }, 500);
+		}
+
+		function printClick_2(){
+			var selectedData = gridApi.value.getSelectedRows();
 			// console.log("[checked row]", selectedData);
 
-			var newWin = window.open("");// 새로운 빈 창을 엽니 다
+			// var newWin = window.open('', "PrintWindow",
+			// 						"width=5, height=5, toolbars=no, scrollbars=no, status=no, resizeable=no, location=no");// 새로운 빈 창을 엽니 다
+			var newWin = window.open('', "PrintWindow",
+									"toolbars=no, scrollbars=no, status=no, resizable=no, location=no");// 새로운 빈 창을 엽니 다
 
 			for(var i=0; i<selectedData.length; i++ ){
 				console.log("[checked barno]", selectedData[i].barno);
 
 				// var imageToPrint = document.getElementById("print_me"); // 인쇄하는 데 필요한 콘텐츠를
-        newWin.document.write("test print");							// 컨텐츠를 추가하면 새 창에 인쇄해야
+        // newWin.document.write(imageToPrint.outerHTML);					// 컨텐츠를 추가하면 새 창에 인쇄해야
+
+				newWin.document.write('<html>');
+				newWin.document.write('<head><title>PrintWindow</title>');
+				// newWin.document.write('<link rel="stylesheet" type="text/scss" href="${ctx }/assets/style/print.scss"/>');
+				newWin.document.write('</head>');
+				newWin.document.write('<body class="print-body">');
+
+				newWin.document.write('<div class="print-mdf-1" style="page-break-after: always">'); //인쇄시 다음 페이지로 넘긴다.
+				newWin.document.write('<div class="input-group mb-3">');
+				newWin.document.write('	<input type="text" class="form-control btn-sm" aria-label="UserID" aria-describedby="basic-addon1"');
+				newWin.document.write('		value="Dongwha Label Test">');
+				newWin.document.write('</div>');
+				newWin.document.write('<p>' + "Barcode " + selectedData[i].barno + '</p>');
+				newWin.document.write('<h1>' + "수량 " + selectedData[i].qty + '</h1>');
+				newWin.document.write('</div>');
+				newWin.document.write('</body></html>');
 			}
 
+			newWin.document.write('<style lang="scss">');
 
-      // for (var i = 0; i < this.items.length; i++) {
-      //   var imageToPrint = document.getElementById("printDiv" + i); // 인쇄하는 데 필요한 콘텐츠를
-      //   newWin.document.write(imageToPrint.outerHTML);// 컨텐츠를 추가하면 새 창에 인쇄해야
-      // }
-      const styleSheet = '<style>li{list-style==none; border: 1px solid #e8e8e8;}</style>';
-      newWin.document.head.innerHTML = styleSheet;
-      newWin.document.close();
+			newWin.document.write('.print-body {');
+			newWin.document.write('	margin: 1px 0px 0px 1px;');
+			newWin.document.write('}');
+
+			newWin.document.write('.print-mdf-1 {');
+			newWin.document.write('	background:white;');
+			newWin.document.write('	height: 380px;');
+			newWin.document.write('	width: 390px;');
+			newWin.document.write('	padding: 2px;');
+			newWin.document.write('	margin: 0px 0px 0px 0px;');
+			newWin.document.write('	border: 1px solid black;');
+			newWin.document.write('}');
+
+			newWin.document.write('</style>');
+
+			// const styleSheet = '<style>li{list-style==none; border: 1px solid #e8e8e8;}</style>';
+			// newWin.document.head.innerHTML = styleSheet;
+			newWin.document.close();
+
       newWin.focus();
       setTimeout(function() {
         newWin.print();//인쇄
         newWin.close();//창을 닫습니다
-      }, 100);
+      }, 500);
+		}
+
+		function printClick_3(){
+			// div = document.getElementById("print_me");
+
+			// window.onbeforeprint = beforePrint;
+			// window.onafterprint = afterPrint;
+			window.print();
 		}
 
 		return {
@@ -514,7 +669,12 @@ export default {
 			barno,
 			keyupenter,
 			searchClick,
-			printClick
+			printClick,
+			printClick_1,
+			printClick_2,
+			printClick_3,
+			printData,
+			printObj,
 		}
 	},
 }
