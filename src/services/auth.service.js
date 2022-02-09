@@ -6,7 +6,7 @@ const lang = 'KR';
 
 class AuthService {
   login(user) {
-    console.log("[auth.service] = login -- ", lang + '/' + user);
+    // console.log("[auth.service] = login -- ", lang + '/' + user);
     return $axios
       .post(API_URL + 'signin', {
         lang: lang,
@@ -15,11 +15,11 @@ class AuthService {
       })
       .then(response => {
 
-        console.log("[auth.service] = response -- ", response.data);
-        console.log("[auth.service] = response -- ", response.data[0].username);
+        // console.log("[auth.service] = response -- ", response.data);
+        // console.log("[auth.service] = response -- ", response.data[0].username);
 
         if (response.data[0].code == "OK") {
-          console.log("[auth.service] = response -- ", response.data[0].code);
+          // console.log("[auth.service] = response -- ", response.data[0].code);
           localStorage.setItem('user', JSON.stringify(response.data));
         }
         return response.data;
