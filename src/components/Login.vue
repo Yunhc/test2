@@ -58,7 +58,7 @@ import {useRouter} from 'vue-router';
 
 export default {
 	setup(){
-		console.log("[login] = ", "setup--")
+		// console.log("[login] = ", "setup--")
 
 		let window_width = ref(window.innerWidth);
 		let window_height = ref(window.innerHeight);
@@ -83,46 +83,46 @@ export default {
 		// user.value.password = "wavelink";
 
 		onMounted(() => {
-			console.log("[login] = ", "onMounted--");
-			console.log("[login] = loggedUser --", store.state.auth.user);
-			console.log("[login] = saveid --", store.state.saveid.id);
+			// console.log("[login] = ", "onMounted--");
+			// console.log("[login] = loggedUser --", store.state.auth.user);
+			// console.log("[login] = saveid --", store.state.saveid.id);
 
 			window.addEventListener('resize', handleResize);
 
 			if(store.state.saveid.id != null){
-				console.log("[login] = saveid -- exist");
+				// console.log("[login] = saveid -- exist");
 				if(store.state.saveid.id[0].chk == true){
 					chkID.value = true;
 					user.value.userid = store.state.saveid.id[0].id;
 				}
 				else{
-					console.log("[login] = store.state.saveid.id.chk -- ", store.state.saveid.id[0].chk);
+					// console.log("[login] = store.state.saveid.id.chk -- ", store.state.saveid.id[0].chk);
 				}
 			}
     });
 
 		onUnmounted(() =>{
-			console.log("[login] = onUnmounted -- ");
+			// console.log("[login] = onUnmounted -- ");
 			window.removeEventListener('resize', handleResize);
 		});
 
 		function handleLogin() {
 			// evt.preventDefault();
 
-			console.log("[handleLogin] = userid --", user.value.userid);
-			console.log("[handleLogin] = password --", user.value.password);
-			console.log("[handleLogin] = chkID", chkID.value);
+			// console.log("[handleLogin] = userid --", user.value.userid);
+			// console.log("[handleLogin] = password --", user.value.password);
+			// console.log("[handleLogin] = chkID", chkID.value);
 			loading = true;
 
 			if (user.value.userid && user.value.password) {
-				console.log("[handleLogin] = loggedUser --", store.state.auth.user);
-				console.log("[handleLogin] = loggedIn --", store.state.auth.status.loggedIn);
+				// console.log("[handleLogin] = loggedUser --", store.state.auth.user);
+				// console.log("[handleLogin] = loggedIn --", store.state.auth.status.loggedIn);
 
 				store.dispatch("auth/login", user).then(
 					() => {
 						loading = false;
-						console.log("[handleLogin] = loggedUser --", store.state.auth.user);
-						console.log("[handleLogin] = loggedIn --", store.state.auth.status.loggedIn);
+						// console.log("[handleLogin] = loggedUser --", store.state.auth.user);
+						// console.log("[handleLogin] = loggedIn --", store.state.auth.status.loggedIn);
 
 						if(chkID.value == true){
 							saveid.push({chk:true, id:user.value.userid});
@@ -130,7 +130,7 @@ export default {
 						}
 						else{
 							store.dispatch("saveid/deleteid");
-							console.log("[login] = deleteid store.state.saveid.id--", store.state.saveid.id);
+							// console.log("[login] = deleteid store.state.saveid.id--", store.state.saveid.id);
 						}
 
 						// this.$router.push('/');
@@ -139,7 +139,7 @@ export default {
 					error => {
 						loading = false;
 						message = (error.response && error.response.data) || error.message || error.toString();
-						console.log("[handleLogin error] = ", message)
+						// console.log("[handleLogin error] = ", message)
 					}
 				);
 			}
@@ -180,12 +180,12 @@ export default {
 	computed: {
 		loggedIn() {
 			const store = useStore();	//스토어호출
-			console.log("[login] = computed -- ", store.state.auth.status.loggedIn);
+			// console.log("[login] = computed -- ", store.state.auth.status.loggedIn);
 			return store.state.auth.loggedIn;
 		}
 	},
 	created() {
-		console.log("[login] = created -- ");
+		// console.log("[login] = created -- ");
 		if (this.loggedIn) {
 			this.$router.push('/');
 		}
