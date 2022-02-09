@@ -2,8 +2,8 @@
 	background:white;
 	height: 380px;
 	width: 389px;
-	padding: 3px;
-	margin: 2px 0px 0px 2px;
+	padding: 0px 7px 0px 3px;
+	margin: 0px 0px 0px 0px;
 	// border: 1px solid red;
 }
 .textdiv {
@@ -12,15 +12,15 @@
 }
 .bardiv-normal {
 	background:transparent;
-	height: 80px;
-	width: 260px;
+	height: 60px;
+	width: 240px;
 	z-index: 21;
 	// border: 1px solid red;
 }
 .bardiv-rotation-90 {
 	background:transparent;
-	height: 80px;
-	width: 260px;
+	height: 60px;
+	width: 240px;
 	transform: rotate(90deg);
 	z-index: 21;
 	// border: 1px solid red;
