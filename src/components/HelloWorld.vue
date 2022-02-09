@@ -52,12 +52,12 @@ export default {
     let window_height = ref(window.innerHeight);
 
     onMounted(() => {
-      console.log("[HelloWorld] = ", "onMounted--");
+      // console.log("[HelloWorld] = ", "onMounted--");
       window.addEventListener('resize', handleResize);
     });
 
     onUnmounted(() =>{
-      console.log("[HelloWorld] = onUnmounted -- ");
+      // console.log("[HelloWorld] = onUnmounted -- ");
       window.removeEventListener('resize', handleResize);
     });
 
