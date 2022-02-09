@@ -9,7 +9,7 @@ export const saveid = {
 	state: initialState,
 	actions: {
 		saveid({ commit }, id) {
-			console.log("[saveid] = id -- ", id);
+			// console.log("[saveid] = id -- ", id);
 			localStorage.setItem('id', JSON.stringify(id));
 
 			return id => {
@@ -18,7 +18,7 @@ export const saveid = {
 			}
 		},
 		deleteid({ commit }) {
-			console.log("[deleteid] = id -- ");
+			// console.log("[deleteid] = id -- ");
 			localStorage.removeItem('id');
 			commit('deleteid');
 		},
