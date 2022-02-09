@@ -30,8 +30,8 @@
       function handleLogout() {
         store.dispatch("auth/logout");
 
-        console.log("[handleLogout] = loggedUser --", store.state.auth.user);
-				console.log("[handleLogout] = loggedIn --", store.state.auth.status.loggedIn);
+        // console.log("[handleLogout] = loggedUser --", store.state.auth.user);
+				// console.log("[handleLogout] = loggedIn --", store.state.auth.status.loggedIn);
         router.push({ path: "/login" });
       }
 
