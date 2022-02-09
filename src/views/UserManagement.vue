@@ -134,8 +134,6 @@
   import $axios from 'axios';
   import { reactive, ref, onMounted, onUnmounted, onBeforeMount} from 'vue'
   import { useStore } from 'vuex';
-  import 'ag-grid-community/dist/styles/ag-grid.css';
-  import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
   import { AgGridVue } from 'ag-grid-vue3'
   import { getdata } from '@/helper/filter.js';
 
