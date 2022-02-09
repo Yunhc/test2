@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 //콤보박스를 조회한다.
 export async function searchSelectBox_1(req_param) {
-	console.log("[searchSelectBox] = req_param -- ", req_param);
+	// console.log("[searchSelectBox] = req_param -- ", req_param);
 
 	let url = ref(process.env.VUE_APP_SERVER_URL);
 	let urlPost = url.value + '/api/dw/selectboxList';
@@ -20,7 +20,7 @@ export async function searchSelectBox_1(req_param) {
 		space: req_param.space, //"Y",
 	})
 	.then((res) => {
-		console.log("[searchSelectBox] = response data -- ", res.data);
+		// console.log("[searchSelectBox] = response data -- ", res.data);
 		return res.data;
 	})
 	.catch(err => {
