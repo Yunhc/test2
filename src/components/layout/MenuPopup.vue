@@ -167,7 +167,7 @@ export default {
 		let ignoreClick = ref(false);		//이때 컴포넌트 변환 클릭 이벤트를 무시하도록한다.
 
 		onMounted(() => {
-			console.log("[MenuPopup] = ", "onMounted--");
+			// console.log("[MenuPopup] = ", "onMounted--");
 			tabs.push({id:'home2', name:'Home'});
 			selectedTabs.value.push('home2');
 			// console.log("[MenuPopup] = tabs --", tabs);
@@ -197,7 +197,7 @@ export default {
 		function clickSubButton(i){
       // alert(this.button_id);
 			// router.push({ path: menus_sub[i].id });
-			console.log("[MenuPopup] = clickSubButton  tabs-- ", tabs);
+			// console.log("[MenuPopup] = clickSubButton  tabs-- ", tabs);
 
 			let isIncluld = ref(false);
 			for(var j=0; j<tabs.length; j++)
@@ -252,7 +252,7 @@ export default {
 		}
 
 		function changeComponent(selmenu) {
-			console.log("[MenuPopup] = changeComponent -- ", selmenu.id);
+			// console.log("[MenuPopup] = changeComponent -- ", selmenu.id);
 
 			if (clickTabExit.value){
 				clickTabExit.value = false;
@@ -260,7 +260,7 @@ export default {
 
 				comp.value = selmenu.id;
 				currentTab.value = selmenu.id;
-				console.log("[MenuPopup] = currentTab -- ", selmenu.id);
+				// console.log("[MenuPopup] = currentTab -- ", selmenu.id);
 			}
 			else{
 				if (ignoreClick.value){
@@ -269,13 +269,13 @@ export default {
 				else{
 					comp.value = selmenu.id;
 					currentTab.value = selmenu.id;
-					console.log("[MenuPopup] = currentTab -- ", selmenu.id);
+					// console.log("[MenuPopup] = currentTab -- ", selmenu.id);
 				}
 			}
     }
 
 		function exitComponent(selmenu) {
-      console.log("[MenuPopup] = exitComponent -- ", selmenu.id);
+      // console.log("[MenuPopup] = exitComponent -- ", selmenu.id);
 
 			var nIndex = -1;
 			var j=0;
@@ -287,14 +287,14 @@ export default {
 				}
 			}
 			if( nIndex>0 ){
-				console.log("[MenuPopup] = exitComponent - index -- ", nIndex);
+				// console.log("[MenuPopup] = exitComponent - index -- ", nIndex);
 
 				tabs.splice(nIndex, 1);
 				selectedTabs.value.splice(nIndex,1);
 			}
 
-			console.log("[MenuPopup] = tabs -- ", tabs);
-			console.log("[MenuPopup] = selectedTabs -- ", selectedTabs);
+			// console.log("[MenuPopup] = tabs -- ", tabs);
+			// console.log("[MenuPopup] = selectedTabs -- ", selectedTabs);
 
 			// console.log("[MenuPopup] = tabs.length -- ", tabs.length);
 			// console.log("[MenuPopup] = tabs -- ", tabs);
@@ -314,7 +314,7 @@ export default {
 
 		// exitComponent와 동일한 함수이다. 파라미터 형식만 틀림
 		function component_close(selmenu) {
-      console.log("[MenuPopup] = component_close -- ", selmenu);
+      // console.log("[MenuPopup] = component_close -- ", selmenu);
 
 			var nIndex = -1;
 			var j=0;
@@ -326,14 +326,14 @@ export default {
 				}
 			}
 			if( nIndex>0 ){
-				console.log("[MenuPopup] = exitComponent - index -- ", nIndex);
+				// console.log("[MenuPopup] = exitComponent - index -- ", nIndex);
 
 				tabs.splice(nIndex, 1);
 				selectedTabs.value.splice(nIndex,1);
 			}
 
-			console.log("[MenuPopup] = tabs -- ", tabs);
-			console.log("[MenuPopup] = selectedTabs -- ", selectedTabs);
+			// console.log("[MenuPopup] = tabs -- ", tabs);
+			// console.log("[MenuPopup] = selectedTabs -- ", selectedTabs);
 
 			// console.log("[MenuPopup] = tabs.length -- ", tabs.length);
 			// console.log("[MenuPopup] = tabs -- ", tabs);
@@ -363,7 +363,7 @@ export default {
 				useflag: "Y"
 			})
 			.then((res) => {
-				console.log("[response data]", res.data);
+				// console.log("[response data]", res.data);
 
 				if(res.data.length > 0){
           menus.splice(0, menus.length);
@@ -377,7 +377,7 @@ export default {
 				//.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
 			.catch(err => {
 				alert(err);
-				console.error(err)
+				// console.error(err)
 			})
 		}
 
