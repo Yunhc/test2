@@ -206,7 +206,7 @@ import $axios from 'axios';
 import { reactive, ref, onMounted, onUnmounted } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3'
 import { useStore } from 'vuex';
-import { getdata, formatDate, addDate } from '@/helper/filter.js';
+import { getdata, formatDate } from '@/helper/filter.js';
 import { searchSelectBox } from '@/helper/sql.js';
 import LabelFormat from "@/components/LabelFormat.vue";
 
@@ -227,7 +227,8 @@ export default {
 		//달력
     let isDark = ref(false);
     let isRange = ref(true);
-    let date = ref({start:new Date(addDate("-6")), end:new Date()});
+		let date = ref({start:new Date(), end:new Date()});
+    // let date = ref({start:new Date(addDate("-6")), end:new Date()});
 
 		//check box
 		let chkStock = ref(false);
