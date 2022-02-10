@@ -176,8 +176,8 @@
         </label>
       </div>
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'100px'}"
-          @click='printClick_1'>라벨발행-1</button>
+        <!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'100px'}"
+          @click='printClick_3'>라벨발행-3</button> -->
 				<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'100px'}"
 					v-print="printObj"
 					@click='printClick'>
@@ -314,30 +314,30 @@ export default {
 		const printObj = {
         // url: 'http://localhost:8080/',
         id:'print_me',
-        preview: true,
+        preview: false,
         previewPrintBtnLabel:'인쇄',
         previewTitle: '인쇄 미리 보기', // The title of the preview window. The default is 打印预览
         popTitle: 'Print Label',
         previewBeforeOpenCallback () {
-          console.log('previewBeforeOpenCallback');
+          // console.log('previewBeforeOpenCallback');
         },
         previewOpenCallback () {
 					print_yn_1.value = false;
 					printData.splice(0, printData.length); //프린터 미리보기 창 종료시 선택한 데이터를 삭제한다.
 					gridApi.value.deselectAll();
-          console.log('previewOpenCallback');
+          // console.log('previewOpenCallback');
         },
         beforeOpenCallback () {
-          console.log('beforeOpenCallback');
+          // console.log('beforeOpenCallback');
         },
         openCallback () {
-          console.log('openCallback');
+          // console.log('openCallback');
         },
         closeCallback () {
 					print_yn_1.value = false;
 					printData.splice(0, printData.length); //프린터 미리보기 창 종료시 선택한 데이터를 삭제한다.
 					gridApi.value.deselectAll();
-          console.log('closeCallback');
+          // console.log('closeCallback');
         }
       };
 
@@ -593,7 +593,9 @@ export default {
 
 			// window.onbeforeprint = beforePrint;
 			// window.onafterprint = afterPrint;
-			window.print();
+			// window.print();
+
+			this.$htmlToPaper('printMe')
 		}
 
 		function closeClick(){
