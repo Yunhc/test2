@@ -1,5 +1,20 @@
 <template>
   <div class="window-main">
+    <!-- Send버튼 클릭시 처리여부 문의 팝업화면 -->
+     <popupyn v-if="popupisopen"
+      :title="popupTitle"
+      :message="popupMsg"
+      @yesClick="yesClick"
+      @noClick="popupisopen=false">
+    </popupyn>
+
+    <!-- 바코드 출고이력이 2건 이상이면 DO조회 팝업화면 -->
+    <popupdosearch v-if="popupdoisopen"
+      :tmpBarno="tmpBarno"
+      @DOselectClick="DOselectClick"
+      @DOcloseClick="DOcloseClick">
+    </popupdosearch>
+
     <div class="pda-panel-7">
 			<div class="input-group mb-3">
 				<span class="input-group-text btn-sm" id="basic-addon1"
@@ -134,26 +149,33 @@
   import { useStore } from 'vuex';
   import { getdata } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
-  // import popupyn from '@/views/PopupYN.vue';  
-  // import popupdosearch from '@/views/Good_Issue_DO_Search.vue';
-  // import popupbarsearch from '@/views/Good_Issue_Bar_Search.vue';
+  import popupyn from '@/views/PopupYN.vue';
+  import popupdosearch from '@/views/Good_Issue_Cancel_DO_Search.vue';
 
 export default {
 	name:'good_issue_cancel',
 	components:{
-    // popupdosearch,    
+    popupyn,
+    popupdosearch,
 	},
   setup(props,{emit}){
     let url = ref(process.env.VUE_APP_SERVER_URL);
     let window_width = ref(window.innerWidth);
     let window_height = ref(window.innerHeight);
 
-    // let popupdoisopen = ref(false);
+    let popupTitle = ref(null);
+    let popupMsg = ref(null);
+    let popupisopen = ref(false);
+    
+    let popupdoisopen = ref(false);
 
     const store = useStore();	//스토어호출
     // let options = reactive([]);
 
     // let recvData = reactive([]);
+
+    let strDONo = ref(null);
+    let tmpBarno = ref(null);
 
     let lblDONo = ref(null);
     let lblPlandate = ref(null);
@@ -189,40 +211,63 @@ export default {
       window_height.value = window.innerHeight;
     }
 
+    function DOselectClick(strDONo){
+      console.log(strDONo);
+      popupdoisopen.value = false;
+
+      fn_Search(req_param.txtScan, strDONo, "", "S", "S");
+    }
+
+    function DOcloseClick(){
+      popupdoisopen.value = false;
+      console.log("[Customer] : ", lblCustomer.value);
+      scan.value.focus();
+    }
+
     function scanEnter(e) {
       if (e.target.id == "scan"){
         console.log(req_param.txtScan);
+        fn_Search(req_param.txtScan, "", "", "S", "S");
       }
+    }
 
+    function fn_Search(strBarno, strVbeln, strMatnr, strProctype, strCalltype) {
       let urlPost = url.value + '/dwt/good_issue_cancel/scan';
 
-      console.log("[req_param]", req_param);
-      // console.log(getdata(req_param.txtScan));
+      console.log("[parameters]", strBarno, "/", strVbeln, "/",  strMatnr, "/",  strProctype, "/",  strCalltype);
 
       //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
       $axios.post(urlPost, {
           i_lang: "EN",
           i_userid: store.state.auth.user[0].userid,
           i_werks: getdata(store.state.auth.user[0].plantcd),
-          i_barno: req_param.txtScan
-          // i_calltype: "S"   //스캔화면 호출시 S, 바코드 삭제화면 호출시 D
+          i_barno: strBarno,
+          i_vbeln: getdata(strVbeln),
+          i_matnr: getdata(strMatnr),
+          i_proctype: strProctype,  //S:바코드출고이력 조회, D:바코드 출고 DO조회
+          i_calltype: strCalltype   //S:스캔시, D:DO선택시
       })
       .then((res) => {
         console.log("[response data]", res.data);
-        console.log("[response data] = res.data[0].wadat -- ", res.data[0].wadat);
         console.log("[response data] = req_param.txtScan -- ", req_param.txtScan);
 
         if (res.data[0].code == "NG"){
-          msg_color.value = "red";
-          msg.value = res.data[0].message;
+          if (res.data[0].subcode == "Confirm") {
+            tmpBarno.value = strBarno;
+            popupdoisopen.value = true;
+          }
+          else {
+            clearClick();
+            msg_color.value = "red";
+            msg.value = res.data[0].message;
+          }
         } else{
           msg_color.value = "blue";
           msg.value = "OK";
           // msg.value = res.data[0].message;
           // recvData.value = res.data;
           lblDONo.value = res.data[0].vbeln;
-          lblPlandate = res.data[0].wadat;
-console.log("[lblPlandate] -- ", lblPlandate);
+          lblPlandate.value = res.data[0].wadat;
           lblCustomer.value = res.data[0].zkunnrnm;
           lblMaktx.value = res.data[0].maktx;
           lblProcQty.value = res.data[0].procqty;
@@ -251,52 +296,58 @@ console.log("[lblPlandate] -- ", lblPlandate);
       e.target.select();
     }
 
+    function noClick(){
+      popupisopen.value = false;
+    }
+
+    function yesClick() {
+      popupisopen.value = false;
+      Cancel_GI();
+    }
+
     function sendClick() {
       console.log("[Barcode No] : ", req_param.txtScan);
-      if ((!req_param.txtScan) || (!lblCustomer.value)) {    //DO가 조회된 경우만 처리. 
+      if (!lblDONo.value) {    //DO가 조회된 경우만 처리. 
         alert("Please search D/O information first");
       }
       else {
-        let urlPost = url.value + '/dwt/good_issue_cancel/save';
-
-        //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
-        $axios.post(urlPost, {
-            i_lang: "EN",
-            i_userid: store.state.auth.user[0].userid,
-            i_werks: getdata(store.state.auth.user[0].plantcd),
-            // i_vbeln: req_param.txtDO,
-            // i_procflag: procflag
-        })
-        .then((res) => {
-          console.log("[response data]", res.data);
-
-          if(res.data.length > 0) {
-            if (res.data[0].code == "NG") {
-              if (res.data[0].subcode == "Confirm") {
-                // popupTitle.value ="Good Issue";
-                // popupMsg.value = res.data[0].message + "\n" + "Do you want to process? ";
-                // popupisopen.value = true;
-                msg_color.value = "red";
-                msg.value = res.data[0].message;
-              } else {
-                msg_color.value = "red";
-                msg.value = res.data[0].message;
-              }
-            } else if (res.data[0].code == "OK") {
-              clearClick();
-              msg_color.value = "blue";
-              msg.value = res.data[0].message;
-              PlaySound("OK");
-            }
-          }
-          scan.value.focus();
-        }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
-          //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
-        .catch(err => {
-          alert(err);
-          console.error(err)
-        })
+          popupTitle.value ="Cancel Good Issue";
+          popupMsg.value = "Do you want to save it?";
+          popupisopen.value = true;
       }
+    }
+
+    function Cancel_GI() {
+      let urlPost = url.value + '/dwt/good_issue_cancel/save';
+
+      //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
+      $axios.post(urlPost, {
+          i_lang: "EN",
+          i_userid: store.state.auth.user[0].userid,
+          i_werks: getdata(store.state.auth.user[0].plantcd),
+          i_barno: lblBarno.value,
+          i_vbeln: lblDONo.value,
+          i_matnr: lblMatnr.value
+      })
+      .then((res) => {
+        console.log("[response data]", res.data);
+
+        if (res.data[0].code == "NG") {
+            msg_color.value = "red";
+            msg.value = res.data[0].message;
+        } else if (res.data[0].code == "OK") {
+          clearClick();
+          msg_color.value = "blue";
+          msg.value = res.data[0].message;
+          PlaySound("OK");
+        }
+        scan.value.focus();
+      }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+        //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+      .catch(err => {
+        alert(err);
+        console.error(err)
+      })
     }
 
     function scanClick() {
@@ -332,6 +383,18 @@ console.log("[lblPlandate] -- ", lblPlandate);
     }
 
 		return {
+      window_width,
+      window_height,      
+      popupTitle,
+      popupMsg,
+      popupisopen,
+      popupdoisopen,
+      strDONo,
+      tmpBarno,
+      DOselectClick,
+      DOcloseClick,      
+      yesClick,
+      noClick,          
       lblDONo,
       lblPlandate,
       lblCustomer,
