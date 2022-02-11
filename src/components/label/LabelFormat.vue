@@ -63,7 +63,7 @@
 <script>
 // import { defineComponent } from '@vue/composition-api'
 import { ref } from 'vue'
-import BarcodeGenerator from "@/components/BarcodeGenerator.vue";
+import BarcodeGenerator from "@/components/label/BarcodeGenerator.vue";
 
 export default {
 	name:'labelformat',
