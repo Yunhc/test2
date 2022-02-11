@@ -192,11 +192,18 @@
 
 		<!--라벨 발행 포맷 -->
 		<div class="print" id="print_me" v-if="print_yn_1">
-			<section class="print-mdf-1" v-for="(item, index) in printData" :key="index"
+			<section class="print-autolabeller-1" v-for="(item, index) in printData" :key="index"
 				:id="'print_me' + index" style="page-break-after:always;">
-					<LabelFormat
+					<AutoLabeller1
 					:barno="item.barno"
-					:qty="item.qty"/>
+					:ptdesc="item.ptdesc"
+					:ptcode="item.ptcode"
+					:lotno="item.lotno"
+					:date="item.date"
+					:matnr="item.matnr"
+					:maktx="item.maktx"
+					:qty="item.qty"
+					:meins="item.meins"/>
 			</section>
 		</div>
 	</div>
@@ -206,15 +213,16 @@ import $axios from 'axios';
 import { reactive, ref, onMounted, onUnmounted } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3'
 import { useStore } from 'vuex';
-import { getdata, formatDate } from '@/helper/filter.js';
+import { getdata, formatDate, addDate } from '@/helper/filter.js';
 import { searchSelectBox } from '@/helper/sql.js';
-import LabelFormat from "@/components/LabelFormat.vue";
+// import LabelFormat from "@/components/label/LabelFormat.vue";
+import AutoLabeller1 from "@/components/label/AutoLabeller1.vue";
 
 export default {
 	name:'label_print_hist',
 	components:{
     AgGridVue,
-		LabelFormat
+		AutoLabeller1
 	},
 	setup(props, {emit}) {
 		// let url = ref(process.env.VUE_APP_SERVER_URL);
@@ -227,8 +235,8 @@ export default {
 		//달력
     let isDark = ref(false);
     let isRange = ref(true);
-		let date = ref({start:new Date(), end:new Date()});
-    // let date = ref({start:new Date(addDate("-6")), end:new Date()});
+		// let date = ref({start:new Date(), end:new Date()});
+    let date = ref({start:new Date(addDate("-6")), end:new Date()});
 
 		//check box
 		let chkStock = ref(false);
@@ -283,6 +291,10 @@ export default {
 			{headerName: 'S/O품번', field: 'kdpos', width: 80, cellStyle: {textAlign: "center"}},
 			{headerName: '발행일자', field: 'prodate', width: 80, cellStyle: {textAlign: "center"}},
 			{headerName: '갱신일자', field: 'upddate1', width: 80, cellStyle: {textAlign: "center"}},
+
+			{headerName: '패턴명', field: 'ptdesc', width: 80, cellStyle: {textAlign: "left"}},
+			{headerName: '패턴코드', field: 'ptcode', width: 80, cellStyle: {textAlign: "left"}},
+			{headerName: 'Lot No', field: 'lotno', width: 80, cellStyle: {textAlign: "left"}},
 		]);
 		var gridOptions = {
 			defaultColDef: {
@@ -315,7 +327,7 @@ export default {
 		const printObj = {
         // url: 'http://localhost:8080/',
         id:'print_me',
-        preview: false,
+        // preview: false,
         previewPrintBtnLabel:'인쇄',
         previewTitle: '인쇄 미리 보기', // The title of the preview window. The default is 打印预览
         popTitle: 'Print Label',
@@ -499,7 +511,15 @@ export default {
 				// print_yn_1.value = true;
 				printData.splice(0, printData.length);
 				for(var j=0; j<selectedData.length; j++ ){
-					printData.push({barno:selectedData[j].barno, qty:selectedData[j].qty});
+					printData.push({barno:selectedData[j].barno,
+													ptdesc:selectedData[j].ptdesc,
+													ptcode:selectedData[j].ptcode,
+													lotno:selectedData[j].lotno,
+													date:selectedData[j].prodate,
+													matnr:selectedData[j].matnr,
+													maktx:selectedData[j].maktx,
+													qty:selectedData[j].qty,
+													meins:selectedData[j].meins});
 				}
 				// console.log("[printData]", printData);
 			}
