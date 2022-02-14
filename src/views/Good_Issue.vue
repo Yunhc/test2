@@ -34,7 +34,7 @@
         <span class="input-group-text btn-sm" id="basic-addon1"
           :style="{width:'80px', display:'inline-block', 'text-align':'right'}">DO
         </span>
-        <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Deliver Order" aria-label="Deliver Order" aria-describedby="basic-addon1"
+        <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Delivery Order" aria-label="Delivery Order" aria-describedby="basic-addon1"
           id="txtDO"
           ref="txtDO"
           @keyup.enter='displayClick'
