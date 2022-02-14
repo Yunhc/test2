@@ -89,6 +89,7 @@ import about from '@/views/About.vue';
 import qrcode from '@/views/QRCode.vue';
 import print from '@/views/Print.vue';
 import room from '@/views/OneRoom.vue';
+import good_receipt from '@/views/Good_Receipt.vue';
 import usermanagement from '@/views/UserManagement.vue';
 import mdi from '@/views/Mdi.vue';
 import label_print_hist from '@/views/Label_Print_Hist.vue';
@@ -117,6 +118,7 @@ export default {
 		qrcode,
 		print,
 		room,
+		good_receipt,
 		usermanagement,
 		mdi,
 		label_print_hist,
@@ -149,6 +151,7 @@ export default {
 			{pid: 'M000', id:'mdi', name:'MDI Test'},
 			{pid: 'M100', id:'about', name:'About'},
 			{pid: 'M200', id:'room', name:'Room'},
+			{pid: 'M200', id:'good_receipt', name:'구매입고'},
 			{pid: 'M250', id:'label_print_hist', name:'라벨 발행 이력'},
 			{pid: 'M250', id:'parents', name:'Slot 테스트'},
 			{pid: 'M520', id:'fg_receipt', name:'Finished Goods Receipt'},
