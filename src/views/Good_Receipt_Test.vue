@@ -94,7 +94,6 @@
         @click='displayClick'>조회</button>
       </div>
     </div>
-
 		<div class="window-order"
       :style="{
         'height': `calc(${window_height - 109 - 40 - 123}px)`
