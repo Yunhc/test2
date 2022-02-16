@@ -23,13 +23,6 @@
 
 
     <div class="window-search-1">
-      <!-- <div align="right" :style="{height:'40px', margin:'0px 0px 0px 0px'}">
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
-        @click='DetailClick'>상세</button>
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 0px 0px 0px', width:'70px'}"
-        @click='DOClick'>PO</button>
-      </div> -->
-
       <div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px', 'z-index':'1', height:'40px', border:'1px solid transparent'}">
 				<v-date-picker
 					mode="date"
@@ -291,11 +284,9 @@
       }
 
       function displayClick(){
-        console.log(req_param.txtPO);
-
         var tmpscan = document.getElementById("scan");
         tmpscan.setAttribute('inputmode','none');
-        console.log(tmpscan.inputMode);
+        // console.log(tmpscan.inputMode);
 
         //PO 조회 API전송
         fn_POSearch();
@@ -303,9 +294,7 @@
 
       function fn_POSearch(){
         let urlPost = url.value + '/dw/good_receipt/search';
-
-        console.log("[req_param]", req_param);
-
+        // console.log("[req_param]", req_param);
 				// clear data
 				recvData.splice(0, recvData.length);
 
@@ -320,99 +309,64 @@
             i_date_to: formatDate(new Date(), "YYYYMMDD"),
         })
         .then((res) => {
-          console.log("[response data]", res.data);
-
-					// recvData = res.data;
+          // console.log("[response data]", res.data);
           if(res.data.length > 0) {
             if (res.data[0].code == "NG"){
               msg_color.value = "red";
               msg.value = res.data[0].message;
-              // lblPOdate.value = "";
-              // lblVendor.value = "";
-              // lblSL.value = "";
-
-              // txtPO.value.focus();
-              // txtPO.value.select();
             } else{
               msg_color.value = "blue";
               msg.value = "OK";
               PlaySound("OK");
 
-              // scan.value.focus();
-              // scan.value.select();
-
 							let tmpNo = "";
-							let tmpOrder = ([]);
-							let tmpItem = ([]);
-
 							for(var i=0; i<res.data.length; i++){
 								if(tmpNo == res.data[i].ebeln){
-									tmpItem.push({ebeln:res.data[i].ebeln,
-																ebelp:res.data[i].ebelp,
-																burks:res.data[i].burks,
-																ekgrp:res.data[i].ekgrp,
-																bstyp:res.data[i].bstyp,
-																ematn:res.data[i].ematn,
-																txz01:res.data[i].txz01,
-																werks:res.data[i].werks,
-																lgort:res.data[i].lgort,
-																menge:res.data[i].menge,
-																meins:res.data[i].meins,
-															});
+                  recvData[recvData.length - 1].data.push({
+                    ebeln:res.data[i].ebeln,
+                    ebelp:res.data[i].ebelp,
+                    burks:res.data[i].burks,
+                    ekgrp:res.data[i].ekgrp,
+                    bstyp:res.data[i].bstyp,
+                    ematn:res.data[i].ematn,
+                    txz01:res.data[i].txz01,
+                    werks:res.data[i].werks,
+                    lgort:res.data[i].lgort,
+                    menge:res.data[i].menge,
+                    meins:res.data[i].meins,
+                  });
 								}
 								else{
-									if(tmpNo !=""){
-										recvData.push({order:tmpOrder, data:tmpItem});
-
-										tmpOrder.splice(0, tmpOrder.length);
-										tmpItem.splice(0, tmpItem.length);
-									}
-
-									tmpOrder.push({ebeln:res.data[i].ebeln,
-																bsart:res.data[i].bsart,
-																bedat:res.data[i].bedat,
-                                lifnr:res.data[i].lifnr,
-																name1:res.data[i].name1,
-																procqty:res.data[i].procqty,
-																procflag:res.data[i].procflag
-															});
-
-									tmpItem.push({ebeln:res.data[i].ebeln,
-																ebelp:res.data[i].ebelp,
-																burks:res.data[i].burks,
-																ekgrp:res.data[i].ekgrp,
-																bstyp:res.data[i].bstyp,
-																ematn:res.data[i].ematn,
-																txz01:res.data[i].txz01,
-																werks:res.data[i].werks,
-																lgort:res.data[i].lgort,
-																menge:res.data[i].menge,
-																meins:res.data[i].meins,
-															});
+                  recvData.push({
+                    order:
+                    [{
+                      ebeln:res.data[i].ebeln,
+                      bsart:res.data[i].bsart,
+                      bedat:res.data[i].bedat,
+                      lifnr:res.data[i].lifnr,
+                      name1:res.data[i].name1,
+                      procqty:res.data[i].procqty,
+                      procflag:res.data[i].procflag
+                    }],
+                    data:
+                    [{
+                      ebeln:res.data[i].ebeln,
+                      ebelp:res.data[i].ebelp,
+                      burks:res.data[i].burks,
+                      ekgrp:res.data[i].ekgrp,
+                      bstyp:res.data[i].bstyp,
+                      ematn:res.data[i].ematn,
+                      txz01:res.data[i].txz01,
+                      werks:res.data[i].werks,
+                      lgort:res.data[i].lgort,
+                      menge:res.data[i].menge,
+                      meins:res.data[i].meins,
+                    }]
+                  });
 								}
 								tmpNo = res.data[i].ebeln;
-
-								// recvData.push({	ebeln:res.data[i].ebeln,
-								// 								ebelp:res.data[i].ebelp,
-								// 								bsart:res.data[i].bsart,
-								// 								bedat:res.data[i].bedat,
-								// 								lifnr:res.data[i].lifnr,
-								// 								name1:res.data[i].name1,
-								// 								burks:res.data[i].burks,
-								// 								ekgrp:res.data[i].ekgrp,
-								// 								bstyp:res.data[i].bstyp,
-								// 								ematn:res.data[i].ematn,
-								// 								txz01:res.data[i].txz01,
-								// 								werks:res.data[i].werks,
-								// 								lgort:res.data[i].lgort,
-								// 								menge:res.data[i].menge,
-								// 								meins:res.data[i].meins,
-								// 								procqty:res.data[i].procqty,
-								// 								procflag:res.data[i].procflag
-								// 							});
 							}
-							recvData.push({order:tmpOrder, data:tmpItem});
-							console.log("[recvData data]", recvData);
+							// console.log("[recvData data]", recvData);
             }
           }
           else {
