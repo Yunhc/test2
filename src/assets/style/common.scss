@@ -221,6 +221,9 @@
 	border-radius: 5px;
 	overflow:auto;
 	border: 2px solid $color-dw-green;
+	label{
+		border: 1px solid transparent;
+	}
 }
 
 .order-gr {
@@ -242,6 +245,8 @@
 	border-radius: 6px;
 }
 .order-gr-item-1 {
+	border: 1px solid gainsboro;
+	border-radius: 6px;
 	height: 100px;
 	// border: 1px solid $color-dw-green;
 	margin: 0px 0px 0px 0px;
