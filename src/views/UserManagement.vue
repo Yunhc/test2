@@ -432,6 +432,9 @@
         //     if (node.rowIndex === 0) {
         //         node.setSelected(true);
         //     }
+
+        //     // var rowdata = gridApi.value.getdata()
+        //     console.log("[node.getdata]", node.data.userid );
         // });
 
         // gridApi.value.forEachNodeAfterFilter( function(node) {
