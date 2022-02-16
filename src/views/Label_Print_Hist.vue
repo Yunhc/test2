@@ -192,7 +192,7 @@
 
 		<!--라벨 발행 포맷 -->
 		<div class="print" id="print_me" v-if="print_yn_1">
-			<section class="print-autolabeller-1" v-for="(item, index) in printData" :key="index"
+			<section class="print-autolabeller" v-for="(item, index) in printData" :key="index"
 				:id="'print_me' + index" style="page-break-after:always;">
 					<AutoLabeller1
 					:barno="item.barno"
@@ -296,6 +296,12 @@ export default {
 			{headerName: '패턴코드', field: 'ptcode', width: 80, cellStyle: {textAlign: "left"}},
 			{headerName: 'Lot No', field: 'lotno', width: 80, cellStyle: {textAlign: "left"}},
 		]);
+		let columnsum= ([{
+			werks:'합계',
+			qty:0,
+			prtcnt:0,
+		}]);
+
 		var gridOptions = {
 			defaultColDef: {
 				width:150,
@@ -320,6 +326,12 @@ export default {
 			getRowHeight: function() {
 				return 35;
 			},
+			// pinnedBottomRowData:[{
+			// 	werks:'합계',
+			// 	qty:0,
+			// 	prtcnt:0,
+			// }],
+			pinnedBottomRowData:columnsum,
 		};
 
 		let print_yn_1 = ref(false);
@@ -327,7 +339,7 @@ export default {
 		const printObj = {
         // url: 'http://localhost:8080/',
         id:'print_me',
-        // preview: false,
+        preview: false,
         previewPrintBtnLabel:'인쇄',
         previewTitle: '인쇄 미리 보기', // The title of the preview window. The default is 打印预览
         popTitle: 'Print Label',
@@ -474,15 +486,40 @@ export default {
 				t_date: req_param.t_date
 			})
 			.then((res) => {
-				// console.log("[response data]", res.data);
 				recvData.value = res.data;
+				columnsum[0].qty = 0;
+				columnsum[0].prtcnt = 0;
+				if(res.data.length > 0){
+					// columnsum[0].qty = recvData.value.reduce((prev, next) => {prev + next.qty});
+					// var nRtn = recvData.value.reduce(function(previousValue, currentValue, currentIndex, array1){
+					// 	var sum = 0;
+					// 	console.log("previousValue ", previousValue);
+					// 	console.log("currentValue ", currentValue);
+					// 	console.log("currentIndex ", currentIndex);
+					// 	console.log("array1 ", array1);
+					// 	sum = parseInt(previousValue.qty) + parseInt(currentValue.qty);
+					// 	return ({qty:sum});
+					// });
 
-				setTimeout(function () {
-            autoSizeAll(false);
-          }, 1000);
+					var nRtn = recvData.value.reduce(function(previousValue, currentValue){
+						var sumqty = 0;
+						var sumprtcnt = 0;
+						sumqty = parseFloat(previousValue.qty) + parseFloat(currentValue.qty);
+						sumprtcnt = parseFloat(previousValue.prtcnt) + parseFloat(currentValue.prtcnt);
+						return ({qty:sumqty, prtcnt:sumprtcnt});
+					});
+					columnsum[0].qty = nRtn.qty;
+					columnsum[0].prtcnt = nRtn.prtcnt;
+					// console.log("[columnsum data]", columnsum);
 
-					msg_color.value = "blue";
-					msg.value = "Total Count : " + recvData.value.length ;
+					setTimeout(function () {
+						autoSizeAll(false);
+					});
+				}
+
+				gridApi.value.setPinnedBottomRowData(columnsum);
+				msg_color.value = "blue";
+				msg.value = "Total Count : " + recvData.value.length ;
 			}) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
 				//.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
 			.catch(err => {
