@@ -92,6 +92,7 @@ import room from '@/views/OneRoom.vue';
 import good_receipt from '@/views/Good_Receipt.vue';
 import good_receipt_test from '@/views/Good_Receipt_Test.vue';
 import usermanagement from '@/views/UserManagement.vue';
+import auth_management from '@/views/Auth_Management.vue';
 import mdi from '@/views/Mdi.vue';
 import label_print_hist from '@/views/Label_Print_Hist.vue';
 import parents from '@/views/Parents.vue';
@@ -122,6 +123,7 @@ export default {
 		good_receipt,
 		good_receipt_test,
 		usermanagement,
+		auth_management,
 		mdi,
 		label_print_hist,
 		parents,
@@ -148,6 +150,7 @@ export default {
 		let menus = reactive([]);
 		let menus_sub = reactive([
 			{pid: 'M000', id:'usermanagement', name:'사용자관리'},
+			{pid: 'M000', id:'auth_management', name:'권한관리'},
 			{pid: 'M000', id:'print', name:'Print Test'},
 			{pid: 'M000', id:'qrcode', name:'Barcode Test'},
 			{pid: 'M000', id:'mdi', name:'MDI Test'},
