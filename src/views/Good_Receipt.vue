@@ -32,7 +32,7 @@
 
       <div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px', 'z-index':'1'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
-          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">PO
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">PO 번호
         </span>
         <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Purchase Order" aria-label="Purchase Order" aria-describedby="basic-addon1"
           id="txtPO"
@@ -54,7 +54,7 @@
 
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
-          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">PO Date
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">PO 날짜
         </span>
         <label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="PO Date"
             aria-label="PO Date" aria-describedby="basic-addon1"
@@ -64,10 +64,10 @@
       </div>
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
-          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Customer
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Vendor
         </span>
-        <label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Customer"
-            aria-label="Customer" aria-describedby="basic-addon1"
+        <label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Vendor"
+            aria-label="Vendor" aria-describedby="basic-addon1"
             :style="{'text-align':'left'}">
             {{lblVendor}}
         </label>
@@ -153,6 +153,7 @@
       popupposearch,
       popupbarsearch,
     },
+
     setup(props,{emit}){
       let url = ref(process.env.VUE_APP_SERVER_URL);
       let window_width = ref(window.innerWidth);
@@ -188,24 +189,59 @@
       let columnApi = ref(null);
 
       let columnDefs= reactive([
-        // {headerName: 'Material', field: 'matnr', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-        {headerName: '오더번호', field: 'EBELN', width: 10, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-        {headerName: 'Item No', field: 'EBELP', width: 8, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: 'PO 유형', field: 'BSART', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: 'PO 일자', field: 'BEDAT', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '공급업체', field: 'LIFNR', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '공급업체명명', field: 'NAME1', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-        {headerName: '회사코드', field: 'BUKRS', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '구매그룹', field: 'EKGRP', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '아이템유형', field: 'BSTYP', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '자재코드', field: 'EMATN', width: 12, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: '자재명', field: 'TXZ01', width: 20, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '플랜트', field: 'WERKS', width: 10, cellStyle: {textAlign: "center"}},
-        {headerName: '저장위치', field: 'LGORT', width: 10, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: '오더수량', field: 'MENGE', width: 8, cellStyle: {textAlign: "right"}, sortable: true},
-        {headerName: '단위', field: 'MEINS', width: 8, cellStyle: {textAlign: "left"}, sortable: true},
-        {headerName: '실적수량', field: 'PROCQTY', width: 8, cellStyle: {textAlign: "right"}, sortable: true},
-        {headerName: '처리여부', field: 'PROCFLAG', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        // {headerName: '오더번호', field: 'ebeln', width: 10, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        // {headerName: 'Item No', field: 'ebelp', width: 8, hide: true, cellStyle: {textAlign: "center"}},
+        // {headerName: 'PO 유형', field: 'bsart', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        // {headerName: 'PO 일자', field: 'bedat', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        // {headerName: '공급업체', field: 'lifnr', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        // {headerName: '공급업체명', field: 'name1', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        // {headerName: '회사코드', field: 'bukrs', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        // {headerName: '구매그룹', field: 'ekgrp', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        // {headerName: '아이템유형', field: 'bstyp', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        // {headerName: '자재코드', field: 'ematn', width: 12, cellStyle: {textAlign: "center"}, sortable: true},
+        // {headerName: '자재명', field: 'txz01', width: 20, hide: true, cellStyle: {textAlign: "center"}},
+        // {headerName: '플랜트', field: 'werks', width: 10, cellStyle: {textAlign: "center"}},
+        // {headerName: '저장위치', field: 'lgort', width: 10, cellStyle: {textAlign: "center"}, sortable: true},
+        // {headerName: '오더수량', field: 'menge', width: 8, cellStyle: {textAlign: "right"}, sortable: true},
+        // {headerName: '단위', field: 'meins', width: 8, cellStyle: {textAlign: "left"}, sortable: true},
+        // {headerName: '실적수량', field: 'procqty', width: 8, cellStyle: {textAlign: "right"}, sortable: true},
+        // {headerName: '처리여부', field: 'procflag', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+
+        {headerName: '오더번호', field: 'ebeln', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        {headerName: '품번', field: 'ebelp', width: 6, cellStyle: {textAlign: "center"}},
+        {headerName: '오더유형', field: 'bsart', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '오더일자', field: 'bedat', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '공급업체', field: 'lifnr', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '공급업체명', field: 'name1', width: 20, hide: true, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        {headerName: '공급플랜트', field: 'reswk', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '회사코드', field: 'bukrs', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '구매그룹', field: 'ekgrp', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '아이템유형', field: 'bstyp', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '자재코드', field: 'ematn', width: 10, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: '자재명', field: 'txz01', width: 20, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '플랜트', field: 'werks', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '저장위치', field: 'lgort', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: '오더수량', field: 'menge', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
+        {headerName: '단위', field: 'meins', width: 4, cellStyle: {textAlign: "left"}, sortable: true},
+        {headerName: '환산수량', field: 'menge2', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
+        {headerName: '누적수량', field: 'procqty', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
+        {headerName: '스캔수량', field: 'scanqty', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
+        {headerName: '환산단위', field: 'meins2', width: 4, cellStyle: {textAlign: "left"}, sortable: true},
+        {headerName: '처리여부', field: 'procflag', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: '마감여부', field: 'elikz', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: '수량초과허용', field: 'uebtk', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: '수량초과범위', field: 'uebto', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: '최대가능수량', field: 'maxqty', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: 'LPMFO', field: 'var1', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: 'LPMFI', field: 'var2', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: 'LPMBO', field: 'var3', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: 'LPMBI', field: 'var4', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: 'Plate F', field: 'var5', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: 'Plate B', field: 'var6', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: '외자여부', field: 'kalsk', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: 'S/O 번호', field: 'kdauf', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: 'S/O 품번', field: 'kdpos', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: '재고유형', field: 'insmk', width: 8, cellStyle: {textAlign: "center"}, sortable: true},
       ]);
       var gridOptions = {
         defaultColDef: {
@@ -216,6 +252,10 @@
           lockPosition: true, //컬럼 드래그로 이동 방지
           cellStyle: {textAlign: "left"},
         },
+        // pinnedBottomRowData: [
+        pinnedTopRowData: [
+          {ebelp: '합계', menge: null, menge2: null, procqty: null, scanqty: null}
+        ],
         columnDefs: columnDefs,
         rowData: null,
         rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
@@ -282,7 +322,7 @@
       }
 
       function fn_POSearch(){
-        let urlPost = url.value + '/dw/good_receipt/search';
+        let urlPost = url.value + '/dw/good_receipt/detail_search';
 
         console.log("[req_param]", req_param);
         // console.log(getdata(req_param.txtScan));
@@ -296,8 +336,8 @@
             i_userid: store.state.auth.user[0].userid,
             i_ord_no: req_param.txtPO,
             i_ord_item_no: req_param.txtPOitem,
-            i_date_from: "",
-            i_date_to: "",
+            // i_date_from: "",
+            // i_date_to: "",
         })
         .then((res) => {
           console.log("[response data]", res.data);
@@ -353,8 +393,7 @@
           console.log(req_param.txtScan);
         }
 
-        if (lblVendor.value) {  //DO가 입력된 경우만 스캔을 허용 한다.
-                                //DO입력없이 바코드 스캔시 스캔이력이 있으면 해당 DO정보 불러오는 기능 추가 검토.
+        if (lblVendor.value) {  //오더가 조회된 경우만 스캔을 허용 한다.
           let urlPost = url.value + '/dw/good_receipt/scan';
 
           console.log("[req_param]", req_param);
@@ -363,17 +402,15 @@
           //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
           $axios.post(urlPost, {
               i_lang: "EN",
-              i_userid: store.state.auth.user[0].userid,
               i_werks: getdata(store.state.auth.user[0].plantcd),
-              i_vbeln: req_param.txtPO,
+              i_userid: store.state.auth.user[0].userid,
+              i_ord_no: req_param.txtPO,
+              i_ord_item_no: req_param.txtPOitem,
               i_barno: req_param.txtScan,
-              i_qty: "0",
-              i_delflag: "N",   //신규 스캔시 N, 삭제시 Y (이미 스캔한 바코드를 다시 스캔할 경우 삭제여부 문의하고 삭제 선택시) 
-              i_calltype: "S"   //스캔화면 호출시 S, 바코드 삭제화면 호출시 D
           })
           .then((res) => {
             console.log("[response data]", res.data);
-            console.log("[response data] = res.data[0].barno -- ", res.data[0].matnr);
+            console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
             console.log("[response data] = req_param.txtScan -- ", req_param.txtScan);
 
             if (res.data[0].code == "NG"){
@@ -382,7 +419,27 @@
             } else{
               msg_color.value = "blue";
               msg.value = "OK";
-              recvData.value = res.data;
+
+              let isBreak = false;
+              // let addQty = 0;
+
+              gridApi.value.forEachNode( (node) => {
+                console.log("[node.getdata]", node.rowIndex, " : ", node.data.ematn);
+                if (isBreak == false) {
+                  if (node.data.ematn === res.data[0].matnr) {
+                    console.log("scanqty : ", node.data.scanqty);
+                    console.log("procqty : ", node.data.procqty);
+                    // node.data.scanqty += res.data[0].qty;
+                    // addQty = Number(res.data[0].qty) + 7;
+                    // addQty = addQty + Number(node.data.scanqty) + 3;
+                    node.setDataValue('procqty', Number(node.data.procqty)+Number(res.data[0].qty));
+                    node.setDataValue('scanqty', Number(node.data.scanqty)+Number(res.data[0].qty));
+
+                    isBreak = true;
+                  }
+                }
+                // console.log("isBreak : ", isBreak);
+              });
             }
             req_param.txtScan = "";
             scan.value.focus();
@@ -426,7 +483,7 @@
 
       function POcloseClick(){
         popuppoisopen.value = false;
-        console.log("[Customer] : ", lblVendor.value);
+        console.log("[Vendor] : ", lblVendor.value);
         if (lblVendor.value) {
           scan.value.focus();
           // scan.value.select();
@@ -577,6 +634,17 @@
         closeClick,
         fn_SelectAll,
       };
+    },
+
+    method: {
+      makeData (){
+        let sum = [{
+          make: '합계',
+          menge: this.rowData.reduce((prev, next) => {prev + next.qty}),
+          menge2: this.rowData.reduce((next, prev) => {next + prev.qty}),
+        }]
+        this.gridOptions.api.setPinnedTopRowData(sum)
+      },
     },
   }
 </script>
