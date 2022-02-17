@@ -30,6 +30,12 @@
 	padding:0px 5px 0px 5px;
 	// border:1px solid green;
 }
+.window-search-2 {
+	width:100%;
+	height:66px;
+	padding:0px 5px 0px 5px;
+	// border:1px solid red;
+}
 .window-search-3 {
 	width:100%;
 	height:98px;
@@ -59,8 +65,8 @@
 .window-grid-1 {
 	margin:0px 5px 0px 5px;
 	overflow:auto;
+	// border:1px solid red;
 }
-
 
 .window-save-b {
 	width:100%;
@@ -167,6 +173,16 @@
 	background:white;
 	float: right;
 	width: 50%;
+}
+.left-box-40 {
+	background:white;
+	float: left;
+	width: 40%;
+}
+.right-box-60 {
+	background:white;
+	float: right;
+	width: 60%;
 }
 /******************************************************************************/
 .pda-panel-7{
