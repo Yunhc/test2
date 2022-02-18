@@ -12,7 +12,7 @@
     <!-- Detail버튼 클릭시 스캔한 바코드 리스트 조회(삭제) 팝업화면 -->
     <popupbarsearch v-if="popupbarisopen"
       :strPO="req_param.txtPO"
-      :barData = "scanData"
+      :barData="scanData"
       @BarcloseClick="BarcloseClick">
     </popupbarsearch>
 
@@ -48,7 +48,7 @@
           @keyup.enter='displayClick'
           @focus='fn_SelectAll'
           data-ref="InputContent" inputmode="numeric"
-          v-model="req_param.txtPOitem">          
+          v-model="req_param.txtPOitem">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'70px'}"
         @click='displayClick'>조회</button>
       </div>
@@ -142,7 +142,7 @@
   import { useStore } from 'vuex';
   import { getdata } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
-  import popupyn from '@/views/PopupYN.vue';  
+  import popupyn from '@/views/PopupYN.vue';
   import popupposearch from '@/views/Good_Receipt_PO_Search.vue';
   import popupbarsearch from '@/views/Good_Receipt_Bar_Search.vue';
 
@@ -163,7 +163,7 @@
       let popupTitle = ref(null);
       let popupMsg = ref(null);
       let popupisopen = ref(false);
-    
+
       let popupbarisopen = ref(false);
       let popuppoisopen = ref(false);
 
@@ -211,10 +211,10 @@
         {headerName: '환산수량', field: 'menge2', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
         {headerName: '누적수량', field: 'procqty', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
         // {headerName: '스캔수량', field: 'scanqty', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
-        {headerName: '스캔수량', field: 'scanqty', width: 6, 
+        {headerName: '스캔수량', field: 'scanqty', width: 6,
           cellStyle: function(params){
             if (params.value != "0") {
-              return {textAlign: 'right', color: 'blue', backgroundColor: 'yellow', 
+              return {textAlign: 'right', color: 'blue', backgroundColor: 'yellow',
                       fontSize: '15px', 'font-weight': 'bold'};
             } else {
               // return null;
@@ -281,13 +281,14 @@
           var focusedCell = gridApi.value.getFocusedCell()
           var colId = focusedCell.column.colId
           var rowNum = focusedCell.rowIndex
-          
+
           console.log("colId/rowNum : ", colId, "/", rowNum);
           console.log("selectedRow : ", selectedRow, "/", selectedRow.ebelp);
 
           //합계행도 rowNum이 0임
           if (selectedRow.ebelp != "합계"){
             popupbarisopen.value = true;
+            console.log("scanData : ", scanData.value);
           }
         },
 
@@ -336,7 +337,7 @@
             // alert("Please input P/O number first.")
             msg_color.value = "red";
             msg.value = "Please input P/O number first.";
-            // PlaySound("OK");            
+            // PlaySound("OK");
             txtPO.value.focus();
           }
         // }
@@ -395,7 +396,7 @@
             msg.value = "No Data";
             lblPOdate.value = "";
             lblVendor.value = "";
-            lblSL.value = "";           
+            lblSL.value = "";
           }
 
           setTimeout(function () {
@@ -487,13 +488,13 @@
                       node.setDataValue('scanqty', Number(node.data.scanqty)+Number(res.data[0].qty));
 
                       //바코드 데이터 저장하기
-                      scanData = res.data;
-                      console.log("scanData : ", scanData);
+                      scanData.value = res.data;
+                      console.log("scanData : ", scanData.value);
                       isBreak = true;
                     }
                     else {
                       msg_color.value = "red";
-                      msg.value = "구매가능 수량을 초과하였습니다.";                
+                      msg.value = "구매가능 수량을 초과하였습니다.";
                     }
                   }
                 }
@@ -562,7 +563,7 @@
       function sendClick(procflag) {
         console.log("[ProcFlag] : ", procflag);
         console.log("[P/O No] : ", req_param.txtPO);
-        if ((!req_param.txtPO) || (!lblVendor.value)) {    //PO가 조회된 경우만 처리. 
+        if ((!req_param.txtPO) || (!lblVendor.value)) {    //PO가 조회된 경우만 처리.
           alert("Please search P/O information first");
         }
         else {
@@ -664,7 +665,7 @@
         popupMsg,
         popupisopen,
         yesClick,
-        noClick,    
+        noClick,
         txtPO,
         txtPOitem,
         lblPOdate,
