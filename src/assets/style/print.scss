@@ -17,9 +17,23 @@
 	// border: 1px solid red;
 }
 /******************************************************************************/
+/*오토라벨러 라벨 형식*/
 .print-autolabeller {
-	height: 374px;
+	// height: 374px;
+	height: 748px;
 	width: 522px;
+}
+.print-autolabeller1 {
+	height: 374px;
+	// height: 748px;
+	width: 522px;
+	page-break-after: always;
+}
+.print-autolabeller2 {
+	height: 374px;
+	// height: 748px;
+	width: 522px;
+	page-break-after: always;
 }
 .print-al-content {
 	// background:yellow;
@@ -30,12 +44,14 @@
 		text-align: center;
 		padding: 0px 0px 0px 0px;
 		font-weight: bold;
-		// border: transparent;
+		border: transparent;
+		// border: 1px solid red;
 	}
 	input{
 		padding: 0px 0px 0px 5px;
 		font-weight: bold;
 		border: transparent;
+		// border: 1px solid red;
 	}
 }
 .div-close{
@@ -52,6 +68,8 @@
 	// border-bottom: 1px solid black;
 	border-left: 1px solid black;
 }
+/******************************************************************************/
+/*세로선*/
 .print-line{
 	width: 1px;
 	height: 100px;
@@ -59,23 +77,62 @@
 	position: fixed;
 	z-index: 60; //div를 최상위로 올린다.
 }
+.print-line-v-1{
+	width: 1px;
+	height: 52px;
+	border-left: 1px solid black;
+	margin: -1px 0px -1px 0px;
+	z-index: 60; //div를 최상위로 올린다.
+}
+.print-line-v-2{
+	width: 1px;
+	height: 39px;
+	border-left: 1px solid black;
+	margin: -1px 0px -1px 0px;
+	z-index: 60; //div를 최상위로 올린다.
+}
+.print-line-v-3{
+	width: 1px;
+	height: 44px;
+	border-left: 1px solid black;
+	margin: -1px 0px -1px 0px;
+	z-index: 60; //div를 최상위로 올린다.
+}
+.print-line-v-4{
+	width: 1px;
+	height: 107px;
+	border-left: 1px solid black;
+	margin: -1px 0px -1px 0px;
+	z-index: 60; //div를 최상위로 올린다.
+}
+.print-line-v-5{
+	width: 1px;
+	height: 75px;
+	border-left: 1px solid black;
+	margin: -1px 0px -1px 0px;
+	z-index: 60; //div를 최상위로 올린다.
+}
+/******************************************************************************/
 /* 화면 분할*/
 .al-left-box {
 	background:white;
 	float: left;
 	width: 80%;
+	overflow: hidden;
 }
 .al-right-box {
-	background:white;
+	background:transparent;
 	float: right;
 	width: 20%;
+	overflow: hidden;
 }
 /******************************************************************************/
+/*바코드*/
 .bardiv-normal {
 	background:transparent;
 	height: 60px;
 	width: 400px;
-	z-index: 21;
+	z-index: 51;
 	// border: 1px solid red;
 }
 .bardiv-rotation-90 {
@@ -83,7 +140,14 @@
 	height: 60px;
 	width: 400px;
 	transform: rotate(90deg);
-	z-index: 21;
+	z-index: 51;
+	// border: 1px solid red;
+}
+.bardiv-dataMatrix {
+	background:transparent;
+	z-index: 51;
+	padding: 0px 0px 0px 10px;
+	margin: 0px 0px 0px 0px;
 	// border: 1px solid red;
 }
 /******************************************************************************/

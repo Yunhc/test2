@@ -192,19 +192,33 @@
 
 		<!--라벨 발행 포맷 -->
 		<div class="print" id="print_me" v-if="print_yn_1">
-			<section class="print-autolabeller" v-for="(item, index) in printData" :key="index"
+			<div class="print-autolabeller" v-for="(item, index) in printData" :key="index"
 				:id="'print_me' + index" style="page-break-after:always;">
-					<AutoLabeller1
-					:barno="item.barno"
-					:ptdesc="item.ptdesc"
-					:ptcode="item.ptcode"
-					:lotno="item.lotno"
-					:date="item.date"
-					:matnr="item.matnr"
-					:maktx="item.maktx"
-					:qty="item.qty"
-					:meins="item.meins"/>
-			</section>
+					<div>
+						<AutoLabeller1
+						:barno="item.barno"
+						:ptdesc="item.ptdesc"
+						:ptcode="item.ptcode"
+						:lotno="item.lotno"
+						:date="item.date"
+						:matnr="item.matnr"
+						:maktx="item.maktx"
+						:qty="item.qty"
+						:meins="item.meins"/>
+					</div>
+					<div>
+						<AutoLabeller2
+						:barno="item.barno"
+						:ptdesc="item.ptdesc"
+						:ptcode="item.ptcode"
+						:lotno="item.lotno"
+						:date="item.date"
+						:matnr="item.matnr"
+						:maktx="item.maktx"
+						:qty="item.qty"
+						:meins="item.meins"/>
+					</div>
+			</div>
 		</div>
 	</div>
 </template>
@@ -215,14 +229,15 @@ import { AgGridVue } from 'ag-grid-vue3'
 import { useStore } from 'vuex';
 import { getdata, formatDate, addDate } from '@/helper/filter.js';
 import { searchSelectBox } from '@/helper/sql.js';
-// import LabelFormat from "@/components/label/LabelFormat.vue";
 import AutoLabeller1 from "@/components/label/AutoLabeller1.vue";
+import AutoLabeller2 from "@/components/label/AutoLabeller2.vue";
 
 export default {
 	name:'label_print_hist',
 	components:{
     AgGridVue,
-		AutoLabeller1
+		AutoLabeller1,
+		AutoLabeller2
 	},
 	setup(props, {emit}) {
 		// let url = ref(process.env.VUE_APP_SERVER_URL);
