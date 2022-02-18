@@ -12,6 +12,7 @@
     <!-- Detail버튼 클릭시 스캔한 바코드 리스트 조회(삭제) 팝업화면 -->
     <popupbarsearch v-if="popupbarisopen"
       :strPO="req_param.txtPO"
+      :barData = "scanData"
       @BarcloseClick="BarcloseClick">
     </popupbarsearch>
 
@@ -172,6 +173,8 @@
       let recvData = reactive([]);
       let strPONo = ref(null);
 
+      let scanData = reactive([]);  //스캔한 바코드 데이터 저장
+
       //focus 이동을 위한 변수
 
       let txtPO = ref(null);
@@ -189,24 +192,6 @@
       let columnApi = ref(null);
 
       let columnDefs= reactive([
-        // {headerName: '오더번호', field: 'ebeln', width: 10, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-        // {headerName: 'Item No', field: 'ebelp', width: 8, hide: true, cellStyle: {textAlign: "center"}},
-        // {headerName: 'PO 유형', field: 'bsart', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        // {headerName: 'PO 일자', field: 'bedat', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        // {headerName: '공급업체', field: 'lifnr', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        // {headerName: '공급업체명', field: 'name1', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-        // {headerName: '회사코드', field: 'bukrs', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        // {headerName: '구매그룹', field: 'ekgrp', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        // {headerName: '아이템유형', field: 'bstyp', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        // {headerName: '자재코드', field: 'ematn', width: 12, cellStyle: {textAlign: "center"}, sortable: true},
-        // {headerName: '자재명', field: 'txz01', width: 20, hide: true, cellStyle: {textAlign: "center"}},
-        // {headerName: '플랜트', field: 'werks', width: 10, cellStyle: {textAlign: "center"}},
-        // {headerName: '저장위치', field: 'lgort', width: 10, cellStyle: {textAlign: "center"}, sortable: true},
-        // {headerName: '오더수량', field: 'menge', width: 8, cellStyle: {textAlign: "right"}, sortable: true},
-        // {headerName: '단위', field: 'meins', width: 8, cellStyle: {textAlign: "left"}, sortable: true},
-        // {headerName: '실적수량', field: 'procqty', width: 8, cellStyle: {textAlign: "right"}, sortable: true},
-        // {headerName: '처리여부', field: 'procflag', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-
         {headerName: '오더번호', field: 'ebeln', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
         {headerName: '품번', field: 'ebelp', width: 6, cellStyle: {textAlign: "center"}},
         {headerName: '오더유형', field: 'bsart', width: 10, hide: true, cellStyle: {textAlign: "center"}},
@@ -225,7 +210,18 @@
         {headerName: '단위', field: 'meins', width: 4, cellStyle: {textAlign: "left"}, sortable: true},
         {headerName: '환산수량', field: 'menge2', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
         {headerName: '누적수량', field: 'procqty', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
-        {headerName: '스캔수량', field: 'scanqty', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
+        // {headerName: '스캔수량', field: 'scanqty', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
+        {headerName: '스캔수량', field: 'scanqty', width: 6, 
+          cellStyle: function(params){
+            if (params.value != "0") {
+              return {textAlign: 'right', color: 'blue', backgroundColor: 'yellow', 
+                      fontSize: '15px', 'font-weight': 'bold'};
+            } else {
+              // return null;
+              return {textAlign: 'right'};
+            }
+          }
+          , valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
         {headerName: '환산단위', field: 'meins2', width: 4, cellStyle: {textAlign: "left"}, sortable: true},
         {headerName: '처리여부', field: 'procflag', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
         {headerName: '마감여부', field: 'elikz', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
@@ -243,6 +239,15 @@
         {headerName: 'S/O 품번', field: 'kdpos', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
         {headerName: '재고유형', field: 'insmk', width: 8, cellStyle: {textAlign: "center"}, sortable: true},
       ]);
+
+      let columnsum= ([{
+        ebelp:'합계',
+        menge:0,
+        menge2:0,
+        procqty:0,
+        scanqty:0,
+      }]);
+
       var gridOptions = {
         defaultColDef: {
           width: 100,
@@ -252,10 +257,7 @@
           lockPosition: true, //컬럼 드래그로 이동 방지
           cellStyle: {textAlign: "left"},
         },
-        // pinnedBottomRowData: [
-        pinnedTopRowData: [
-          {ebelp: '합계', menge: null, menge2: null, procqty: null, scanqty: null}
-        ],
+
         columnDefs: columnDefs,
         rowData: null,
         rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
@@ -270,9 +272,27 @@
         getRowHeight: function() {
           return 35;
         },
-        onGridSizeChanged: function(event) {
-          event.api.sizeColumnsToFit();
+        // onGridSizeChanged: function(event) {
+        //   event.api.sizeColumnsToFit();
+        // },
+
+        onCellClicked : function(event){
+          var selectedRow = event.node.data;
+          var focusedCell = gridApi.value.getFocusedCell()
+          var colId = focusedCell.column.colId
+          var rowNum = focusedCell.rowIndex
+          
+          console.log("colId/rowNum : ", colId, "/", rowNum);
+          console.log("selectedRow : ", selectedRow, "/", selectedRow.ebelp);
+
+          //합계행도 rowNum이 0임
+          if (selectedRow.ebelp != "합계"){
+            popupbarisopen.value = true;
+          }
         },
+
+        // pinnedBottomRowData:columnsum,
+        pinnedTopRowData:columnsum,
       };
 
       onMounted(() => {
@@ -297,6 +317,7 @@
         const selectedDataStringPresentation = selectedData.map( node => `${node.make} ${node.model}`).join(', ');
         alert(`Selected nodes: ${selectedDataStringPresentation}`);
       };
+
 
       function displayClick(){
         // if (e.target.id == "txtPO"){
@@ -344,7 +365,7 @@
           console.log("[response data] = req_param.txtPO / txtPOitem -- ", req_param.txtPO, "/", req_param.txtPOitem);
 
           if(res.data.length > 0) {
-            if (res.data[0].code == "NG"){
+            if (res.data[0].code == "NG") {
               msg_color.value = "red";
               msg.value = res.data[0].message;
               lblPOdate.value = "";
@@ -353,7 +374,7 @@
 
               // txtPO.value.focus();
               // txtPO.value.select();
-            } else{
+            } else {
               msg_color.value = "blue";
               msg.value = "OK";
               PlaySound("OK");
@@ -362,6 +383,8 @@
               lblPOdate.value = res.data[0].bedat;
               lblVendor.value = res.data[0].name1;
               lblSL.value = res.data[0].lgort;
+
+              fn_sumgrid();
 
               scan.value.focus();
               scan.value.select();
@@ -379,6 +402,8 @@
             autoSizeAll(false);
           }, 500);
 
+          // gridApi.value.setPinnedBottomRowData(columnsum);
+          // gridApi.value.setPinnedTopRowData(columnsum);
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => {
@@ -387,6 +412,33 @@
         })
       }
 
+      function fn_sumgrid(){
+        columnsum[0].menge = 0;
+        columnsum[0].menge2 = 0;
+        columnsum[0].procqty = 0;
+        columnsum[0].scanqty = 0;
+
+        var nRtn = recvData.value.reduce(function(previousValue, currentValue){
+          var summenge = 0;
+          var summenge2 = 0;
+          var sumprocqty = 0;
+          var sumscanqty = 0;
+
+          summenge = Number(previousValue.menge) + Number(currentValue.menge);
+          summenge2 = Number(previousValue.menge2) + Number(currentValue.menge2);
+          sumprocqty = Number(previousValue.procqty) + Number(currentValue.procqty);
+          sumscanqty = Number(previousValue.scanqty) + Number(currentValue.scanqty);
+          return ({menge:summenge, menge2:summenge2, procqty:sumprocqty, scanqty:sumscanqty});
+        });
+
+        columnsum[0].menge = nRtn.menge;
+        columnsum[0].menge2 = nRtn.menge2;
+        columnsum[0].procqty = nRtn.procqty;
+        columnsum[0].scanqty = nRtn.scanqty;
+
+        // gridApi.value.setPinnedBottomRowData(columnsum);
+        gridApi.value.setPinnedTopRowData(columnsum);
+      }
 
       function scanEnter(e) {
         if (e.target.id == "scan"){
@@ -421,23 +473,31 @@
               msg.value = "OK";
 
               let isBreak = false;
-              // let addQty = 0;
 
               gridApi.value.forEachNode( (node) => {
                 console.log("[node.getdata]", node.rowIndex, " : ", node.data.ematn);
                 if (isBreak == false) {
                   if (node.data.ematn === res.data[0].matnr) {
-                    console.log("scanqty : ", node.data.scanqty);
-                    console.log("procqty : ", node.data.procqty);
-                    // node.data.scanqty += res.data[0].qty;
-                    // addQty = Number(res.data[0].qty) + 7;
-                    // addQty = addQty + Number(node.data.scanqty) + 3;
-                    node.setDataValue('procqty', Number(node.data.procqty)+Number(res.data[0].qty));
-                    node.setDataValue('scanqty', Number(node.data.scanqty)+Number(res.data[0].qty));
+                    //추후 K124, K125 플랜트이면서 자재코드 4번째 자리가 9인경우는 패턴 6가지 비교추가 필요
+                    if (node.data.uebtk == "X" || (Number(node.data.maxqty) >= (Number(node.data.procqty)+Number(res.data[0].qty)))){
+                      console.log("scanqty : ", node.data.scanqty);
+                      console.log("procqty : ", node.data.procqty);
 
-                    isBreak = true;
+                      node.setDataValue('procqty', Number(node.data.procqty)+Number(res.data[0].qty));
+                      node.setDataValue('scanqty', Number(node.data.scanqty)+Number(res.data[0].qty));
+
+                      //바코드 데이터 저장하기
+                      scanData = res.data;
+                      console.log("scanData : ", scanData);
+                      isBreak = true;
+                    }
+                    else {
+                      msg_color.value = "red";
+                      msg.value = "구매가능 수량을 초과하였습니다.";                
+                    }
                   }
                 }
+                fn_sumgrid();
                 // console.log("isBreak : ", isBreak);
               });
             }
@@ -497,13 +557,12 @@
       function BarcloseClick(){
         popupbarisopen.value = false;
         console.log("BarcloseClick -- ", req_param.txtPO);
-        fn_POSearch();
       }
 
       function sendClick(procflag) {
         console.log("[ProcFlag] : ", procflag);
         console.log("[P/O No] : ", req_param.txtPO);
-        if ((!req_param.txtPO) || (!lblVendor.value)) {    //DO가 조회된 경우만 처리. 
+        if ((!req_param.txtPO) || (!lblVendor.value)) {    //PO가 조회된 경우만 처리. 
           alert("Please search P/O information first");
         }
         else {
@@ -512,9 +571,11 @@
           //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
           $axios.post(urlPost, {
               i_lang: "EN",
-              i_userid: store.state.auth.user[0].userid,
               i_werks: getdata(store.state.auth.user[0].plantcd),
-              i_vbeln: req_param.txtPO,
+              i_userid: store.state.auth.user[0].userid,
+              i_ord_no: req_param.txtPO,
+              i_ord_seq: req_param.txtPOitem,
+              i_barno: req_param.txtScan,
               i_procflag: procflag
           })
           .then((res) => {
@@ -568,6 +629,8 @@
       function clearClick(){
         // txtPO.value = "";
         req_param.txtPO = "";
+        req_param.txtPOitem = "";
+        lblPOdate.value = "";
         lblVendor.value = "";
         lblSL.value = "";
         // scan.value = "";
@@ -621,6 +684,7 @@
         popupbarisopen,
         popuppoisopen,
         strPONo,
+        scanData,
         POselectClick,
         POcloseClick,
         BarcloseClick,
@@ -634,17 +698,6 @@
         closeClick,
         fn_SelectAll,
       };
-    },
-
-    method: {
-      makeData (){
-        let sum = [{
-          make: '합계',
-          menge: this.rowData.reduce((prev, next) => {prev + next.qty}),
-          menge2: this.rowData.reduce((next, prev) => {next + prev.qty}),
-        }]
-        this.gridOptions.api.setPinnedTopRowData(sum)
-      },
     },
   }
 </script>
