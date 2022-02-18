@@ -49,33 +49,31 @@
 
 </template>
 <script>
-  import $axios from 'axios';
   import { reactive, ref, onMounted, onUnmounted } from 'vue'
   import 'ag-grid-community/dist/styles/ag-grid.css';
   import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
   import {AgGridVue} from 'ag-grid-vue3'
-  import { useStore } from 'vuex';
-  import { getdata} from '@/helper/filter.js';
-  import { PlaySound } from '@/helper/util.js';
+  // import { useStore } from 'vuex';
+  // import { PlaySound } from '@/helper/util.js';
 
 export default {
   name:'popupbarsearch',
-  props:['strPO'],
+  props:['strPO', 'barData'],
   components:{
     AgGridVue,
   },
 
   setup(props, {emit}){
-    let url = ref(process.env.VUE_APP_SERVER_URL);
     let window_width = ref(window.innerWidth);
     let window_height = ref(window.innerHeight);
 
-    const store = useStore();	//스토어호출
+    // const store = useStore();	//스토어호출
 
     let msg = ref(null);
     let msg_color = ref(null);
 
     let strPO_No = ref(props.strPO);
+    let barcodeData = reactive([]);
 
     let options = reactive([]);
 
@@ -107,7 +105,9 @@ export default {
       rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
       onGridReady: function(event) {
         setTimeout(function () {
-          // event.api.setRowData(recvData);
+          // barcodeData.value = props.barData;
+          console.log("barData : ",props.barData);
+          event.api.setRowData(barcodeData);
           fn_BarcodeList();
         }, 100);
         gridApi.value = event.api;
@@ -125,6 +125,7 @@ export default {
     onMounted(() => {
       console.log("[Good Receipt Bar Search] = ", "onMounted--");
       window.addEventListener('resize', handleResize);
+      barcodeData.value = props.barData;
     });
 
     onUnmounted(() =>{
@@ -150,46 +151,8 @@ export default {
     }
 
     function fn_BarcodeList(){
-      console.log("PO No", strPO_No.value);
-      let urlPost = url.value + '/dw/good_receipt/bar_search';
-
-      //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
-      $axios.post(urlPost, {
-          i_lang: "EN",
-          i_userid: store.state.auth.user[0].userid,
-          i_werks: getdata(store.state.auth.user[0].plantcd),
-          i_vbeln: strPO_No.value,
-      })
-      .then((res) => {
-        console.log("[response data]", res.data);
-        if(res.data.length > 0){
-          console.log(res.data[0].code);
-          if (res.data[0].code == "NG"){
-            msg_color.value = "red";
-            msg.value = res.data[0].message;
-          } else{
-            msg_color.value = "blue";
-            msg.value = "OK";
-            PlaySound("OK");
-
-            recvData.value = res.data;
-          }
-        } else{
-          recvData.value = res.data;
-          msg_color.value = "red";
-          msg.value = "There is no data.";
-        }
-
-        setTimeout(function () {
-          autoSizeAll(false);
-        }, 500);
-
-      }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
-        //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
-      .catch(err => {
-        alert(err);
-        console.error(err)
-      })
+      console.log("PO No : ", strPO_No.value);
+      console.log("barcodeData : ", barcodeData);
     }
 
     function selectAllClick(){
@@ -202,55 +165,20 @@ export default {
 
       console.log("[checked row]", selectedData);
 
-      // 스캔화면에서 스캔시 호출 프로시저 사용.
-      let urlPost = url.value + '/dw/good_receipt/scan';
-      $axios.post(urlPost, {
-            i_lang: "EN",
-            i_userid: store.state.auth.user[0].userid,
-            i_werks: getdata(store.state.auth.user[0].plantcd),
-            i_vbeln: strPO_No.value,
-            i_qty: "0",
-            i_delflag: "Y",   //신규 스캔시 N, 삭제시 Y (스캔화면에서는 이미 스캔한 바코드를 다시 스캔할 경우 삭제여부 문의하고 삭제 선택시)
-                              //본화면 (바코드 삭제화면)에서는 항상 Y
-            i_calltype: "D",   //스캔화면 호출시 S, 바코드 삭제화면 호출시 D
-            data:       selectedData,
-      })
-      .then((res) => {
-        console.log("[response data]", res.data);
-        if(res.data.length > 0){
-          console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
-          if (res.data[0].code == "NG"){
-            msg_color.value = "red";
-            msg.value = res.data[0].message;
-          } else{
-            msg_color.value = "blue";
-            msg.value = "OK";
-            recvData.value = res.data;
-          }
-        }
-        else{
-          recvData.value = res.data;
-        }
-      }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
-        //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
-      .catch(err => {
-        alert(err);
-        console.error(err)
-      })
     }
 
-    function autoSizeAll(skipHeader) {
-      console.log("[Good Receipt Bar Search] = autoSizeAll -- ");
-      const allColumnIds = [];
-      columnApi.value.getAllColumns().forEach((column) => {
-        if (column.colId != 'sel'){
-          // console.log("[Good Receipt Bar Search] = autoSizeAll -- ", column.colId);
-          allColumnIds.push(column.colId);
-        }
-      });
+    // function autoSizeAll(skipHeader) {
+    //   console.log("[Good Receipt Bar Search] = autoSizeAll -- ");
+    //   const allColumnIds = [];
+    //   columnApi.value.getAllColumns().forEach((column) => {
+    //     if (column.colId != 'sel'){
+    //       // console.log("[Good Receipt Bar Search] = autoSizeAll -- ", column.colId);
+    //       allColumnIds.push(column.colId);
+    //     }
+    //   });
 
-      columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
-    }
+    //   columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
+    // }
 
     return{
       window_width,
