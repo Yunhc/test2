@@ -50,7 +50,9 @@
 						:style="{width:'80px'}">
 						사용자
 					</span>
-					<label type="text" class="form-control btn-sm">
+					<label type="text" class="form-control btn-sm"
+						:style="{'text-align':'left'}">
+						{{lblUserName}}
 					</label>
 				</div>
 			</div>
@@ -119,9 +121,15 @@ export default {
 		//조회조건 데이터 바인딩
 		let req_param = reactive({userid:"",
 															username:""});
+		let lblUserName = ref(null);
+
 		//리턴값 표시
 		let msg = ref(null);
     let msg_color = ref(null);
+
+		const BoldRenderer = function (params) {
+			return '<b>' + params.value + '</b>';
+		};
 
 		// ag-grid 데이터 변수
 		let recvData = reactive([]);
@@ -129,7 +137,7 @@ export default {
     let columnApi = ref(null);
 		let columnDefs= reactive([
 			{headerName: '선택', field: 'sel', hide:true, pinned: 'left'},
-			{headerName: '사용자ID', field: 'userid', width: 80, cellStyle: {textAlign: "center"}, pinned: 'left'},
+			{headerName: '사용자ID', field: 'userid', width: 80, cellStyle: {textAlign: "center"}, pinned: 'left', cellRenderer: BoldRenderer},
 			{headerName: '사용자명', field: 'username', width: 80, cellStyle: {textAlign: "left"}, pinned: 'left'},
 			{headerName: '패스워드', field: 'userpwd', hide: true},
 			{headerName: '플랜드', field: 'plant', width: 250, sortable: true, filter: true},
@@ -162,6 +170,12 @@ export default {
 			getRowHeight: function() {
 				return 35;
 			},
+			onRowClicked : function(event){
+				var selectedRow = event.node.data;
+				lblUserName.value = selectedRow.username;
+				searchAuth(selectedRow.userid);
+
+			},
 		};
 
 		// ag-grid 데이터 변수
@@ -169,16 +183,19 @@ export default {
 		let gridApi2 = ref(null);
     let columnApi2 = ref(null);
 		let columnDefs2= reactive([
-			{headerName: '선택', field: 'sel', hide:true, pinned: 'left'},
-			{headerName: '사용자ID', field: 'userid', width: 80, cellStyle: {textAlign: "center"}, pinned: 'left'},
-			{headerName: '사용자명', field: 'username', width: 80, cellStyle: {textAlign: "left"}, pinned: 'left'},
-			{headerName: '패스워드', field: 'userpwd', hide: true},
-			{headerName: '플랜드', field: 'plant', width: 250, sortable: true, filter: true},
-			{headerName: '작업장', field: 'wc', width: 250, sortable: true, filter: true},
-			{headerName: '권한', field: 'auth', hide: true},
-			{headerName: '사용유무', field: 'useflag', hide: true},
-			{headerName: '수정자', field: 'upduser', hide: true},
-			{headerName: '수정일', field: 'upddate', hide: true},
+			{headerName: '메뉴ID', 	field: 'menuid', 		hide:true, 		width: 60, 	pinned: 'left'},
+			{headerName: '메뉴명', 	field: 'menuname', 	hide:false, 	width: 80, 	cellStyle: {textAlign: "left"}, pinned: 'left'},
+			{headerName: '선택', 		field: 'sel',			 	hide:true, 		width: 60, 	pinned: 'left'},
+			{headerName: '화면ID', 	field: 'progid', 		hide:false, 	width: 250, cellStyle: {textAlign: "center"}, pinned: 'left'},
+			{headerName: '화면명', 	field: 'progname', 	hide:false, 	width: 250, cellStyle: {textAlign: "left"},pinned: 'left'},
+			{headerName: '조회', 		field: 'findflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"}},
+			{headerName: '신규',	 	field: 'newflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"}},
+			{headerName: '저장', 		field: 'saveflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"}},
+			{headerName: '삭제', 		field: 'delflag', 	hide:true, 		width: 60, 	cellStyle: {textAlign: "center"}},
+			{headerName: '엑셀', 		field: 'expflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"}},
+			{headerName: '인쇄', 		field: 'prtflag', 	hide:true, 		width: 60, 	cellStyle: {textAlign: "center"}},
+			{headerName: '수정자', 	field: 'upduser', 	hide:false, 	width: 60},
+			{headerName: '수정일', 	field: 'upddate', 	hide:false, 	width: 60},
 		]);
 		var gridOptions2 = {
 			defaultColDef: {
@@ -247,6 +264,34 @@ export default {
 			})
 		}
 
+		function searchAuth(strUserid){
+			let urlPost = url.value + '/dw_auth_mng_auth_search_p_j';
+			$axios.post(urlPost, {
+				lang:"KR",
+				userid:strUserid,
+				procdate: ""
+			})
+			.then((res) => {
+				recvData2.value = res.data;
+				if(res.data.length > 0){
+					setTimeout(function () {
+						autoSizeAll2(false);
+					});
+				}
+				msg_color.value = "blue";
+				msg.value = "Total Count : " + recvData.value.length ;
+			}) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+				//.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+			.catch(err => {
+				alert(err);
+				console.error(err)
+
+				msg_color.value = "red";
+        msg.value = err;
+			})
+		}
+
+
 		function autoSizeAll(skipHeader) {
 			const allColumnIds = [];
 			columnApi.value.getAllColumns().forEach((column) => {
@@ -256,6 +301,17 @@ export default {
 			});
 			columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
 		}
+
+		function autoSizeAll2(skipHeader) {
+			const allColumnIds = [];
+			columnApi2.value.getAllColumns().forEach((column) => {
+				if (column.colId != 'sel'){
+          allColumnIds.push(column.colId);
+        }
+			});
+			columnApi2.value.autoSizeColumns(allColumnIds, skipHeader);
+		}
+
 
 		function saveClick(){
 			emit("component_close", "auth_management");
@@ -274,6 +330,7 @@ export default {
 			gridOptions2,
 			searchClick,
 			req_param,
+			lblUserName,
 			msg,
 			msg_color,
 			saveClick,
