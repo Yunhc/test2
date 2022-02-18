@@ -5,11 +5,14 @@
       <p :style="{padding:'2px 0px 0px 0px', 'text-align':'center'}">스캔 바코드 리스트
       </p>
     </div>
+    <input type="text" class="form-control btn-sm" placeholder="UserID"
+      autocomplete="off"
+      v-model="strFilter">
 
     <div class="pop-up-window-grid-1"
       :style="{
         //109:헤더(위 3줄 메뉴까지) - 28(팝업화면 헤더) - 48(하단 메시지) - 40 (하단버튼) - 4 (행간여백)
-        'height': `calc(${window_height - 109 - 28 - 48 - 40 - 4}px)`
+        'height': `calc(${window_height - 109 - 28 - 48 -40 - 4 -40}px)`
       }"
     >
       <ag-grid-vue
@@ -37,6 +40,8 @@
       </div>
 
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'90px'}"
+          @click='onQuickFilterChanged'>filter</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'80px'}"
           @click='selectAllClick'>Select All</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'90px'}"
@@ -77,7 +82,7 @@ export default {
     let strPO_No = ref(props.strPO);
     let barcodeData = reactive(props.barData);
 
-
+    let strFilter = ref(null);
 
     let options = reactive([]);
 
@@ -85,13 +90,30 @@ export default {
     let gridApi = ref(null);
     let columnApi = ref(null);
 
+    // const BoldRenderer = function (params) {
+    //   return '<b>' + params.value + '</b>';
+    // };
+
     let columnDefs= reactive([
       {headerName: '', field: 'sel', width: 10, cellStyle: {textAlign: "center"},
         headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'},
-      {headerName: 'Barcode', field: 'barno', width: 15, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+      {headerName: 'Barcode', field: 'barno', width: 15, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left',
+        // getQuickFilterText: function(params) {
+        //   // return params.colDef.hide ? '' : params.value;
+        //   // return params.value;
+        //   console.log("[params] : ", params);
+        //   return params.colDef.field!='barno' ? '' : params.value;
+        // }
+      },
       {headerName: 'Qty', field: 'qty', width: 10, cellStyle: {textAlign: "right"}, pinned: 'left'},
       {headerName: 'Unit', field: 'meins', width: 6},
-      {headerName: 'Material', field: 'matnr', width: 15, cellStyle: {textAlign: "center"}},
+      {headerName: 'Material', field: 'matnr', width: 15, cellStyle: {textAlign: "center"},
+        getQuickFilterText: function(params) {
+          // return params.value;
+          console.log("[params] : ", params);
+          return "";
+        }
+      },
       {headerName: 'Material Description', field: 'maktx', width: 80},
       {headerName: 'BdlQty(SO)', field: 'sobdqty', width: 10, cellStyle: {textAlign: "center"}},
     ]);
@@ -106,6 +128,7 @@ export default {
       },
       columnDefs: columnDefs,
       rowData: null,
+      cacheQuickFilter:true,
       rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
       onGridReady: function(event) {
         setTimeout(function () {
@@ -191,6 +214,12 @@ export default {
     //   columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
     // }
 
+    function onQuickFilterChanged() {
+      console.log("[strFilter]", strFilter.value);
+      gridApi.value.setQuickFilter(strFilter.value);
+
+    }
+
     return{
       window_width,
       window_height,
@@ -205,6 +234,8 @@ export default {
       fn_BarcodeList,
       selectAllClick,
       deleteClick,
+      onQuickFilterChanged,
+      strFilter,
     }
   },
 }
