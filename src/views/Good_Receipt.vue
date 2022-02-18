@@ -12,6 +12,7 @@
     <!-- Detail버튼 클릭시 스캔한 바코드 리스트 조회(삭제) 팝업화면 -->
     <popupbarsearch v-if="popupbarisopen"
       :strPO="req_param.txtPO"
+      :strItem="strPOItem"
       :barData="scanData"
       @BarcloseClick="BarcloseClick">
     </popupbarsearch>
@@ -172,6 +173,7 @@
 
       let recvData = reactive([]);
       let strPONo = ref(null);
+      let strPOItem = ref(null);
 
       let scanData = reactive([]);  //스캔한 바코드 데이터 저장
 
@@ -285,10 +287,11 @@
           console.log("colId/rowNum : ", colId, "/", rowNum);
           console.log("selectedRow : ", selectedRow, "/", selectedRow.ebelp);
 
+          console.log("scanData : ", scanData);
           //합계행도 rowNum이 0임
-          if (selectedRow.ebelp != "합계"){
+          if (colId == "scanqty" && Number(selectedRow.scanqty) > 0){
+            strPOItem = selectedRow.ebelp;  //합계행의 경우 "합계"가 들어간다.
             popupbarisopen.value = true;
-            console.log("scanData : ", scanData);
           }
         },
 
@@ -447,6 +450,16 @@
         }
 
         if (lblVendor.value) {  //오더가 조회된 경우만 스캔을 허용 한다.
+          //이미 스캔한 바코드인지 체크한다.
+          for (var i=0; i<scanData.length; i++){
+            if (scanData[i].barno == req_param.txtScan){
+              msg_color.value = "red";
+              msg.value = "이미 스캔한 바코드입니다.";
+              return;
+            }
+          }
+
+          //데이터 전송
           let urlPost = url.value + '/dw/good_receipt/scan';
 
           console.log("[req_param]", req_param);
@@ -487,8 +500,9 @@
                       node.setDataValue('procqty', Number(node.data.procqty)+Number(res.data[0].qty));
                       node.setDataValue('scanqty', Number(node.data.scanqty)+Number(res.data[0].qty));
 
-                      scanData.push(res.data[0]);
-
+                      // scanData.push(res.data[0]);
+                      scanData.push({barno:res.data[0].barno, qty:res.data[0].qty, meins:res.data[0].meins, matnr:res.data[0].matnr, ebeln:node.data.ebeln, ebelp:node.data.ebelp});
+                      
                       console.log("scanData : ", scanData);
                       isBreak = true;
                     }
@@ -685,6 +699,7 @@
         popupbarisopen,
         popuppoisopen,
         strPONo,
+        strPOItem,
         scanData,
         POselectClick,
         POcloseClick,
