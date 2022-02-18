@@ -288,7 +288,7 @@
           //합계행도 rowNum이 0임
           if (selectedRow.ebelp != "합계"){
             popupbarisopen.value = true;
-            console.log("scanData : ", scanData.value);
+            console.log("scanData : ", scanData);
           }
         },
 
@@ -481,15 +481,15 @@
                   if (node.data.ematn === res.data[0].matnr) {
                     //추후 K124, K125 플랜트이면서 자재코드 4번째 자리가 9인경우는 패턴 6가지 비교추가 필요
                     if (node.data.uebtk == "X" || (Number(node.data.maxqty) >= (Number(node.data.procqty)+Number(res.data[0].qty)))){
-                      console.log("scanqty : ", node.data.scanqty);
-                      console.log("procqty : ", node.data.procqty);
+                      // console.log("scanqty : ", node.data.scanqty);
+                      // console.log("procqty : ", node.data.procqty);
 
                       node.setDataValue('procqty', Number(node.data.procqty)+Number(res.data[0].qty));
                       node.setDataValue('scanqty', Number(node.data.scanqty)+Number(res.data[0].qty));
 
-                      //바코드 데이터 저장하기
-                      scanData.value = res.data;
-                      console.log("scanData : ", scanData.value);
+                      scanData.push(res.data[0]);
+
+                      console.log("scanData : ", scanData);
                       isBreak = true;
                     }
                     else {
