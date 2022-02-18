@@ -12,7 +12,7 @@
     <div class="pop-up-window-grid-1"
       :style="{
         //109:헤더(위 3줄 메뉴까지) - 28(팝업화면 헤더) - 48(하단 메시지) - 40 (하단버튼) - 4 (행간여백)
-        'height': `calc(${window_height - 109 - 28 - 48 -40 - 4 -40}px)`
+        'height': `calc(${window_height - 109 - 28 - 48 - 40 - 4 -40}px)`
       }"
     >
       <ag-grid-vue
@@ -63,7 +63,7 @@
 
 export default {
   name:'popupbarsearch',
-  props:['strPO', 'barData'],
+  props:['strPO', 'strItem', 'barData'],
   components:{
     AgGridVue,
   },
@@ -80,6 +80,7 @@ export default {
 
     console.log("Setup - barData  : ",props.barData);
     let strPO_No = ref(props.strPO);
+    let strItem_No = ref(props.strItem);
     let barcodeData = reactive(props.barData);
 
     let strFilter = ref(null);
@@ -90,32 +91,33 @@ export default {
     let gridApi = ref(null);
     let columnApi = ref(null);
 
-    // const BoldRenderer = function (params) {
-    //   return '<b>' + params.value + '</b>';
-    // };
-
     let columnDefs= reactive([
-      {headerName: '', field: 'sel', width: 10, cellStyle: {textAlign: "center"},
+      {headerName: '', field: 'sel', width: 4, cellStyle: {textAlign: "center"},
         headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'},
-      {headerName: 'Barcode', field: 'barno', width: 15, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left',
-        // getQuickFilterText: function(params) {
-        //   // return params.colDef.hide ? '' : params.value;
-        //   // return params.value;
-        //   console.log("[params] : ", params);
-        //   return params.colDef.field!='barno' ? '' : params.value;
-        // }
+      {headerName: '바코드', field: 'barno', width: 10, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left',
+        getQuickFilterText: function() {
+          return "";
+        }
       },
-      {headerName: 'Qty', field: 'qty', width: 10, cellStyle: {textAlign: "right"}, pinned: 'left'},
-      {headerName: 'Unit', field: 'meins', width: 6},
-      {headerName: 'Material', field: 'matnr', width: 15, cellStyle: {textAlign: "center"},
+      {headerName: '수량', field: 'qty', width: 6, cellStyle: {textAlign: "right"}, pinned: 'left',
+        getQuickFilterText: function() {
+          return "";
+        }
+      },
+      {headerName: '단위', field: 'meins', width: 6},
+      {headerName: '자재코드', field: 'matnr', width: 10, cellStyle: {textAlign: "center"},
         getQuickFilterText: function(params) {
           // return params.value;
           console.log("[params] : ", params);
           return "";
         }
       },
-      {headerName: 'Material Description', field: 'maktx', width: 80},
-      {headerName: 'BdlQty(SO)', field: 'sobdqty', width: 10, cellStyle: {textAlign: "center"}},
+      {headerName: 'PO번호', field: 'ebeln', width: 8, cellStyle: {textAlign: "center"},
+        getQuickFilterText: function() {
+          return "";
+        }
+      },
+      {headerName: '품번', field: 'ebelp', width: 6, cellStyle: {textAlign: "center"}},
     ]);
     var gridOptions = {
       defaultColDef: {
@@ -128,11 +130,11 @@ export default {
       },
       columnDefs: columnDefs,
       rowData: null,
-      cacheQuickFilter:true,
       rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
       onGridReady: function(event) {
         setTimeout(function () {
           event.api.setRowData(barcodeData);
+          onQuickFilterChanged(strItem_No);
           autoSizeAll();
           fn_BarcodeList();
         }, 100);
@@ -176,7 +178,7 @@ export default {
     }
 
     function fn_BarcodeList(){
-      console.log("PO No : ", strPO_No.value);
+      console.log("PO No / Item No : ", strPO_No.value, "/", strItem_No.value);
       console.log("barcodeData : ", barcodeData);
     }
 
@@ -187,9 +189,32 @@ export default {
 
     function deleteClick(){
       var selectedData = gridApi.value.getSelectedRows();
+      //var selectedData = this.gridOptions.api.getSelectedRows();
+      console.log("[selected row]", selectedData);
+      // this.gridOptions.api.updateRowData({remove: selectedData});
+      // var removedRows = [];
+      // selectedData.forEach( function(selectedRow){
+      //   removedRows.push(selectedRow);
+      //   gridApi.value.updateRowData({remove: [selectedRow]});
+      // });
+      // console.log("[removed row]", removedRows);
 
-      console.log("[checked row]", selectedData);
+      // barcodeData.splice(0, 1);
+      if(selectedData.length > 0){
+        for(var i=0; i<selectedData.length; i++ ){
 
+            var index = barcodeData.findIndex(v=>v.barno === selectedData[i].barno);
+            if(index > -1){
+              console.log("[bardata]", barcodeData[index].barno);
+              barcodeData.splice(index,1);
+            }
+        }
+
+        console.log("[barcodeData -delete]", barcodeData);
+        gridApi.value.setRowData(barcodeData);
+      }
+
+      this.gridOptions.api.setRowData(barcodeData);
     }
 
     function autoSizeAll(skipHeader) {
@@ -214,10 +239,11 @@ export default {
     //   columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
     // }
 
-    function onQuickFilterChanged() {
-      console.log("[strFilter]", strFilter.value);
-      gridApi.value.setQuickFilter(strFilter.value);
-
+    function onQuickFilterChanged(strFT) {
+      // console.log("[strFilter]", strFilter.value);
+      // gridApi.value.setQuickFilter(strFilter.value);
+      console.log("[strFilter]", strFT.value);
+      gridApi.value.setQuickFilter(strFT.value);
     }
 
     return{
