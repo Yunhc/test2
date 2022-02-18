@@ -17,7 +17,7 @@
         class="ag-theme-alpine"
         headerHeight='35'
         style="width: 1000px; height:100%"
-        :rowData="recvData.value"
+        :rowData="barcodeData.value"
         :gridOptions="gridOptions"
         allow_unsafe_jscode="True"
         >
@@ -72,8 +72,12 @@ export default {
     let msg = ref(null);
     let msg_color = ref(null);
 
+
+    console.log("Setup - barData  : ",props.barData);
     let strPO_No = ref(props.strPO);
-    let barcodeData = reactive([]);
+    let barcodeData = reactive(props.barData.value);
+
+
 
     let options = reactive([]);
 
@@ -93,7 +97,7 @@ export default {
     ]);
     var gridOptions = {
       defaultColDef: {
-        width: 10,
+        width: 100,
         editable: false,
         resizable: true,
         sortable: true,
@@ -105,9 +109,8 @@ export default {
       rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
       onGridReady: function(event) {
         setTimeout(function () {
-          // barcodeData.value = props.barData;
-          console.log("barData : ",props.barData);
           event.api.setRowData(barcodeData);
+          autoSizeAll();
           fn_BarcodeList();
         }, 100);
         gridApi.value = event.api;
@@ -125,7 +128,6 @@ export default {
     onMounted(() => {
       console.log("[Good Receipt Bar Search] = ", "onMounted--");
       window.addEventListener('resize', handleResize);
-      barcodeData.value = props.barData;
     });
 
     onUnmounted(() =>{
@@ -167,6 +169,15 @@ export default {
 
     }
 
+    function autoSizeAll(skipHeader) {
+      const allColumnIds = [];
+      columnApi.value.getAllColumns().forEach((column) => {
+        allColumnIds.push(column.colId);
+      });
+
+      columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
+    }
+
     // function autoSizeAll(skipHeader) {
     //   console.log("[Good Receipt Bar Search] = autoSizeAll -- ");
     //   const allColumnIds = [];
@@ -186,6 +197,7 @@ export default {
       msg,
       msg_color,
       options,
+      barcodeData,
       recvData,
       gridOptions,
       getSelectedRows,
