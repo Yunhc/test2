@@ -75,7 +75,7 @@ export default {
 
     console.log("Setup - barData  : ",props.barData);
     let strPO_No = ref(props.strPO);
-    let barcodeData = reactive(props.barData.value);
+    let barcodeData = reactive(props.barData);
 
 
 
