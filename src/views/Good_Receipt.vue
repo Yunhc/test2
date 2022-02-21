@@ -47,7 +47,7 @@
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'70px'}"
           @click='displayClick'>조회</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'70px'}"
-          @click='DetailClick'>상세</button>        
+          @click='DetailClick'>상세</button>
       </div>
 
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
@@ -763,7 +763,7 @@
         }
         else if (strCalltype.value == "clear"){
           dataClear();
-        }        
+        }
       }
 
       function scanClick() {
@@ -800,7 +800,8 @@
         msg.value = "";
 
         //grid clear
-        recvData.splice(0, recvData.length);
+        // recvData.splice(0, recvData.length);
+        recvData.value = "";
         console.log("clearClick->length/receData => ", recvData.length, "/", recvData);
 
         scanData.splice(0, scanData.length);
