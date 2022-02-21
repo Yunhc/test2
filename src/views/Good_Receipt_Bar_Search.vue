@@ -127,6 +127,7 @@ export default {
         sortable: true,
         lockPosition: true, //컬럼 드래그로 이동 방지
         cellStyle: {textAlign: "left"},
+        filter: true,
       },
       columnDefs: columnDefs,
       rowData: null,
@@ -213,8 +214,6 @@ export default {
         console.log("[barcodeData -delete]", barcodeData);
         gridApi.value.setRowData(barcodeData);
       }
-
-      this.gridOptions.api.setRowData(barcodeData);
     }
 
     function autoSizeAll(skipHeader) {
