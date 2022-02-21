@@ -125,6 +125,7 @@ export default {
         sortable: true,
         lockPosition: true, //컬럼 드래그로 이동 방지
         cellStyle: {textAlign: "left"},
+        filter: true,
       },
       columnDefs: columnDefs,
       rowData: null,
@@ -190,6 +191,20 @@ export default {
 
       console.log("[checked row]", selectedData);
 
+      if(selectedData.length > 0){
+        for(var i=0; i<selectedData.length; i++ ){
+
+            var index = barcodeData.findIndex(v=>v.barno === selectedData[i].barno);
+            if(index > -1){
+              console.log("[bardata]", barcodeData[index].barno);
+              barcodeData.splice(index,1);
+            }
+        }
+
+        console.log("[barcodeData -delete]", barcodeData);
+        gridApi.value.setRowData(barcodeData);
+      }
+
     }
 
     function autoSizeAll(skipHeader) {
@@ -215,8 +230,32 @@ export default {
     // }
 
     function onQuickFilterChanged() {
-      console.log("[strFilter]", strFilter.value);
-      gridApi.value.setQuickFilter(strFilter.value);
+      // console.log("[strFilter]", strFilter.value);
+      // gridApi.value.setQuickFilter(strFilter.value);
+
+      setFilterFromHardCoded();
+
+    }
+
+    function setFilterFromHardCoded() {
+      // var hardcodedFilter = {
+      //   barno: {
+      //     filterType: 'text',
+      //     type:'Contains',
+      //     values: ['1200904000820']
+      //   },
+      // };
+
+      // gridApi.value.setFilterModel(null);
+      // gridApi.value.setFilterModel(hardcodedFilter);
+
+      // var countryFilterComponent = gridApi.value.getFilterInstance("barno");
+      // countryFilterComponent.setModel({
+      //     type:"Contains",
+      //     values: ["1200904000820"]
+      // });
+
+      // console.log("[setFilterFromHardCoded - 3]");
 
     }
 
