@@ -27,7 +27,7 @@
     <div class="window-search-5">
       <div align="right" :style="{height:'40px', margin:'0px 0px 0px 0px'}">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
-        @click='DetailClick'>상세</button>
+        @click='onCellClicked'>상세</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 0px 0px 0px', width:'70px'}"
         @click='DOClick'>PO</button>
       </div>
@@ -385,11 +385,13 @@
               PlaySound("OK");
 
               recvData.value = res.data;
+              console.log("[PO_Search] -> recvData.length/recvData : ", recvData.value.length, "/", recvData);
               lblPOdate.value = res.data[0].bedat;
               lblVendor.value = res.data[0].name1;
               lblSL.value = res.data[0].lgort;
 
-              fn_sumgrid();
+              fn_sumscanqty();
+              fn_sumgrid("PO_Search");
 
               scan.value.focus();
               scan.value.select();
@@ -417,12 +419,41 @@
         })
       }
 
-      function fn_sumgrid(){
+      function fn_sumscanqty(){
+        console.log("start fn_sumscanqty");
+        //스캔수량 다시 계산 (바코드 삭제후 변경사항 반영위해서)
+        // if (recvData.value.length > 0) {  //조회된 데이터가 그리드에 있을 경우만 합계 계산.
+        //   console.log("[recvData]", recvData.length, recvData.value.length, recvData);
+        //   console.log("[scanData] : ", scanData.length, scanData.value.length, scanData);
+
+        //   for (var i=0; i<scanData.length; i++) {
+        //     for (var j=0; j<recvData.length; j++) {
+        //       if (recvData[j].ematn == scanData[i].matnr && recvData[j].ebelp == scanData[i].ebelp) {
+        //           node.setDataValue('procqty', Number(node.data.procqty)+Number(scanData[0].qty));
+        //           node.setDataValue('scanqty', Number(node.data.scanqty)+Number(scanData[0].qty));
+        //       }
+        //     }
+        //   }
+        // }
+        gridApi.value.forEachNode( (node) => {
+          console.log("[node.getdata]", node.rowIndex, " : ", node.data.ematn);
+          console.log("[scanData] : ", scanData.length, scanData.value.length, scanData);
+          for (var i=0; i<scanData.length; i++) {
+            if (node.data.ematn == scanData[i].matnr && node.data.ebelp == scanData[i].ebelp) {
+                node.setDataValue('procqty', Number(node.data.procqty)+Number(scanData[0].qty));
+                node.setDataValue('scanqty', Number(node.data.scanqty)+Number(scanData[0].qty));
+            }
+          }
+        });
+      }
+
+      function fn_sumgrid(calltype){
         columnsum[0].menge = 0;
         columnsum[0].menge2 = 0;
         columnsum[0].procqty = 0;
         columnsum[0].scanqty = 0;
-        console.log("recvData.length/recvData : ", recvData.value.length, "/", recvData);
+        console.log("start fn_sumgrid from ", calltype);
+        console.log("fn_sumgrid->recvData.length/recvData : ", recvData.value.length, "/", recvData);
 
         if (recvData.value.length > 0) {  //조회된 데이터가 그리드에 있을 경우만 합계 계산.
           var nRtn = recvData.value.reduce(function(previousValue, currentValue){
@@ -517,7 +548,7 @@
                     }
                   }
                 }
-                fn_sumgrid();
+                fn_sumgrid("Scan");
                 // console.log("isBreak : ", isBreak);
               });
             }
@@ -545,8 +576,9 @@
       }
 
       function DetailClick(){
-        popupbarisopen.value = true;
-        console.log("txtPO => ", req_param.txtPO);
+        // popupbarisopen.value = true;
+        // console.log("txtPO => ", req_param.txtPO);
+        // onCellClicked();
       }
 
       function DOClick(){
@@ -582,16 +614,10 @@
 
         console.log("scanData.length/scanData => ", scanData.length, "/", scanData);
 
-        gridApi.value.forEachNode( (node) => {
-          console.log("[node.getdata]", node.rowIndex, " : ", node.data.ematn);
-          for (var i=0; i<scanData.length; i++) {
-            if (node.data.ematn == scanData[i].matnr && node.data.ebelp == scanData[i].ebelp) {
-                node.setDataValue('procqty', Number(node.data.procqty)+Number(scanData[0].qty));
-                node.setDataValue('scanqty', Number(node.data.scanqty)+Number(scanData[0].qty));
-            }
-          }
-        });
-        fn_sumgrid();
+        //누적수량과 스캔수량 초기화 위해 오더를 다시 조회.
+        fn_POSearch();
+
+        // fn_sumgrid("Barclose");
       }
 
       function sendClick(procflag) {
@@ -662,22 +688,22 @@
       }
 
       function clearClick(){
-        // txtPO.value = "";
         req_param.txtPO = "";
         req_param.txtPOitem = "";
         lblPOdate.value = "";
         lblVendor.value = "";
         lblSL.value = "";
-        // scan.value = "";
         req_param.txtScan = "";
         msg.value = "";
 
         //grid clear
-        recvData.value = reactive([]);
-        fn_sumgrid();
+        recvData.splice(0, recvData.length);
+        console.log("clearClick->length/receData => ", recvData.length, "/", recvData);
+
+        scanData.splice(0, scanData.length);
+        console.log("clearClick->length/scanData => ", scanData.length, "/", scanData);
+        fn_sumgrid("clear");
         gridApi.value.setRowData([]);
-        
-        // fn_sumgrid();
 
         txtPO.value.focus();
       }
