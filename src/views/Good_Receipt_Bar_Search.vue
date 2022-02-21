@@ -214,22 +214,6 @@ export default {
         console.log("[barcodeData -delete]", barcodeData);
         gridApi.value.setRowData(barcodeData);
       }
-
-      if(selectedData.length > 0){
-        for(var i=0; i<selectedData.length; i++ ){
-
-            var index = barcodeData.findIndex(v=>v.barno === selectedData[i].barno);
-            if(index > -1){
-              console.log("[bardata]", barcodeData[index].barno);
-              barcodeData.splice(index,1);
-            }
-        }
-
-        console.log("[barcodeData -delete]", barcodeData);
-        gridApi.value.setRowData(barcodeData);
-      }
-
-      this.gridOptions.api.setRowData(barcodeData);
     }
 
     function autoSizeAll(skipHeader) {
