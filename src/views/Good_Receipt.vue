@@ -17,20 +17,14 @@
       @BarcloseClick="BarcloseClick">
     </popupbarsearch>
 
-    <!-- DO버튼 클릭시 일자별 DO조회 팝업화면 -->
-    <popupposearch v-if="popuppoisopen"
-      @POselectClick="POselectClick"
-      @POcloseClick="POcloseClick">
-    </popupposearch>
 
-
-    <div class="window-search-5">
-      <div align="right" :style="{height:'40px', margin:'0px 0px 0px 0px'}">
+    <div class="window-search-4-1">
+      <!-- <div align="right" :style="{height:'40px', margin:'0px 0px 0px 0px'}">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
-        @click='onCellClicked'>상세</button>
+        @click='DetailClick'>상세</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 0px 0px 0px', width:'70px'}"
         @click='DOClick'>PO</button>
-      </div>
+      </div> -->
 
       <div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px', 'z-index':'1'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
@@ -51,7 +45,9 @@
           data-ref="InputContent" inputmode="numeric"
           v-model="req_param.txtPOitem">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'70px'}"
-        @click='displayClick'>조회</button>
+          @click='displayClick'>조회</button>
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'70px'}"
+          @click='DetailClick'>상세</button>        
       </div>
 
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
@@ -87,14 +83,14 @@
     </div>
     <div class="window-grid-1"
       :style="{
-        'height': `calc(${window_height - 109 - 170 - 123}px)`
+        'height': `calc(${window_height - 109 - 130 - 123}px)`
       }"
     >
       <ag-grid-vue
         id="agGrid1"
         class="ag-theme-alpine"
         headerHeight='35'
-        style="width: 1910px; height:100%"
+        style="width:1910px; height:100%"
         :rowData="recvData.value"
         :gridOptions="gridOptions"
         allow_unsafe_jscode="True"
@@ -144,7 +140,7 @@
   import { getdata } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
   import popupyn from '@/views/PopupYN.vue';
-  import popupposearch from '@/views/Good_Receipt_PO_Search.vue';
+  // import popupposearch from '@/views/Good_Receipt_PO_Search.vue';
   import popupbarsearch from '@/views/Good_Receipt_Bar_Search.vue';
 
   export default {
@@ -152,7 +148,7 @@
     components:{
       AgGridVue,
       popupyn,
-      popupposearch,
+      // popupposearch,
       popupbarsearch,
     },
 
@@ -185,6 +181,7 @@
       let lblVendor = ref(null);
       let lblSL = ref(null);
       let scan = ref(null);
+      let strCalltype = ref(null);
       //데이터 바인딩
       let req_param = reactive({txtPO:"", txtPOitem:"", txtScan:""});
       let msg = ref(null);
@@ -435,6 +432,7 @@
         //     }
         //   }
         // }
+
         gridApi.value.forEachNode( (node) => {
           console.log("[node.getdata]", node.rowIndex, " : ", node.data.ematn);
           console.log("[scanData] : ", scanData.length, scanData.value.length, scanData);
@@ -579,6 +577,9 @@
         // popupbarisopen.value = true;
         // console.log("txtPO => ", req_param.txtPO);
         // onCellClicked();
+          strPOItem.value = "합계";  //합계행의 경우 "합계"가 들어간다.
+          console.log("strPOItem : ", strPOItem.value);
+          popupbarisopen.value = true;
       }
 
       function DOClick(){
@@ -647,6 +648,7 @@
                 if (res.data[0].subcode == "Confirm") {
                   popupTitle.value ="Good Receipt";
                   popupMsg.value = res.data[0].message + "\n" + "Do you want to process? ";
+                  strCalltype = "send";
                   popupisopen.value = true;
                 } else {
                   msg_color.value = "red";
@@ -675,7 +677,12 @@
 
       function yesClick() {
         popupisopen.value = false;
-        sendClick("Y");
+        if (strCalltype.value == "send"){
+          sendClick("Y");
+        }
+        else if (strCalltype.value == "close"){
+          emit("component_close", "good_receipt");
+        }
       }
 
       function scanClick() {
@@ -709,7 +716,12 @@
       }
 
       function closeClick(){
-        emit("component_close", "good_receipt");
+        popupTitle.value ="Good Receipt";
+        popupMsg.value = "종료하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
+        strCalltype.value = "close";
+        popupisopen.value = true;
+        // emit("component_close", "good_receipt");
+
       }
 
       function autoSizeAll(skipHeader) {
