@@ -101,7 +101,7 @@
 import $axios from 'axios';
 import { reactive, ref, onMounted, onUnmounted } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3'
-// import { useStore } from 'vuex';
+import { useStore } from 'vuex';
 // import { addDate } from '@/helper/filter.js';
 
 export default {
@@ -113,7 +113,7 @@ export default {
 		// let url = ref(process.env.VUE_APP_SERVER_URL);
 		let window_width = ref(window.innerWidth);
 		let window_height = ref(window.innerHeight);
-		// const store = useStore();	//스토어호출
+		const store = useStore();	//스토어호출
 
 		const $url_rest = process.env.VUE_APP_SERVER_URL;
     let url = ref($url_rest);
@@ -122,6 +122,7 @@ export default {
 		let req_param = reactive({userid:"",
 															username:""});
 		let lblUserName = ref(null);
+		let lblUserID = ref(null);
 
 		//리턴값 표시
 		let msg = ref(null);
@@ -131,21 +132,66 @@ export default {
 			return '<b>' + params.value + '</b>';
 		};
 
+		const CheckboxRenderer = function (params) {
+			// return `<input type='checkbox' ${params.value=='4' ? 'checked' : ''} />`;
+
+			// if(params.value =='-1'){
+			// 	return `<input type='checkbox' ${'checked'} />`;
+			// }
+			// else if(params.value =='0'){
+			// 	return `<input type='checkbox' ${''}} />`;
+			// }
+			// else{
+			// 	return `<input type='checkbox' ${'disabled'} />`;
+			// }
+
+			// console.log("[params.value] = ", params.value);
+			const input = document.createElement('input');
+			input.type = 'checkbox';
+			if(params.value =='-1'){
+				input.checked = true;
+			}
+			else if(params.value =='0'){
+				input.checked = false;
+			}
+			else{
+				input.checked = false;
+				input.disabled = true;
+			}
+
+			input.addEventListener('click', () => {
+				params.value = !params.value;
+				// params.node.data[params.coldDef.field] = params.value;
+
+				// you can add here code
+				console.log("[params] = ", params);
+				if(params.value == true){
+					params.node.data[params.colDef.field] = "-1"
+				}
+				else{
+					params.node.data[params.colDef.field] = "0"
+				}
+				params.node.setSelected(true);
+			});
+      return input;
+		};
+
 		// ag-grid 데이터 변수
 		let recvData = reactive([]);
 		let gridApi = ref(null);
     let columnApi = ref(null);
 		let columnDefs= reactive([
-			{headerName: '선택', field: 'sel', hide:true, pinned: 'left'},
-			{headerName: '사용자ID', field: 'userid', width: 80, cellStyle: {textAlign: "center"}, pinned: 'left', cellRenderer: BoldRenderer},
-			{headerName: '사용자명', field: 'username', width: 80, cellStyle: {textAlign: "left"}, pinned: 'left'},
-			{headerName: '패스워드', field: 'userpwd', hide: true},
-			{headerName: '플랜드', field: 'plant', width: 250, sortable: true, filter: true},
-			{headerName: '작업장', field: 'wc', width: 250, sortable: true, filter: true},
-			{headerName: '권한', field: 'auth', hide: true},
-			{headerName: '사용유무', field: 'useflag', hide: true},
-			{headerName: '수정자', field: 'upduser', hide: true},
-			{headerName: '수정일', field: 'upddate', hide: true},
+			{headerName: '선택', 			field: 'sel', 			hide:true, 		pinned: 'left'},
+			{headerName: '사용자ID', 	field: 'userid', 		hide:false,		width: 80, cellStyle: {textAlign: "center"}, pinned: 'left',
+				cellRenderer: BoldRenderer},
+			{headerName: '사용자명', 	field: 'username', 	hide:false,		width: 80, cellStyle: {textAlign: "left"}, pinned: 'left'},
+			{headerName: '패스워드', 	field: 'userpwd', 	hide: true},
+			{headerName: '플랜드', 		field: 'plant', 		hide:false,		width: 250, sortable: true, filter: true},
+			{headerName: '작업장', 		field: 'wc', 				hide:false,		width: 250, sortable: true, filter: true},
+			{headerName: '권한', 			field: 'auth', 			hide: true},
+			{headerName: '사용유무', 	field: 'useflag', 	hide: true},
+			{headerName: '수정자', 		field: 'upduser', 	hide: true},
+			{headerName: '수정일', 		field: 'upddate', 	hide: true},
 		]);
 		var gridOptions = {
 			defaultColDef: {
@@ -173,6 +219,7 @@ export default {
 			onRowClicked : function(event){
 				var selectedRow = event.node.data;
 				lblUserName.value = selectedRow.username;
+				lblUserID.value = selectedRow.userid;
 				searchAuth(selectedRow.userid);
 
 			},
@@ -185,14 +232,19 @@ export default {
 		let columnDefs2= reactive([
 			{headerName: '메뉴ID', 	field: 'menuid', 		hide:true, 		width: 60, 	pinned: 'left'},
 			{headerName: '메뉴명', 	field: 'menuname', 	hide:false, 	width: 80, 	cellStyle: {textAlign: "left"}, pinned: 'left'},
-			{headerName: '선택', 		field: 'sel',			 	hide:true, 		width: 60, 	pinned: 'left'},
+			{headerName: '선택', 		field: 'sel',			 	hide:false, 	width: 60, 	pinned: 'left',
+				headerCheckboxSelection: true, checkboxSelection: true},
 			{headerName: '화면ID', 	field: 'progid', 		hide:false, 	width: 250, cellStyle: {textAlign: "center"}, pinned: 'left'},
 			{headerName: '화면명', 	field: 'progname', 	hide:false, 	width: 250, cellStyle: {textAlign: "left"},pinned: 'left'},
-			{headerName: '조회', 		field: 'findflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"}},
-			{headerName: '신규',	 	field: 'newflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"}},
-			{headerName: '저장', 		field: 'saveflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"}},
+			{headerName: '조회', 		field: 'findflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"},
+				cellRenderer: CheckboxRenderer},
+			{headerName: '신규',	 	field: 'newflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"},
+				cellRenderer: CheckboxRenderer},
+			{headerName: '저장', 		field: 'saveflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"},
+				cellRenderer: CheckboxRenderer},
 			{headerName: '삭제', 		field: 'delflag', 	hide:true, 		width: 60, 	cellStyle: {textAlign: "center"}},
-			{headerName: '엑셀', 		field: 'expflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"}},
+			{headerName: '엑셀', 		field: 'expflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"},
+				cellRenderer: CheckboxRenderer},
 			{headerName: '인쇄', 		field: 'prtflag', 	hide:true, 		width: 60, 	cellStyle: {textAlign: "center"}},
 			{headerName: '수정자', 	field: 'upduser', 	hide:false, 	width: 60},
 			{headerName: '수정일', 	field: 'upddate', 	hide:false, 	width: 60},
@@ -208,6 +260,7 @@ export default {
 			},
 			columnDefs: columnDefs2,
 			rowData: null,
+			suppressRowClickSelection:true,
 			rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
 			onGridReady: function(event) {
 				setTimeout(function () {
@@ -314,7 +367,32 @@ export default {
 
 
 		function saveClick(){
-			emit("component_close", "auth_management");
+			let urlPost = url.value + '/dw_auth_mng_user_search_p_j';
+
+			var selectedData = gridApi2.value.getSelectedRows();
+			// console.log("[checked row] = ", selectedData);
+			// console.log("[login id] = ", store.state.auth.user[0].userid);
+
+			$axios.post(urlPost, {
+				lang:"KR",
+				userid:lblUserID.value,
+				upduser:store.state.auth.user[0].userid,
+				data: selectedData
+			})
+			.then((res) => {
+				if(res.data.length > 0){
+					msg_color.value = "blue";
+					msg.value = "OK";
+				}
+			}) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+				//.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+			.catch(err => {
+				alert(err);
+				console.error(err)
+
+				msg_color.value = "red";
+        msg.value = err;
+			})
 		}
 
 		function closeClick(){
