@@ -324,7 +324,7 @@
       };
 
 
-      function displayClick(){
+      async function displayClick(){
         // if (e.target.id == "txtPO"){
           console.log(req_param.txtPO);
 
@@ -335,7 +335,11 @@
             console.log(tmpscan.inputMode);
 
             //DO 조회 API전송
-            fn_POSearch();
+            var bRtn = await fn_POSearch()
+            if (bRtn){
+              fn_sumscanqty();
+              fn_sumgrid("PO_Search");
+            }
           }
           else {
             // alert("Please input P/O number first.")
@@ -347,7 +351,7 @@
         // }
       }
 
-      function fn_POSearch(){
+      async function fn_POSearch(){
         let urlPost = url.value + '/dw/good_receipt/detail_search';
 
         console.log("[req_param]", req_param);
@@ -356,7 +360,7 @@
         gridApi.value.setRowData([]);
 
         //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
-        $axios.post(urlPost, {
+        await $axios.post(urlPost, {
             i_lang: "KR",
             i_werks: getdata(store.state.auth.user[0].plantcd),
             i_userid: store.state.auth.user[0].userid,
@@ -377,7 +381,7 @@
               lblVendor.value = "";
               lblSL.value = "";
 
-              // txtPO.value.focus();
+              txtPO.value.focus();
               // txtPO.value.select();
             } else {
               msg_color.value = "blue";
@@ -390,8 +394,10 @@
               lblVendor.value = res.data[0].name1;
               lblSL.value = res.data[0].lgort;
 
-              fn_sumscanqty();
-              fn_sumgrid("PO_Search");
+
+              console.log("[scanData] = ", scanData);
+              // fn_sumscanqty();
+              // fn_sumgrid("PO_Search");
 
               scan.value.focus();
               scan.value.select();
@@ -408,7 +414,6 @@
           setTimeout(function () {
             autoSizeAll(false);
           }, 500);
-
           // gridApi.value.setPinnedBottomRowData(columnsum);
           // gridApi.value.setPinnedTopRowData(columnsum);
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
@@ -417,7 +422,83 @@
           alert(err);
           console.error(err)
         })
+
+        return true;
       }
+
+      // function fn_POSearch(){
+      //   let urlPost = url.value + '/dw/good_receipt/detail_search';
+
+      //   console.log("[req_param]", req_param);
+      //   // console.log(getdata(req_param.txtScan));
+
+      //   gridApi.value.setRowData([]);
+
+      //   //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
+      //   $axios.post(urlPost, {
+      //       i_lang: "KR",
+      //       i_werks: getdata(store.state.auth.user[0].plantcd),
+      //       i_userid: store.state.auth.user[0].userid,
+      //       i_ord_no: req_param.txtPO,
+      //       i_ord_item_no: req_param.txtPOitem,
+      //       // i_date_from: "",
+      //       // i_date_to: "",
+      //   })
+      //   .then((res) => {
+      //     console.log("[response data]", res.data);
+      //     console.log("[response data] = req_param.txtPO / txtPOitem -- ", req_param.txtPO, "/", req_param.txtPOitem);
+
+      //     if(res.data.length > 0) {
+      //       if (res.data[0].code == "NG") {
+      //         msg_color.value = "red";
+      //         msg.value = res.data[0].message;
+      //         lblPOdate.value = "";
+      //         lblVendor.value = "";
+      //         lblSL.value = "";
+
+      //         txtPO.value.focus();
+      //         // txtPO.value.select();
+      //       } else {
+      //         msg_color.value = "blue";
+      //         msg.value = "OK";
+      //         PlaySound("OK");
+
+      //         recvData.value = res.data;
+      //         console.log("[PO_Search] -> recvData.length/recvData : ", recvData.value.length, "/", recvData);
+      //         lblPOdate.value = res.data[0].bedat;
+      //         lblVendor.value = res.data[0].name1;
+      //         lblSL.value = res.data[0].lgort;
+
+
+      //         console.log("[scanData] = ", scanData);
+      //         fn_sumscanqty();
+      //         fn_sumgrid("PO_Search");
+
+      //         scan.value.focus();
+      //         scan.value.select();
+      //       }
+      //     }
+      //     else {
+      //       msg_color.value = "red";
+      //       msg.value = "No Data";
+      //       lblPOdate.value = "";
+      //       lblVendor.value = "";
+      //       lblSL.value = "";
+      //     }
+
+      //     setTimeout(function () {
+      //       autoSizeAll(false);
+      //     }, 500);
+
+      //     // gridApi.value.setPinnedBottomRowData(columnsum);
+      //     // gridApi.value.setPinnedTopRowData(columnsum);
+      //   }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+      //     //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+      //   .catch(err => {
+      //     alert(err);
+      //     console.error(err)
+      //   })
+      // }
 
       function fn_sumscanqty(){
         console.log("start fn_sumscanqty");
@@ -435,9 +516,11 @@
         //     }
         //   }
         // }
+
+
         gridApi.value.forEachNode( (node) => {
           console.log("[node.getdata]", node.rowIndex, " : ", node.data.ematn);
-          console.log("[scanData] : ", scanData.length, scanData.value.length, scanData);
+          // console.log("[scanData] : ", scanData.length, scanData.value.length, scanData);
           for (var i=0; i<scanData.length; i++) {
             if (node.data.ematn == scanData[i].matnr && node.data.ebelp == scanData[i].ebelp) {
                 node.setDataValue('procqty', Number(node.data.procqty)+Number(scanData[0].qty));
@@ -445,6 +528,8 @@
             }
           }
         });
+
+        console.log("[start fn_sumscanqty -> gridApi.value] = ", gridApi.value);
       }
 
       function fn_sumgrid(calltype){
@@ -538,7 +623,7 @@
 
                       // scanData.push(res.data[0]);
                       scanData.push({barno:res.data[0].barno, qty:res.data[0].qty, meins:res.data[0].meins, matnr:res.data[0].matnr, ebeln:node.data.ebeln, ebelp:node.data.ebelp});
-                      
+
                       console.log("scanData : ", scanData);
                       isBreak = true;
                     }
@@ -585,12 +670,18 @@
         popuppoisopen.value = true;
       }
 
-      function POselectClick(strPONo){
+      async function POselectClick(strPONo){
         console.log(strPONo);
         popuppoisopen.value = false;
         req_param.txtPO = strPONo;
 
-        fn_POSearch();
+        // fn_POSearch();
+        var bRtn = await fn_POSearch()
+        console.log(bRtn);
+        if (bRtn){
+          fn_sumscanqty();
+          fn_sumgrid("PO_Search");
+        }
       }
 
       function POcloseClick(){
@@ -606,7 +697,7 @@
         }
       }
 
-      function BarcloseClick(){
+      async function BarcloseClick(){
         popupbarisopen.value = false;
         console.log("BarcloseClick -- ", req_param.txtPO);
 
@@ -615,7 +706,12 @@
         console.log("scanData.length/scanData => ", scanData.length, "/", scanData);
 
         //누적수량과 스캔수량 초기화 위해 오더를 다시 조회.
-        fn_POSearch();
+        // fn_POSearch();
+        var bRtn = await fn_POSearch()
+        if (bRtn){
+          fn_sumscanqty();
+          fn_sumgrid("PO_Search");
+        }
 
         // fn_sumgrid("Barclose");
       }
