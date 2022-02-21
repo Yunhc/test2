@@ -5,14 +5,14 @@
       <p :style="{padding:'2px 0px 0px 0px', 'text-align':'center'}">스캔 바코드 리스트
       </p>
     </div>
-    <input type="text" class="form-control btn-sm" placeholder="UserID"
+    <!-- <input type="text" class="form-control btn-sm" placeholder="UserID"
       autocomplete="off"
-      v-model="strFilter">
+      v-model="strFilter"> -->
 
     <div class="pop-up-window-grid-1"
       :style="{
         //109:헤더(위 3줄 메뉴까지) - 28(팝업화면 헤더) - 48(하단 메시지) - 40 (하단버튼) - 4 (행간여백)
-        'height': `calc(${window_height - 109 - 28 - 48 - 40 - 4 -40}px)`
+        'height': `calc(${window_height - 109 - 28 - 48 - 40 - 4}px)`
       }"
     >
       <ag-grid-vue
@@ -40,13 +40,13 @@
       </div>
 
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'90px'}"
-          @click='onQuickFilterChanged'>filter</button>
+        <!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'90px'}"
+          @click='onQuickFilterChanged'>filter</button> -->
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'80px'}"
           @click='selectAllClick'>Select All</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'90px'}"
           @click='deleteClick'>Delete Item</button>
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 0px 0px 0px', width:'70px'}"
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
           @click='BarcloseClick'>Close</button>
       </div>
     </div>
@@ -135,7 +135,9 @@ export default {
       onGridReady: function(event) {
         setTimeout(function () {
           event.api.setRowData(barcodeData);
-          onQuickFilterChanged(strItem_No);
+          if (strItem_No.value != "합계"){
+            onQuickFilterChanged(strItem_No);
+          }
           autoSizeAll();
           fn_BarcodeList();
         }, 100);
