@@ -761,6 +761,9 @@
         else if (strCalltype.value == "close"){
           emit("component_close", "good_receipt");
         }
+        else if (strCalltype.value == "clear"){
+          dataClear();
+        }        
       }
 
       function scanClick() {
@@ -773,6 +776,21 @@
       }
 
       function clearClick(){
+        popupTitle.value ="Good Receipt";
+        popupMsg.value = "모든 데이터를 초기화하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
+        strCalltype.value = "clear";
+        popupisopen.value = true;
+      }
+
+      function closeClick(){
+        popupTitle.value ="Good Receipt";
+        popupMsg.value = "종료하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
+        strCalltype.value = "close";
+        popupisopen.value = true;
+        // emit("component_close", "good_receipt");
+      }
+
+      function dataClear(){
         req_param.txtPO = "";
         req_param.txtPOitem = "";
         lblPOdate.value = "";
@@ -789,17 +807,8 @@
         console.log("clearClick->length/scanData => ", scanData.length, "/", scanData);
         fn_sumgrid("clear");
         gridApi.value.setRowData([]);
-
+fn_sumgrid("clear");
         txtPO.value.focus();
-      }
-
-      function closeClick(){
-        popupTitle.value ="Good Receipt";
-        popupMsg.value = "종료하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
-        strCalltype.value = "close";
-        popupisopen.value = true;
-        // emit("component_close", "good_receipt");
-
       }
 
       function autoSizeAll(skipHeader) {
