@@ -285,12 +285,13 @@
           var rowNum = focusedCell.rowIndex
 
           console.log("colId/rowNum : ", colId, "/", rowNum);
-          console.log("selectedRow : ", selectedRow, "/", selectedRow.ebelp);
+          console.log("selectedRow/ebelp : ", selectedRow, "/", selectedRow.ebelp);
 
           console.log("scanData : ", scanData);
           //합계행도 rowNum이 0임
           if (colId == "scanqty" && Number(selectedRow.scanqty) > 0){
-            strPOItem = selectedRow.ebelp;  //합계행의 경우 "합계"가 들어간다.
+            strPOItem.value = selectedRow.ebelp;  //합계행의 경우 "합계"가 들어간다.
+            console.log("strPOItem : ", strPOItem.value);
             popupbarisopen.value = true;
           }
         },
@@ -421,25 +422,27 @@
         columnsum[0].menge2 = 0;
         columnsum[0].procqty = 0;
         columnsum[0].scanqty = 0;
+        console.log("recvData.length/recvData : ", recvData.value.length, "/", recvData);
 
-        var nRtn = recvData.value.reduce(function(previousValue, currentValue){
-          var summenge = 0;
-          var summenge2 = 0;
-          var sumprocqty = 0;
-          var sumscanqty = 0;
+        if (recvData.value.length > 0) {  //조회된 데이터가 그리드에 있을 경우만 합계 계산.
+          var nRtn = recvData.value.reduce(function(previousValue, currentValue){
+            var summenge = 0;
+            var summenge2 = 0;
+            var sumprocqty = 0;
+            var sumscanqty = 0;
 
-          summenge = Number(previousValue.menge) + Number(currentValue.menge);
-          summenge2 = Number(previousValue.menge2) + Number(currentValue.menge2);
-          sumprocqty = Number(previousValue.procqty) + Number(currentValue.procqty);
-          sumscanqty = Number(previousValue.scanqty) + Number(currentValue.scanqty);
-          return ({menge:summenge, menge2:summenge2, procqty:sumprocqty, scanqty:sumscanqty});
-        });
+            summenge = Number(previousValue.menge) + Number(currentValue.menge);
+            summenge2 = Number(previousValue.menge2) + Number(currentValue.menge2);
+            sumprocqty = Number(previousValue.procqty) + Number(currentValue.procqty);
+            sumscanqty = Number(previousValue.scanqty) + Number(currentValue.scanqty);
+            return ({menge:summenge, menge2:summenge2, procqty:sumprocqty, scanqty:sumscanqty});
+          });
 
-        columnsum[0].menge = nRtn.menge;
-        columnsum[0].menge2 = nRtn.menge2;
-        columnsum[0].procqty = nRtn.procqty;
-        columnsum[0].scanqty = nRtn.scanqty;
-
+          columnsum[0].menge = nRtn.menge;
+          columnsum[0].menge2 = nRtn.menge2;
+          columnsum[0].procqty = nRtn.procqty;
+          columnsum[0].scanqty = nRtn.scanqty;
+        }
         // gridApi.value.setPinnedBottomRowData(columnsum);
         gridApi.value.setPinnedTopRowData(columnsum);
       }
@@ -455,6 +458,8 @@
             if (scanData[i].barno == req_param.txtScan){
               msg_color.value = "red";
               msg.value = "이미 스캔한 바코드입니다.";
+              scan.value.focus();
+              scan.value.select();
               return;
             }
           }
@@ -572,6 +577,21 @@
       function BarcloseClick(){
         popupbarisopen.value = false;
         console.log("BarcloseClick -- ", req_param.txtPO);
+
+        // fn_POSearch();
+
+        console.log("scanData.length/scanData => ", scanData.length, "/", scanData);
+
+        gridApi.value.forEachNode( (node) => {
+          console.log("[node.getdata]", node.rowIndex, " : ", node.data.ematn);
+          for (var i=0; i<scanData.length; i++) {
+            if (node.data.ematn == scanData[i].matnr && node.data.ebelp == scanData[i].ebelp) {
+                node.setDataValue('procqty', Number(node.data.procqty)+Number(scanData[0].qty));
+                node.setDataValue('scanqty', Number(node.data.scanqty)+Number(scanData[0].qty));
+            }
+          }
+        });
+        fn_sumgrid();
       }
 
       function sendClick(procflag) {
@@ -653,7 +673,11 @@
         msg.value = "";
 
         //grid clear
+        recvData.value = reactive([]);
+        fn_sumgrid();
         gridApi.value.setRowData([]);
+        
+        // fn_sumgrid();
 
         txtPO.value.focus();
       }
