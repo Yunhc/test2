@@ -700,6 +700,8 @@
       }
 
       async function sendData() {
+
+        var rtn = false;
         console.log("[P/O No] : ", req_param.txtPO);
         if ((!req_param.txtPO) || (!lblVendor.value)) {    //PO가 조회된 경우만 처리.
           alert("Please search P/O information first");
@@ -709,8 +711,8 @@
           let urlPost = url.value + '/dw/good_receipt/save';
 
           //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
-          $axios.post(urlPost, {
-          // await $axios.post(urlPost, {
+          // $axios.post(urlPost, {
+          await $axios.post(urlPost, {
               i_lang: "EN",
               i_werks: getdata(store.state.auth.user[0].plantcd),
               i_userid: store.state.auth.user[0].userid,
@@ -728,18 +730,20 @@
               if (res.data[0].code == "NG") {
                 msg_color.value = "red";
                 msg.value = res.data[0].message;
+                rtn = false;
               } else if (res.data[0].code == "OK") {
                 //DO 조회 API전송.
                 // fn_POSearch();
-                var bRtn = await fn_POSearch();
-                if (bRtn){
-                  fn_sumscanqty();
-                  fn_sumgrid("save");
-                }
+                // var bRtn = await fn_POSearch();
+                // if (bRtn){
+                //   fn_sumscanqty();
+                //   fn_sumgrid("save");
+                // }
 
                 msg_color.value = "blue";
                 msg.value = res.data[0].message;
                 PlaySound("OK");
+                rtn = true;
               }
             }
             txtPO.value.focus();
@@ -748,25 +752,37 @@
           .catch(err => {
             alert(err);
             console.error(err)
+            rtn = false;
           })
         }
+
+        return rtn;
       }
 
       function noClick(){
         popupisopen.value = false;
       }
 
-      function yesClick() {
+      async function yesClick() {
         popupisopen.value = false;
         if (strCalltype.value == "send"){
-          sendData("Y");
+          var bRtn = await sendData("Y");
+
+          if (bRtn){
+            fn_POSearch();
+            var bRtn2 = await fn_POSearch();
+            if (bRtn2){
+              fn_sumscanqty();
+              fn_sumgrid("save");
+            }
+          }
         }
         else if (strCalltype.value == "close"){
           emit("component_close", "good_receipt");
         }
         else if (strCalltype.value == "clear"){
           clearData();
-        }  
+        }
       }
 
       function scanClick() {
