@@ -33,7 +33,7 @@
 					'height': `calc(${window_height - 109 - 70 - 70}px)`
 				}">
 				<ag-grid-vue
-					class="ag-theme-balham"
+					class="ag-theme-alpine"
 					headerHeight='35'
 					style="width: 100%; height:100%"
 					:rowData="recvData.value"
@@ -55,13 +55,43 @@
 						{{lblUserName}}
 					</label>
 				</div>
+				<div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
+					<input type="checkbox" :style="{ margin:'8px 0px 0px 5px'}"
+						v-model="chkFind"
+						@click='chkFindClick'>
+					<label class="form-check-label" for="defaultCheck1"
+						:style="{ margin:'6px 0px 0px 5px', color:'rgb(34, 33, 33)', 'font-size':'14px'}">
+						조회
+					</label>
+					<input type="checkbox" :style="{ margin:'8px 0px 0px 25px'}"
+						v-model="chkNew"
+						@click='chkNewClick'>
+					<label class="form-check-label" for="defaultCheck1"
+						:style="{ margin:'6px 0px 0px 5px', color:'rgb(34, 33, 33)', 'font-size':'14px'}">
+						신규
+					</label>
+					<input type="checkbox" :style="{ margin:'8px 0px 0px 25px'}"
+						v-model="chkSave"
+						@click='chkSaveClick'>
+					<label class="form-check-label" for="defaultCheck1"
+						:style="{ margin:'6px 0px 0px 5px', color:'rgb(34, 33, 33)', 'font-size':'14px'}">
+						저장
+					</label>
+					<input type="checkbox" :style="{ margin:'8px 0px 0px 25px'}"
+						v-model="chkExp"
+						@click='chkExpClick'>
+					<label class="form-check-label" for="defaultCheck1"
+						:style="{ margin:'6px 0px 0px 5px', color:'rgb(34, 33, 33)', 'font-size':'14px'}">
+						엑셀
+					</label>
+				</div>
 			</div>
 			<div class="window-grid-1"
 				:style="{
 					'height': `calc(${window_height - 109 - 70 - 70}px)`
 				}">
 				<ag-grid-vue
-					class="ag-theme-balham"
+					class="ag-theme-alpine"
 					headerHeight='35'
 					style="width: 100%; height:100%"
 					:rowData="recvData2.value"
@@ -84,7 +114,7 @@
       </div>
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
         <!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'100px'}"
-          @click='printClick_3'>라벨발행-3</button> -->
+          @click='testClick'>테스트</button> -->
 				<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'100px'}"
 					@click='saveClick'>
 					저장
@@ -124,6 +154,12 @@ export default {
 		let lblUserName = ref(null);
 		let lblUserID = ref(null);
 
+		//체크박스
+		let chkFind = ref(false);
+		let chkNew = ref(false);
+		let chkSave = ref(false);
+		let chkExp = ref(false);
+
 		//리턴값 표시
 		let msg = ref(null);
     let msg_color = ref(null);
@@ -160,16 +196,16 @@ export default {
 			}
 
 			input.addEventListener('click', () => {
-				params.value = !params.value;
+				// params.value = !params.value;
 				// params.node.data[params.coldDef.field] = params.value;
 
 				// you can add here code
-				console.log("[params] = ", params);
-				if(params.value == true){
-					params.node.data[params.colDef.field] = "-1"
+				// console.log("[params] = ", params);
+				if(params.node.data[params.colDef.field] == "-1"){
+					params.node.data[params.colDef.field] = "0"
 				}
 				else{
-					params.node.data[params.colDef.field] = "0"
+					params.node.data[params.colDef.field] = "-1"
 				}
 				params.node.setSelected(true);
 			});
@@ -232,8 +268,7 @@ export default {
 		let columnDefs2= reactive([
 			{headerName: '메뉴ID', 	field: 'menuid', 		hide:true, 		width: 60, 	pinned: 'left'},
 			{headerName: '메뉴명', 	field: 'menuname', 	hide:false, 	width: 80, 	cellStyle: {textAlign: "left"}, pinned: 'left'},
-			{headerName: '선택', 		field: 'sel',			 	hide:false, 	width: 60, 	pinned: 'left',
-				headerCheckboxSelection: true, checkboxSelection: true},
+			{headerName: '선택', 		field: 'sel',			 	hide:false, 	width: 60, 	pinned: 'left'},
 			{headerName: '화면ID', 	field: 'progid', 		hide:false, 	width: 250, cellStyle: {textAlign: "center"}, pinned: 'left'},
 			{headerName: '화면명', 	field: 'progname', 	hide:false, 	width: 250, cellStyle: {textAlign: "left"},pinned: 'left'},
 			{headerName: '조회', 		field: 'findflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"},
@@ -365,9 +400,12 @@ export default {
 			columnApi2.value.autoSizeColumns(allColumnIds, skipHeader);
 		}
 
-
 		function saveClick(){
-			let urlPost = url.value + '/dw_auth_mng_user_search_p_j';
+			saveAuth();
+		}
+
+		function saveAuth(){
+			let urlPost = url.value + '/dw_auth_mng_auth_save_p_j';
 
 			var selectedData = gridApi2.value.getSelectedRows();
 			// console.log("[checked row] = ", selectedData);
@@ -381,8 +419,15 @@ export default {
 			})
 			.then((res) => {
 				if(res.data.length > 0){
-					msg_color.value = "blue";
-					msg.value = "OK";
+					if (res.data[0].status == "OK"){
+						msg_color.value = "blue";
+						gridApi2.value.deselectAll();
+          }
+          else{
+						msg_color.value = "red";
+          }
+					msg.value = res.data[0].msg;
+          alert(msg.value);
 				}
 			}) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
 				//.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
@@ -399,6 +444,71 @@ export default {
 			emit("component_close", "auth_management");
 		}
 
+		function testClick(){
+			// console.log("testClick");
+			gridApi2.value.deselectAll();
+		}
+
+		function chkFindClick(){
+			if(chkFind.value)chkFind.value =false;
+			else chkFind.value=true;
+			// console.log("chkFindClick", chkFind.value);
+			gridApi2.value.forEachNode((node)=> {
+				// console.log("node.data = ", node.data['findflag']);
+				if (chkFind.value){
+					if(node.data['findflag'] != "4") node.data['findflag'] = -1;
+				}
+				else{
+					if(node.data['findflag'] != "4") node.data['findflag'] = 0;
+				}
+
+				if(chkFind.value || chkNew.value || chkSave.value || chkExp.value){
+					node.data['sel'] = "-1";
+				}
+				else{
+					node.data['sel'] = "0";
+				}
+			});
+		}
+
+		function chkNewClick(){
+			if(chkNew.value)chkNew.value =false;
+			else chkNew.value=true;
+
+			// console.log("chkNewClick", chkNew.value);
+
+			if(chkFind.value || chkNew.value || chkSave.value || chkExp.value){
+				gridApi2.value.selectAll();
+			}
+			else{
+				gridApi2.value.deselectAll();
+			}
+		}
+
+		function chkSaveClick(){
+			if(chkSave.value)chkSave.value =false;
+			else chkSave.value=true;
+
+			if(chkFind.value || chkNew.value || chkSave.value || chkExp.value){
+				gridApi2.value.selectAll();
+			}
+			else{
+				gridApi2.value.deselectAll();
+			}
+		}
+
+		function chkExpClick(){
+			if(chkExp.value)chkExp.value =false;
+			else chkExp.value=true;
+
+			if(chkFind.value || chkNew.value || chkSave.value || chkExp.value){
+				gridApi2.value.selectAll();
+			}
+			else{
+				gridApi2.value.deselectAll();
+			}
+		}
+
 		return {
 			window_width,
 			window_height,
@@ -409,8 +519,17 @@ export default {
 			searchClick,
 			req_param,
 			lblUserName,
+			chkFindClick,
+			chkNewClick,
+			chkSaveClick,
+			chkExpClick,
+			chkFind,
+			chkNew,
+			chkSave,
+			chkExp,
 			msg,
 			msg_color,
+			testClick,
 			saveClick,
 			closeClick,
 		}
