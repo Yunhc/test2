@@ -54,6 +54,16 @@
 						:style="{'text-align':'left'}">
 						{{lblUserName}}
 					</label>
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+						변경이력
+					</span>
+					<select class="form-select btn-sm" aria-label="Default select example"
+						@change ='changeSelectBox'
+						v-model="cboAuthHist">
+						<option disabled value=""></option>
+						<option v-for="(d, i) in optionAuthHist" :key="i" :value="d.id">{{ d.id }}</option>
+					</select>
 				</div>
 				<div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
 					<input type="checkbox" :style="{ margin:'8px 0px 0px 5px'}"
@@ -132,7 +142,8 @@ import $axios from 'axios';
 import { reactive, ref, onMounted, onUnmounted } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3'
 import { useStore } from 'vuex';
-// import { addDate } from '@/helper/filter.js';
+import { searchSelectBox } from '@/helper/sql.js';
+import { getdata } from '@/helper/filter.js';
 
 export default {
 	name:'auth_management',
@@ -149,10 +160,14 @@ export default {
     let url = ref($url_rest);
 
 		//조회조건 데이터 바인딩
-		let req_param = reactive({userid:"",
-															username:""});
+		let req_param = reactive({
+			userid:"",
+			username:""
+		});
 		let lblUserName = ref(null);
 		let lblUserID = ref(null);
+		let cboAuthHist = ref(null);
+		let optionAuthHist = reactive([]);
 
 		//체크박스
 		let chkFind = ref(false);
@@ -207,7 +222,9 @@ export default {
 				else{
 					params.node.data[params.colDef.field] = "-1"
 				}
-				params.node.setSelected(true);
+				params.node.data['sel'] = "-1";
+
+				refreshAll();
 			});
       return input;
 		};
@@ -240,7 +257,7 @@ export default {
 			},
 			columnDefs: columnDefs,
 			rowData: null,
-			rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
+			rowSelection: 'single',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
 			onGridReady: function(event) {
 				setTimeout(function () {
 					event.api.setRowData(recvData);
@@ -256,8 +273,8 @@ export default {
 				var selectedRow = event.node.data;
 				lblUserName.value = selectedRow.username;
 				lblUserID.value = selectedRow.userid;
-				searchAuth(selectedRow.userid);
-
+				searchAuth();
+				initSelectBox_AuthHist();
 			},
 		};
 
@@ -268,9 +285,10 @@ export default {
 		let columnDefs2= reactive([
 			{headerName: '메뉴ID', 	field: 'menuid', 		hide:true, 		width: 60, 	pinned: 'left'},
 			{headerName: '메뉴명', 	field: 'menuname', 	hide:false, 	width: 80, 	cellStyle: {textAlign: "left"}, pinned: 'left'},
-			{headerName: '선택', 		field: 'sel',			 	hide:false, 	width: 60, 	pinned: 'left'},
+			{headerName: '선택', 		field: 'sel',			 	hide:true, 		width: 60, 	pinned: 'left'},
 			{headerName: '화면ID', 	field: 'progid', 		hide:false, 	width: 250, cellStyle: {textAlign: "center"}, pinned: 'left'},
-			{headerName: '화면명', 	field: 'progname', 	hide:false, 	width: 250, cellStyle: {textAlign: "left"},pinned: 'left'},
+			{headerName: '화면명', 	field: 'progname', 	hide:false, 	width: 250, cellStyle: {textAlign: "left"}, pinned: 'left',
+				cellRenderer: BoldRenderer},
 			{headerName: '조회', 		field: 'findflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"},
 				cellRenderer: CheckboxRenderer},
 			{headerName: '신규',	 	field: 'newflag', 	hide:false, 	width: 60, 	cellStyle: {textAlign: "center"},
@@ -296,7 +314,7 @@ export default {
 			columnDefs: columnDefs2,
 			rowData: null,
 			suppressRowClickSelection:true,
-			rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
+			rowSelection: 'single',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
 			onGridReady: function(event) {
 				setTimeout(function () {
 					event.api.setRowData(recvData2);
@@ -352,12 +370,12 @@ export default {
 			})
 		}
 
-		function searchAuth(strUserid){
+		function searchAuth(){
 			let urlPost = url.value + '/dw_auth_mng_auth_search_p_j';
 			$axios.post(urlPost, {
 				lang:"KR",
-				userid:strUserid,
-				procdate: ""
+				userid:lblUserID.value,
+				procdate:getdata(cboAuthHist.value)
 			})
 			.then((res) => {
 				recvData2.value = res.data;
@@ -380,6 +398,34 @@ export default {
 		}
 
 
+		async function initSelectBox_AuthHist() {
+			let send_param = reactive(
+				{	lang:"KR",
+					userid:lblUserID.value,
+					plantcd:getdata(store.state.auth.user[0].plantcd),
+					type1:"AUTH_HIST",
+					type2:"",
+					type3:"",
+					type4:"",
+					space:"Y",
+				}
+			);
+			// console.log(send_param);
+			let res = reactive([]);
+			res = await searchSelectBox(send_param);
+
+			if(res.data.length > 0){
+				optionAuthHist.splice(0, optionAuthHist.length);
+				for(var i=0; i<res.data.length; i++){
+					optionAuthHist.push({id:res.data[i].id, name:res.data[i].name});
+				}
+			}
+		}
+
+		function changeSelectBox(){
+			searchAuth();
+		}
+
 		function autoSizeAll(skipHeader) {
 			const allColumnIds = [];
 			columnApi.value.getAllColumns().forEach((column) => {
@@ -400,18 +446,45 @@ export default {
 			columnApi2.value.autoSizeColumns(allColumnIds, skipHeader);
 		}
 
-		function saveClick(){
-			saveAuth();
+		async function saveClick(){
+			var bRtn = await saveAuth();
+			console.log("bRtn = ", bRtn);
+			if (bRtn){
+				gridApi2.value.forEachNode((node)=>{
+					if(node.data['sel'] == "-1") {
+						node.data['sel'] = ""
+						// console.log(node.data['sel']);
+					}
+				});
+				refreshAll();
+				initSelectBox_AuthHist();
+			}
 		}
 
-		function saveAuth(){
+		async function saveAuth(){
 			let urlPost = url.value + '/dw_auth_mng_auth_save_p_j';
 
-			var selectedData = gridApi2.value.getSelectedRows();
+			// var selectedData = gridApi2.value.getSelectedRows();
 			// console.log("[checked row] = ", selectedData);
 			// console.log("[login id] = ", store.state.auth.user[0].userid);
 
-			$axios.post(urlPost, {
+			var selectedData = reactive([])
+			gridApi2.value.forEachNode((node)=>{
+				if(node.data['sel'] == "-1"){
+					selectedData.push({
+						progid:node.data['progid'],
+						findflag:node.data['findflag'],
+						newflag:node.data['newflag'],
+						saveflag:node.data['saveflag'],
+						delflag:node.data['delflag'],
+						expflag:node.data['expflag'],
+						prtflag:node.data['prtflag']
+					})
+				}
+			});
+
+			var bRtn = false;
+			await $axios.post(urlPost, {
 				lang:"KR",
 				userid:lblUserID.value,
 				upduser:store.state.auth.user[0].userid,
@@ -421,13 +494,15 @@ export default {
 				if(res.data.length > 0){
 					if (res.data[0].status == "OK"){
 						msg_color.value = "blue";
-						gridApi2.value.deselectAll();
+						bRtn = true;
           }
           else{
 						msg_color.value = "red";
+						bRtn = false;
           }
 					msg.value = res.data[0].msg;
           alert(msg.value);
+					console.log("통신완료");
 				}
 			}) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
 				//.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
@@ -437,7 +512,9 @@ export default {
 
 				msg_color.value = "red";
         msg.value = err;
+				bRtn = false;
 			})
+			return bRtn;
 		}
 
 		function closeClick(){
@@ -456,57 +533,90 @@ export default {
 			gridApi2.value.forEachNode((node)=> {
 				// console.log("node.data = ", node.data['findflag']);
 				if (chkFind.value){
-					if(node.data['findflag'] != "4") node.data['findflag'] = -1;
+					if(node.data['findflag'] != "4") {
+						node.data['findflag'] = -1;
+						node.data['sel'] = "-1";
+					}
 				}
 				else{
-					if(node.data['findflag'] != "4") node.data['findflag'] = 0;
-				}
-
-				if(chkFind.value || chkNew.value || chkSave.value || chkExp.value){
-					node.data['sel'] = "-1";
-				}
-				else{
-					node.data['sel'] = "0";
+					if(node.data['findflag'] != "4") {
+						node.data['findflag'] = 0;
+						node.data['sel'] = "-1";
+					}
 				}
 			});
+			refreshAll();
 		}
 
 		function chkNewClick(){
 			if(chkNew.value)chkNew.value =false;
 			else chkNew.value=true;
-
 			// console.log("chkNewClick", chkNew.value);
-
-			if(chkFind.value || chkNew.value || chkSave.value || chkExp.value){
-				gridApi2.value.selectAll();
-			}
-			else{
-				gridApi2.value.deselectAll();
-			}
+			gridApi2.value.forEachNode((node)=> {
+				if (chkNew.value){
+					if(node.data['newflag'] != "4") {
+						node.data['newflag'] = -1;
+						node.data['sel'] = "-1";
+					}
+				}
+				else{
+					if(node.data['newflag'] != "4") {
+						node.data['newflag'] = 0;
+						node.data['sel'] = "-1";
+					}
+				}
+			});
+			refreshAll();
 		}
 
 		function chkSaveClick(){
 			if(chkSave.value)chkSave.value =false;
 			else chkSave.value=true;
 
-			if(chkFind.value || chkNew.value || chkSave.value || chkExp.value){
-				gridApi2.value.selectAll();
-			}
-			else{
-				gridApi2.value.deselectAll();
-			}
+			gridApi2.value.forEachNode((node)=> {
+				if (chkSave.value){
+					if(node.data['saveflag'] != "4") {
+						node.data['saveflag'] = -1;
+						node.data['sel'] = "-1";
+					}
+				}
+				else{
+					if(node.data['saveflag'] != "4") {
+						node.data['saveflag'] = 0;
+						node.data['sel'] = "-1";
+					}
+				}
+			});
+			refreshAll();
 		}
 
 		function chkExpClick(){
 			if(chkExp.value)chkExp.value =false;
 			else chkExp.value=true;
 
-			if(chkFind.value || chkNew.value || chkSave.value || chkExp.value){
-				gridApi2.value.selectAll();
-			}
-			else{
-				gridApi2.value.deselectAll();
-			}
+			gridApi2.value.forEachNode((node)=> {
+				if (chkExp.value){
+					if(node.data['expflag'] != "4") {
+						node.data['expflag'] = -1;
+						node.data['sel'] = "-1";
+					}
+				}
+				else{
+					if(node.data['expflag'] != "4") {
+						node.data['expflag'] = 0;
+						node.data['sel'] = "-1";
+					}
+				}
+			});
+			refreshAll();
+		}
+
+		function refreshAll() {
+			var params = {
+				force: true,
+				suppressFlash: true,
+			};
+			gridApi2.value.refreshCells(params);
 		}
 
 		return {
@@ -519,6 +629,9 @@ export default {
 			searchClick,
 			req_param,
 			lblUserName,
+			cboAuthHist,
+			optionAuthHist,
+			changeSelectBox,
 			chkFindClick,
 			chkNewClick,
 			chkSaveClick,
