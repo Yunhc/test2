@@ -119,7 +119,7 @@
       </div>
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
-        @click='sendClick("N")'>입고</button>
+        @click='sendClick'>입고</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
         @click='scanClick'>Scan</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
@@ -693,47 +693,50 @@
         var bRtn = await fn_POSearch()
         if (bRtn){
           fn_sumscanqty();
-          fn_sumgrid("PO_Search");
+          fn_sumgrid("Barclose");
         }
 
         // fn_sumgrid("Barclose");
       }
 
-      function sendClick(procflag) {
-        console.log("[ProcFlag] : ", procflag);
+      async function sendData() {
         console.log("[P/O No] : ", req_param.txtPO);
         if ((!req_param.txtPO) || (!lblVendor.value)) {    //PO가 조회된 경우만 처리.
           alert("Please search P/O information first");
         }
         else {
+
           let urlPost = url.value + '/dw/good_receipt/save';
 
           //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
           $axios.post(urlPost, {
+          // await $axios.post(urlPost, {
               i_lang: "EN",
               i_werks: getdata(store.state.auth.user[0].plantcd),
               i_userid: store.state.auth.user[0].userid,
-              i_ord_no: req_param.txtPO,
-              i_ord_seq: req_param.txtPOitem,
-              i_barno: req_param.txtScan,
-              i_procflag: procflag
+              // i_ord_no: req_param.txtPO,
+              data: scanData,
+              i_device: "",
+              i_ipaddress: "",
+              i_model: "",
+              i_osversion: "",
           })
           .then((res) => {
             console.log("[response data]", res.data);
 
             if(res.data.length > 0) {
               if (res.data[0].code == "NG") {
-                if (res.data[0].subcode == "Confirm") {
-                  popupTitle.value ="Good Receipt";
-                  popupMsg.value = res.data[0].message + "\n" + "Do you want to process? ";
-                  strCalltype = "send";
-                  popupisopen.value = true;
-                } else {
-                  msg_color.value = "red";
-                  msg.value = res.data[0].message;
-                }
+                msg_color.value = "red";
+                msg.value = res.data[0].message;
               } else if (res.data[0].code == "OK") {
-                clearClick();
+                //DO 조회 API전송.
+                // fn_POSearch();
+                var bRtn = await fn_POSearch();
+                if (bRtn){
+                  fn_sumscanqty();
+                  fn_sumgrid("save");
+                }
+
                 msg_color.value = "blue";
                 msg.value = res.data[0].message;
                 PlaySound("OK");
@@ -756,14 +759,14 @@
       function yesClick() {
         popupisopen.value = false;
         if (strCalltype.value == "send"){
-          sendClick("Y");
+          sendData("Y");
         }
         else if (strCalltype.value == "close"){
           emit("component_close", "good_receipt");
         }
         else if (strCalltype.value == "clear"){
-          dataClear();
-        }
+          clearData();
+        }  
       }
 
       function scanClick() {
@@ -773,6 +776,13 @@
         console.log(txtscan.inputMode);
 
         scan.value.focus();
+      }
+
+      function sendClick(){
+        popupTitle.value ="Good Receipt";
+        popupMsg.value = "전송하시겠습니까?";
+        strCalltype.value = "send";
+        popupisopen.value = true;
       }
 
       function clearClick(){
@@ -790,7 +800,7 @@
         // emit("component_close", "good_receipt");
       }
 
-      function dataClear(){
+      function clearData(){
         req_param.txtPO = "";
         req_param.txtPOitem = "";
         lblPOdate.value = "";
@@ -807,8 +817,10 @@
         scanData.splice(0, scanData.length);
         console.log("clearClick->length/scanData => ", scanData.length, "/", scanData);
         fn_sumgrid("clear");
+        // console.log("a");
         gridApi.value.setRowData([]);
-fn_sumgrid("clear");
+        // console.log("b");
+
         txtPO.value.focus();
       }
 
