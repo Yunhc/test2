@@ -568,7 +568,7 @@
 
           //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
           $axios.post(urlPost, {
-              i_lang: "EN",
+              i_lang: "KR",
               i_werks: getdata(store.state.auth.user[0].plantcd),
               i_userid: store.state.auth.user[0].userid,
               i_ord_no: req_param.txtPO,
@@ -700,7 +700,6 @@
       }
 
       async function sendData() {
-
         var rtn = false;
         console.log("[P/O No] : ", req_param.txtPO);
         if ((!req_param.txtPO) || (!lblVendor.value)) {    //PO가 조회된 경우만 처리.
@@ -713,7 +712,7 @@
           //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
           // $axios.post(urlPost, {
           await $axios.post(urlPost, {
-              i_lang: "EN",
+              i_lang: "KR",
               i_werks: getdata(store.state.auth.user[0].plantcd),
               i_userid: store.state.auth.user[0].userid,
               // i_ord_no: req_param.txtPO,
@@ -766,10 +765,11 @@
       async function yesClick() {
         popupisopen.value = false;
         if (strCalltype.value == "send"){
-          var bRtn = await sendData("Y");
-
+          var bRtn = await sendData();
           if (bRtn){
-            fn_POSearch();
+            //스캔 데이터만 초기화 함.
+            scanData.splice(0, scanData.length);
+
             var bRtn2 = await fn_POSearch();
             if (bRtn2){
               fn_sumscanqty();
