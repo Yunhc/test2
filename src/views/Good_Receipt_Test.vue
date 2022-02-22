@@ -101,11 +101,11 @@
     >
 			<div>
 				<div v-for="(ord, i) in recvData" :key="i">
-					<button class="order-gr">
+					<button class="order-gr" @click='selectPO(i)'>
 						<div class="order-gr-content">
 							<div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
 								<span class="input-group-text btn-sm" id="basic-addon1"
-									:style="{width:'70px', display:'inline-block', 'text-align':'right', 'font-weight':'bold'}">Po번호
+									:style="{width:'70px', display:'inline-block', 'text-align':'right', 'font-weight':'bold'}">PO 번호
 								</span>
 								<label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Customer"
 										aria-label="Customer" aria-describedby="basic-addon1"
@@ -280,6 +280,16 @@
       function handleResize() {
         window_width.value = window.innerWidth;
         window_height.value = window.innerHeight;
+      }
+
+      function selectPO(i){
+        // popupbarisopen.value = true;
+        // console.log("txtPO => ", req_param.txtPO);
+        // onCellClicked();
+          // console.log("Select PO 번호 : ", i, recvData, recvData.order, recvData.order[i].ebeln);
+          console.log("Select PO 번호 : ", i, recvData[i], recvData[i].data, recvData[i].order.ebeln);
+
+          // popupbarisopen.value = true;
       }
 
       function displayClick(){
@@ -595,6 +605,7 @@
         popupbarisopen,
         popuppoisopen,
         strPONo,
+        selectPO,
         POselectClick,
         POcloseClick,
         BarcloseClick,
