@@ -10,6 +10,7 @@
       v-model="strFilter"> -->
 
     <div class="pop-up-window-grid-1"
+      align="left"
       :style="{
         //109:헤더(위 3줄 메뉴까지) - 28(팝업화면 헤더) - 48(하단 메시지) - 40 (하단버튼) - 4 (행간여백)
         'height': `calc(${window_height - 109 - 28 - 48 - 40 - 4}px)`
