@@ -145,10 +145,10 @@
 
   export default {
     name:'good_receipt',
+    props:['strPO_GR', 'strItem_GR'],
     components:{
       AgGridVue,
       popupyn,
-      // popupposearch,
       popupbarsearch,
     },
 
@@ -170,6 +170,9 @@
       let recvData = reactive([]);
       let strPONo = ref(null);
       let strPOItem = ref(null);
+
+      let strPO_No_GR = ref(props.strPO_GR);
+      let strItem_No_GR = ref(props.strItem_GR);
 
       let scanData = reactive([]);  //스캔한 바코드 데이터 저장
 
@@ -300,7 +303,16 @@
       onMounted(() => {
         console.log("[Good Receipt] = ", "onMounted--");
         window.addEventListener('resize', handleResize);
-        txtPO.value.focus();
+        
+        console.log("strPO_NO_GR", props.strPO_GR);
+        if (strPO_No_GR.value != null){
+          console.log("strPO_NO_GR", strPO_No_GR.value);
+          req_param.txtPO = strPO_No_GR.value;
+          displayClick();
+          // fn_POSearch();
+        } else {
+          txtPO.value.focus();
+        }
       });
 
       onUnmounted(() =>{
@@ -423,79 +435,6 @@
         return true;
       }
 
-      // function fn_POSearch(){
-      //   let urlPost = url.value + '/dw/good_receipt/detail_search';
-
-      //   console.log("[req_param]", req_param);
-      //   // console.log(getdata(req_param.txtScan));
-
-      //   gridApi.value.setRowData([]);
-
-      //   //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
-      //   $axios.post(urlPost, {
-      //       i_lang: "KR",
-      //       i_werks: getdata(store.state.auth.user[0].plantcd),
-      //       i_userid: store.state.auth.user[0].userid,
-      //       i_ord_no: req_param.txtPO,
-      //       i_ord_item_no: req_param.txtPOitem,
-      //       // i_date_from: "",
-      //       // i_date_to: "",
-      //   })
-      //   .then((res) => {
-      //     console.log("[response data]", res.data);
-      //     console.log("[response data] = req_param.txtPO / txtPOitem -- ", req_param.txtPO, "/", req_param.txtPOitem);
-
-      //     if(res.data.length > 0) {
-      //       if (res.data[0].code == "NG") {
-      //         msg_color.value = "red";
-      //         msg.value = res.data[0].message;
-      //         lblPOdate.value = "";
-      //         lblVendor.value = "";
-      //         lblSL.value = "";
-
-      //         txtPO.value.focus();
-      //         // txtPO.value.select();
-      //       } else {
-      //         msg_color.value = "blue";
-      //         msg.value = "OK";
-      //         PlaySound("OK");
-
-      //         recvData.value = res.data;
-      //         console.log("[PO_Search] -> recvData.length/recvData : ", recvData.value.length, "/", recvData);
-      //         lblPOdate.value = res.data[0].bedat;
-      //         lblVendor.value = res.data[0].name1;
-      //         lblSL.value = res.data[0].lgort;
-
-
-      //         console.log("[scanData] = ", scanData);
-      //         fn_sumscanqty();
-      //         fn_sumgrid("PO_Search");
-
-      //         scan.value.focus();
-      //         scan.value.select();
-      //       }
-      //     }
-      //     else {
-      //       msg_color.value = "red";
-      //       msg.value = "No Data";
-      //       lblPOdate.value = "";
-      //       lblVendor.value = "";
-      //       lblSL.value = "";
-      //     }
-
-      //     setTimeout(function () {
-      //       autoSizeAll(false);
-      //     }, 500);
-
-      //     // gridApi.value.setPinnedBottomRowData(columnsum);
-      //     // gridApi.value.setPinnedTopRowData(columnsum);
-      //   }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
-      //     //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
-      //   .catch(err => {
-      //     alert(err);
-      //     console.error(err)
-      //   })
-      // }
 
       function fn_sumscanqty(){
         console.log("start fn_sumscanqty");
@@ -649,37 +588,6 @@
           popupbarisopen.value = true;
       }
 
-      function DOClick(){
-        popuppoisopen.value = true;
-      }
-
-      async function POselectClick(strPONo){
-        console.log(strPONo);
-        popuppoisopen.value = false;
-        req_param.txtPO = strPONo;
-
-        // fn_POSearch();
-        var bRtn = await fn_POSearch()
-        console.log(bRtn);
-        if (bRtn){
-          fn_sumscanqty();
-          fn_sumgrid("PO_Search");
-        }
-      }
-
-      function POcloseClick(){
-        popuppoisopen.value = false;
-        console.log("[Vendor] : ", lblVendor.value);
-        if (lblVendor.value) {
-          scan.value.focus();
-          // scan.value.select();
-        }
-        else {
-          txtPO.value.focus();
-          // txtPO.value.select();
-        }
-      }
-
       async function BarcloseClick(){
         popupbarisopen.value = false;
         console.log("BarcloseClick -- ", req_param.txtPO);
@@ -778,7 +686,12 @@
           }
         }
         else if (strCalltype.value == "close"){
-          emit("component_close", "good_receipt");
+          console.log("strPO_No_GR/strItem_No_GR : ", strPO_No_GR.value, "/", strItem_No_GR.value);
+          if (strPO_No_GR.value == null){
+            emit("component_close", "good_receipt");  //구매입고 메뉴화면에서 호출한 경우의 화면종료
+          } else {
+            emit("GRcloseClick");   //구매오더 조회 메뉴화면에서 호출한 경우의 화면 종료
+          }
         }
         else if (strCalltype.value == "clear"){
           clearData();
@@ -879,11 +792,8 @@
         strPONo,
         strPOItem,
         scanData,
-        POselectClick,
-        POcloseClick,
         BarcloseClick,
         DetailClick,
-        DOClick,
         displayClick,
         scanEnter,
         sendClick,
