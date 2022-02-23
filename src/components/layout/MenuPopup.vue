@@ -78,7 +78,7 @@
 
 <script>
 import VueHorizontal from 'vue-horizontal';
-import { onMounted, onUnmounted, reactive, ref } from 'vue'
+import { onMounted, onUnmounted, reactive, ref, shallowRef } from 'vue'
 import {useRouter} from 'vue-router';
 // import selectedBtn from '@/components/form/SelectedButton.vue';
 
@@ -167,9 +167,9 @@ export default {
 			{pid: 'M520', id:'stockcount_offline', name:'Stock Count(Offline)'},
 		]);
 
-		let comp = ref(home2);
+		let comp = shallowRef(home2);
 		let currentTab = ref("home2");
-		let tabs =  reactive([]);
+		let tabs =  ref([]);
 		let selectedTabs = ref([]);
 
 		let clickTabExit = ref(false); 	//Tab 종료 버튼을 클릭하면 컴포넌트 변환 버튼도 눌리게 된다.
@@ -177,9 +177,8 @@ export default {
 
 		onMounted(() => {
 			// console.log("[MenuPopup] = ", "onMounted--");
-			tabs.push({id:'home2', name:'Home'});
+			tabs.value.push({id:'home2', name:'Home'});
 			selectedTabs.value.push('home2');
-			// console.log("[MenuPopup] = tabs --", tabs);
 			window.addEventListener('resize', handleResize);
 			fn_Search_MainMenu();
     });
@@ -206,12 +205,11 @@ export default {
 		function clickSubButton(i){
       // alert(this.button_id);
 			// router.push({ path: menus_sub[i].id });
-			// console.log("[MenuPopup] = clickSubButton  tabs-- ", tabs);
 
 			let isIncluld = ref(false);
-			for(var j=0; j<tabs.length; j++)
+			for(var j=0; j<tabs.value.length; j++)
 			{
-				if(tabs[j].id == menus_sub[i].id) {
+				if(tabs.value[j].id == menus_sub[i].id) {
 					isIncluld.value = true;
 					break;
 				}
@@ -221,17 +219,17 @@ export default {
 			}
 			else{
 				//탭순서를 앞쪽으로 넣기위해 변경
-				if (tabs.length > 1){
-					tabs.splice(0, 1);
-					tabs.unshift({id:menus_sub[i].id, name:menus_sub[i].name});
-					tabs.unshift({id:'home2', name:'Home'});
+				if (tabs.value.length > 1){
+					tabs.value.splice(0, 1);
+					tabs.value.unshift({id:menus_sub[i].id, name:menus_sub[i].name});
+					tabs.value.unshift({id:'home2', name:'Home'});
 
 					selectedTabs.value.splice(0, 1);
 					selectedTabs.value.unshift(menus_sub[i].id);
 					selectedTabs.value.unshift("home2");
 				}
 				else{
-					tabs.push({id:menus_sub[i].id, name:menus_sub[i].name});
+					tabs.value.push({id:menus_sub[i].id, name:menus_sub[i].name});
 					selectedTabs.value.push(menus_sub[i].id);
 				}
 				changeComponent({id:menus_sub[i].id, name:menus_sub[i].name});
@@ -288,9 +286,9 @@ export default {
 
 			var nIndex = -1;
 			var j=0;
-			for(j=0; j<tabs.length; j++)
+			for(j=0; j<tabs.value.length; j++)
 			{
-				if(tabs[j].id == selmenu.id) {
+				if(tabs.value[j].id == selmenu.id) {
 					nIndex = j;
 					break;
 				}
@@ -298,23 +296,15 @@ export default {
 			if( nIndex>0 ){
 				// console.log("[MenuPopup] = exitComponent - index -- ", nIndex);
 
-				tabs.splice(nIndex, 1);
+				tabs.value.splice(nIndex, 1);
 				selectedTabs.value.splice(nIndex,1);
 			}
 
-			// console.log("[MenuPopup] = tabs -- ", tabs);
-			// console.log("[MenuPopup] = selectedTabs -- ", selectedTabs);
-
-			// console.log("[MenuPopup] = tabs.length -- ", tabs.length);
-			// console.log("[MenuPopup] = tabs -- ", tabs);
-			// let lastsel = ref(tabs[tabs.length - 1].id);
-			// console.log("[MenuPopup] = lastsel -- ", lastsel.value);
-
 			clickTabExit.value = true; //Tab에서 종료 버튼을 누르면 changeComponent 함수를 두번 탄다. 이것을 방지하기 위해 변수 사용함
-			if (tabs.length > 1){
-				changeComponent(tabs[1]);
+			if (tabs.value.length > 1){
+				changeComponent(tabs.value[1]);
 			}else{
-				changeComponent(tabs[0]);
+				changeComponent(tabs.value[0]);
 			}
 
       // comp.value = lastsel.value;
@@ -327,9 +317,9 @@ export default {
 
 			var nIndex = -1;
 			var j=0;
-			for(j=0; j<tabs.length; j++)
+			for(j=0; j<tabs.value.length; j++)
 			{
-				if(tabs[j].id == selmenu) {
+				if(tabs.value[j].id == selmenu) {
 					nIndex = j;
 					break;
 				}
@@ -337,23 +327,15 @@ export default {
 			if( nIndex>0 ){
 				// console.log("[MenuPopup] = exitComponent - index -- ", nIndex);
 
-				tabs.splice(nIndex, 1);
+				tabs.value.splice(nIndex, 1);
 				selectedTabs.value.splice(nIndex,1);
 			}
 
-			// console.log("[MenuPopup] = tabs -- ", tabs);
-			// console.log("[MenuPopup] = selectedTabs -- ", selectedTabs);
-
-			// console.log("[MenuPopup] = tabs.length -- ", tabs.length);
-			// console.log("[MenuPopup] = tabs -- ", tabs);
-			// let lastsel = ref(tabs[tabs.length - 1].id);
-			// console.log("[MenuPopup] = lastsel -- ", lastsel.value);
-
 			clickTabExit.value = false;
-			if (tabs.length > 1){
-				changeComponent(tabs[1]);
+			if (tabs.value.length > 1){
+				changeComponent(tabs.value[1]);
 			}else{
-				changeComponent(tabs[0]);
+				changeComponent(tabs.value[0]);
 			}
 
       // comp.value = lastsel.value;
