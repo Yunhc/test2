@@ -1,5 +1,19 @@
 <template>
-    <div class="lds-facebook" v-if="loading">
+    <div class="wl-loading" v-if="loading">
+        <div>
+        </div>
+        <div>
+        </div>
+        <div>
+        </div>
+        <div>
+        </div>
+        <div>
+        </div>
+        <div>
+        </div>
+        <div>
+        </div>
         <div>
         </div>
         <div>
@@ -19,36 +33,66 @@ export default {
 }
 </script>
 <style>
-.lds-facebook {
+.wl-loading {
     display: inline-block;
     position: absolute;
-    width: 64px;
+    width: 206px;
     height: 64px;
-    top: 47%;
-    left: 47%;
-		z-index: 1000;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+	z-index: 1000;
+    /* border: 1px solid red; */
 }
-.lds-facebook div {
+.wl-loading div {
     display: inline-block;
     position: absolute;
     left: 6px;
-    width: 13px;
+    width: 14px;
     background: #42b883;
-    animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+    animation: wl-loading 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
 }
-.lds-facebook div:nth-child(1) {
+.wl-loading div:nth-child(1) {
     left: 6px;
-    animation-delay: -0.24s;
-}
-.lds-facebook div:nth-child(2) {
-    left: 26px;
-    animation-delay: -0.12s;
-}
-.lds-facebook div:nth-child(3) {
-    left: 45px;
     animation-delay: 0;
 }
-@keyframes lds-facebook {
+.wl-loading div:nth-child(2) {
+    left: 26px;
+    animation-delay: 0.1s;
+}
+.wl-loading div:nth-child(3) {
+    left: 46px;
+    animation-delay: 0.2s;
+}
+.wl-loading div:nth-child(4) {
+    left: 66px;
+    animation-delay: 0.3s;
+}
+.wl-loading div:nth-child(5) {
+    left: 86px;
+    animation-delay: 0.4s;
+}
+.wl-loading div:nth-child(6) {
+    left: 106px;
+    animation-delay: 0.5s;
+}
+.wl-loading div:nth-child(7) {
+    left: 126px;
+    animation-delay: 0.6s;
+}
+.wl-loading div:nth-child(8) {
+    left: 146px;
+    animation-delay: 0.7s;
+}
+.wl-loading div:nth-child(9) {
+    left: 166px;
+    animation-delay: 0.8s;
+}
+.wl-loading div:nth-child(10) {
+    left: 186px;
+    animation-delay: 0.9s;
+}
+@keyframes wl-loading {
     0% {
         top: 6px;
         height: 51px;
