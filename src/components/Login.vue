@@ -45,12 +45,12 @@
 					<div align="center" class="login-desc">
 						<p>Copyright (C) DONGWHA CO,.LTD. reserved</p>
 					</div>
-					<button class="btn btn-outline-success btn-sm" type="button"
+					<!-- <button class="btn btn-outline-success btn-sm" type="button"
 						:style="{ margin:'4px 10px 0px 0px', width:'70px'}"
 						@click='startClick'>Start</button>
 						<button class="btn btn-outline-success btn-sm" type="button"
 						:style="{ margin:'4px 10px 0px 0px', width:'70px'}"
-						@click='endClick'>End</button>
+						@click='endClick'>End</button> -->
 				</div>
 			</div>
 		</div>
@@ -113,42 +113,47 @@ export default {
 		});
 
 		function handleLogin() {
+			if (user.value.userid && user.value.password) {
+				store.commit('loading/startLoading'); //진행표시 시작
+				setTimeout(function(){
+					handleLogin_S();
+				}, 1000)
+			}
+		}
+		function handleLogin_S() {
 			// evt.preventDefault();
-
 			// console.log("[handleLogin] = userid --", user.value.userid);
 			// console.log("[handleLogin] = password --", user.value.password);
 			// console.log("[handleLogin] = chkID", chkID.value);
 			loading = true;
 
-			if (user.value.userid && user.value.password) {
-				// console.log("[handleLogin] = loggedUser --", store.state.auth.user);
-				// console.log("[handleLogin] = loggedIn --", store.state.auth.status.loggedIn);
+			// console.log("[handleLogin] = loggedUser --", store.state.auth.user);
+			// console.log("[handleLogin] = loggedIn --", store.state.auth.status.loggedIn);
+			store.dispatch("auth/login", user).then(
+				() => {
+					loading = false;
+					// console.log("[handleLogin] = loggedUser --", store.state.auth.user);
+					// console.log("[handleLogin] = loggedIn --", store.state.auth.status.loggedIn);
 
-				store.dispatch("auth/login", user).then(
-					() => {
-						loading = false;
-						// console.log("[handleLogin] = loggedUser --", store.state.auth.user);
-						// console.log("[handleLogin] = loggedIn --", store.state.auth.status.loggedIn);
-
-						if(chkID.value == true){
-							saveid.push({chk:true, id:user.value.userid});
-							store.dispatch("saveid/saveid", saveid);
-						}
-						else{
-							store.dispatch("saveid/deleteid");
-							// console.log("[login] = deleteid store.state.saveid.id--", store.state.saveid.id);
-						}
-
-						// this.$router.push('/');
-						router.push({ path: "/" });
-					},
-					error => {
-						loading = false;
-						message = (error.response && error.response.data) || error.message || error.toString();
-						// console.log("[handleLogin error] = ", message)
+					if(chkID.value == true){
+						saveid.push({chk:true, id:user.value.userid});
+						store.dispatch("saveid/saveid", saveid);
 					}
-				);
-			}
+					else{
+						store.dispatch("saveid/deleteid");
+						// console.log("[login] = deleteid store.state.saveid.id--", store.state.saveid.id);
+					}
+					// this.$router.push('/');
+					router.push({ path: "/" });
+					store.commit('loading/endLoading'); //진행표시 중지
+				},
+				error => {
+					loading = false;
+					message = (error.response && error.response.data) || error.message || error.toString();
+					// console.log("[handleLogin error] = ", message)
+					store.commit('loading/endLoading'); //진행표시 중지
+				}
+			);
 		}
 
 		function registerUser() {
