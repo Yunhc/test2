@@ -24,11 +24,11 @@
 					<ejs-datamatrixgenerator
 						id="barcode"
 						ref="datamatrixControl"
-						:width="width"
-						:height="height"
+						width='100px'
+						height='150px'
 						:displayText="displaytext"
-						:value="value"
-						:mode="mode"
+						:value="dataMatrixvalue"
+						mode="SVG"
 					></ejs-datamatrixgenerator>
 				</div>
 			</div>
@@ -43,73 +43,126 @@
 					v-model="barcodeValue">
 				<button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" @click="BarCreate">바코드 생성</button>
 			</div>
-			<svg id="barcode"></svg>
+			<svg id="barcode1"></svg>
+			<!-- <div class="bardiv-normal"
+				align='center'
+				:style="{height:'85px', margin:'0px 0px 0px 0px', border:'1px solid transparent'}"
+			>
+				<BarcodeGenerator
+					:value="barno1"
+					:format="'CODE128'"
+					:background="'transparent'"
+					:lineColor="'#000'"
+					:width="2.3"
+					:height="55"
+					:fontSize="12"
+					:elementTag="'svg'"/>
+			</div> -->
 		</div>
 	</div>
 </template>
 <script>
+import { ref } from 'vue';
 import VueQRCodeComponent from 'vue-qrcode-component';
 import JsBarcode from 'jsbarcode';
 import { DataMatrixGeneratorComponent } from '@syncfusion/ej2-vue-barcode-generator';
-import { DataMatrixGenerator } from '@syncfusion/ej2-vue-barcode-generator';
+// import { DataMatrixGenerator } from '@syncfusion/ej2-vue-barcode-generator';
 // import { BarcodeGeneratorComponent, QRCodeGeneratorComponent, DataMatrixGeneratorComponent } from '@syncfusion/ej2-vue-barcode-generator';
+// import BarcodeGenerator from "@/components/label/BarcodeGenerator.vue";
 
 export default {
 	name: 'qrcode',
 	components:{
     'qr-code': VueQRCodeComponent,
 		'ejs-datamatrixgenerator': DataMatrixGeneratorComponent,
+		// BarcodeGenerator
   },
-	data(){
-		return{
-			qr_values : 'https://www.naver.com',
-			qrcode_1_text : 'https://www.naver.com',
-			barcodeValue: '1234567890128',
+	setup(){
+		let dataMatrixvalue = ref('https://www.naver.com');
+		let displaytext = ref({text:dataMatrixvalue.value, visibility:false});
 
-			width: "100px",
-			height: "150px",
-			type: "DataMatrix",
-			value: "wavelink-0123456789",
-			mode: "SVG",
-			displaytext: { text: 'DataMatrix', visibility:false}
-		};
-	},
-	methods : {
-		QRCreate(){
-			this.qrcode_1_text = this.qr_values;
-			this.value = this.qr_values;
-		},
-		BarCreate(){
-			JsBarcode("#barcode")
+		let qr_values = ref('https://www.naver.com');
+		let qrcode_1_text = ref('https://www.naver.com');
+
+		let barcodeValue = ref('012345678912');
+		// let barno1 = ref('012345678912');
+
+		function QRCreate(){
+			qrcode_1_text.value = qr_values.value;
+			dataMatrixvalue.value = qr_values.value;
+		}
+
+		function BarCreate(){
+			// barno1.value = barcodeValue.value;
+			// console.log(barno1.value);
+
+			JsBarcode("#barcode1")
 			.options({font: "OCR-B"}) // Will affect all barcodes
 			.CODE128(this.barcodeValue, {height: 85, textPosition: "bottom", fontSize: 16, marginTop: 20})
 			.render();
-		},
+		}
 
-		DataMatrixCreate(){
-			let barcode = new DataMatrixGenerator({
-				width: '100px',
-				height: '200px',
-				type: "DataMatrix",
-				value: "wavelink-123456789",
-				mode: "SVG",
-				displaytext: { text: 'DataMatrix', visibility:false}
-			});
-			barcode.appendTo('#bar1');
-
-			// this.barcode.width = '100px';
-			// this.barcode.height= '150px';
-			// this.barcode.type= "DataMatrix";
-			// this.barcode.value= "wavelink-123456789";
-			// this.barcode.mode= "SVG";
-			// this.barcode.displaytext= { text: 'DataMatrix', visiblilit:false};
+		return{
+			qr_values,
+			qrcode_1_text,
+			dataMatrixvalue,
+			displaytext,
+			barcodeValue,
+			// barno1,
+			QRCreate,
+			BarCreate
 		}
 	},
-	Mounted(){
-	},
-	created(){
-		// console.log("[QRCode] = create -- ")
-	}
+	// data(){
+	// 	return{
+	// 		qr_values : 'https://www.naver.com',
+	// 		qrcode_1_text : 'https://www.naver.com',
+	// 		barcodeValue: '1234567890128',
+
+	// 		width: "100px",
+	// 		height: "150px",
+	// 		type: "DataMatrix",
+	// 		dataMatrixvalue: "https://www.naver.com",
+	// 		mode: "SVG",
+	// 		displaytext: { text: 'DataMatrix', visibility:false}
+	// 	};
+	// },
+	// methods : {
+	// 	QRCreate(){
+	// 		this.qrcode_1_text = this.qr_values;
+	// 		this.dataMatrixvalue = this.qr_values;
+	// 	},
+	// 	BarCreate(){
+	// 		JsBarcode("#barcode")
+	// 		.options({font: "OCR-B"}) // Will affect all barcodes
+	// 		.CODE128(this.barcodeValue, {height: 85, textPosition: "bottom", fontSize: 16, marginTop: 20})
+	// 		.render();
+	// 	},
+
+	// 	DataMatrixCreate(){
+	// 		let barcode = new DataMatrixGenerator({
+	// 			width: '100px',
+	// 			height: '200px',
+	// 			type: "DataMatrix",
+	// 			value: "wavelink-123456789",
+	// 			mode: "SVG",
+	// 			displaytext: { text: 'DataMatrix', visibility:false}
+	// 		});
+	// 		barcode.appendTo('#bar1');
+
+	// 		// this.barcode.width = '100px';
+	// 		// this.barcode.height= '150px';
+	// 		// this.barcode.type= "DataMatrix";
+	// 		// this.barcode.value= "wavelink-123456789";
+	// 		// this.barcode.mode= "SVG";
+	// 		// this.barcode.displaytext= { text: 'DataMatrix', visiblilit:false};
+	// 	}
+	// },
+	// Mounted(){
+	// },
+	// created(){
+	// 	// console.log("[QRCode] = create -- ")
+	// }
 }
 </script>
 <style>
