@@ -45,6 +45,12 @@
 					<div align="center" class="login-desc">
 						<p>Copyright (C) DONGWHA CO,.LTD. reserved</p>
 					</div>
+					<button class="btn btn-outline-success btn-sm" type="button"
+						:style="{ margin:'4px 10px 0px 0px', width:'70px'}"
+						@click='startClick'>Start</button>
+						<button class="btn btn-outline-success btn-sm" type="button"
+						:style="{ margin:'4px 10px 0px 0px', width:'70px'}"
+						@click='endClick'>End</button>
 				</div>
 			</div>
 		</div>
@@ -163,6 +169,18 @@ export default {
 			window_height.value = window.innerHeight;
     }
 
+		function startClick() {
+			// console.log("start");
+			store.commit('loading/startLoading');
+			console.log(store.state.loading.LoadingStatus);
+    }
+
+		function endClick() {
+			// console.log("end");
+			store.commit('loading/endLoading');
+			console.log(store.state.loading.LoadingStatus);
+    }
+
 		return {
 			window_width,
 			window_height,
@@ -175,6 +193,8 @@ export default {
 			handleLogin,
 			registerUser,
 			keyupenter,
+			startClick,
+			endClick
 		};
 	},
 	computed: {

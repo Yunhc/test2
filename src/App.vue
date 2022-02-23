@@ -1,4 +1,8 @@
 <template>
+  <!-- <div class="loading" v-if="$store.state.loading.LoadingStatus">
+    <p>로딩중입니다.</p>
+  </div> -->
+    <Loading :loading="$store.state.loading.LoadingStatus"/>
   <div id="main">
     <!-- <div id= "header">
       <MainHeader />
@@ -37,6 +41,7 @@ import {onMounted, onUnmounted, ref} from 'vue'
 // import MainHeader from './components/layout/MainHeader.vue'
 // import MenuTree from './components/layout/MenuTree.vue'
 // import MainFooter from './components/layout/MainFooter.vue'
+import Loading from '@/components/layout/Loading.vue'
 import global from "@/global";
 
 export default {
@@ -46,6 +51,7 @@ export default {
 
     let window_width = ref(window.innerWidth);
 		let window_height = ref(window.innerHeight);
+    let isLoading = ref(true);
 
 		onMounted(() => {
 			// console.log("[App] = ", "onMounted--");
@@ -80,6 +86,7 @@ export default {
     return {
 			window_width,
 			window_height,
+      isLoading,
 		};
   },
   created () {
@@ -89,6 +96,7 @@ export default {
     // MainHeader,
     // MenuTree,
     // MainFooter,
+    Loading
   },
   provide(){
     return{
