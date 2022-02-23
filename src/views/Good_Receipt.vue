@@ -1,6 +1,6 @@
 <template>
 
-  <div class="window-main">
+  <div class="pop-up-window-main">
     <!-- Send버튼 클릭후 오더수량보다 스캔수량이 적을 경우 처리 여부 문의 팝업화면 -->
      <popupyn v-if="popupisopen"
       :title="popupTitle"
@@ -264,9 +264,10 @@
         rowData: null,
         rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
         onGridReady: function(event) {
+          console.log("[Good Receipt] = ", "onGridReady");
           setTimeout(function () {
             event.api.setRowData(recvData);
-          }, 1000);
+          }, 500);
           gridApi.value = event.api;
           columnApi.value = event.columnApi;
           event.api.sizeColumnsToFit();
@@ -303,12 +304,16 @@
       onMounted(() => {
         console.log("[Good Receipt] = ", "onMounted--");
         window.addEventListener('resize', handleResize);
-        
+
         console.log("strPO_NO_GR", props.strPO_GR);
         if (strPO_No_GR.value != null){
           console.log("strPO_NO_GR", strPO_No_GR.value);
           req_param.txtPO = strPO_No_GR.value;
-          displayClick();
+
+          setTimeout(function () {
+            displayClick();
+          }, 1000);
+
           // fn_POSearch();
         } else {
           txtPO.value.focus();
