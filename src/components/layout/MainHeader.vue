@@ -1,5 +1,5 @@
 <template>
-  <div class="header">
+  <div class="mainheader">
     <div align="left" class="mainheader-left-box">
       <p :style="{ margin:'8px 0 0 10px'}">
         {{title}}
@@ -20,7 +20,7 @@
   import {useRouter} from 'vue-router';
 
   export default{
-    name:"header",
+    // name:"header",  //경고메시지 때문에 주석처리함(사용하지 않는데 정의 되어 경고 발생)
     setup(){
       const store = useStore();	//스토어호출
       const router = useRouter();	//라우터호출
@@ -44,7 +44,7 @@
 </script>
 
 <style lang="scss">
-  .header{
+  .mainheader{
     // background:rgb(31, 156, 93);
     width: 100%;
     height:40px;
