@@ -115,14 +115,14 @@
 					:style="{height:'85px', margin:'0px 0px 0px 0px', border:'1px solid transparent'}"
 				>
 					<BarcodeGenerator
-					:value="l_barno"
-					:format="'CODE128'"
-					:background="'transparent'"
-					:lineColor="'#000'"
-					:width="2.3"
-					:height="55"
-					:fontSize="12"
-					:elementTag="'svg'"/>
+						:value="l_barno"
+						:format="'CODE128'"
+						:background="'transparent'"
+						:lineColor="'#000'"
+						:width="2.3"
+						:height="55"
+						:fontSize="12"
+						:elementTag="'svg'"/>
 				</div>
 				<div id="bar1" class="al-right-box bardiv-dataMatrix"
 					:style="{height:'85px', align:'center'}">
