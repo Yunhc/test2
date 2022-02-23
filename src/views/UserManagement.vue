@@ -159,7 +159,7 @@
     //   }
     // },
     setup(props, {emit}){
-      console.log("[UserManagement] = ", "setup --");
+      // console.log("[UserManagement] = ", "setup --");
       // const global = inject('global');
       // console.log("[global.server.url] --", global.server.url);
 
@@ -213,7 +213,7 @@
             // },
             cellEditorParams: function(param){
               var selectedPlant = getdata(param.data.plantcd);
-              console.log("[selectedPlant]", selectedPlant );
+              // console.log("[selectedPlant]", selectedPlant );
               if (selectedPlant == 'K143'){
                 return{
                   values: ['Y', 'N']
@@ -240,7 +240,7 @@
           {headerName: '수정일', field: 'upddate', cellStyle: {textAlign: "center"},},
       ]);
       const useflagCellRenderer = (params) => {
-        console.log("useflagCellRenderer--");
+        // console.log("useflagCellRenderer--");
         params.value.name;
       };
 
@@ -289,12 +289,12 @@
       let window_height = ref(window.innerHeight);
 
       onBeforeMount(()=>{
-        console.log("[UserManagement] = ", "onBeforeMount--");
+        // console.log("[UserManagement] = ", "onBeforeMount--");
         searchSelectBox();
       });
 
       onMounted(() => {
-        console.log("[UserManagement] = ", "onMounted--");
+        // console.log("[UserManagement] = ", "onMounted--");
         window.addEventListener('resize', handleResize);
         // fetch('https://www.ag-grid.com/example-assets/small-row-data.json')
         //         .then(result => result.json())
@@ -306,7 +306,7 @@
         // console.log("[ init recvData ] ", recvData);
       });
       onUnmounted(() =>{
-        console.log("[UserManagement] = onUnmounted -- ");
+        // console.log("[UserManagement] = onUnmounted -- ");
         window.removeEventListener('resize', handleResize);
       });
 
@@ -331,8 +331,8 @@
         // options.push({id:"Y", name:"Yes"});
         // options.push({id:"N", name:"No"});
 
-        console.log("[UserManagement] = userid -- ", store.state.auth.user[0].userid);
-        console.log("[UserManagement] = plat -- ", getdata(store.state.auth.user[0].plantcd));
+        // console.log("[UserManagement] = userid -- ", store.state.auth.user[0].userid);
+        // console.log("[UserManagement] = plat -- ", getdata(store.state.auth.user[0].plantcd));
 
         let urlPost = url.value + '/api/dw/selectboxList';
         $axios.post(urlPost, {
@@ -346,14 +346,14 @@
           space: "Y",
         })
         .then((res) => {
-          console.log("[UserManagement] = response data -- ", res.data);
+          // console.log("[UserManagement] = response data -- ", res.data);
 
           options.splice(0, options.length);
           for(var i=0; i<res.data.length; i++){
              options.push({id:res.data[i].id, name:res.data[i].name});
           }
 
-          console.log("[UserManagement] = options data -- ", options);
+          // console.log("[UserManagement] = options data -- ", options);
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => {
@@ -369,14 +369,14 @@
                      + "&username=" + user_param.username
                      + "&useflag=" + user_param.useflag;
 
-        console.log("[sendData", sendData);
+        // console.log("[sendData", sendData);
         $axios.get(sendData)
         //   headers: {
         //     'Content-Type': 'application/json; charset = utf-8'
         //   }
         // })
         .then((res) => {
-          console.log(res.data);
+          // console.log(res.data);
           recvData.value = res.data;
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
@@ -388,9 +388,9 @@
       function searchClick_post() {
         let urlPost = url.value + '/dw_userList_p';
 
-        console.log("[user_param.userid]", user_param.userid);
-        console.log("[user_param.username]", user_param.username);
-        console.log("[user_param.useflag]", user_param.useflag);
+        // console.log("[user_param.userid]", user_param.userid);
+        // console.log("[user_param.username]", user_param.username);
+        // console.log("[user_param.useflag]", user_param.useflag);
 
         $axios.post(urlPost, {
           userid: user_param.userid,
@@ -398,9 +398,9 @@
           useflag: user_param.useflag,
         })
         .then((res) => {
-          console.log("[response data]", res.data);
+          // console.log("[response data]", res.data);
           recvData.value = res.data;
-          console.log("[ received data ] ", recvData);
+          // console.log("[ received data ] ", recvData);
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => {
@@ -523,7 +523,7 @@
         var msg = "";
         var selectedData = gridApi.value.getSelectedRows();
 
-        console.log("[checked row]", selectedData);
+        // console.log("[checked row]", selectedData);
 
         let urlPost = url.value + '/dw_usersaveList_p_j';
         $axios.post(urlPost, {
@@ -535,11 +535,10 @@
         // {contentType: 'application/json'}
         )
         .then((res) => {
-          console.log(`status code: ${res.status}`);
+          // console.log(`status code: ${res.status}`);
           // console.log(`headers: ${res.headers}`);
           // console.log(`data: ${res.data}`);
-
-          console.log("[response data]", res.data);
+          // console.log("[response data]", res.data);
           // rtnmsg.value = res.data;
 
           // if (rtnmsg.value[0].status == "OK")
@@ -625,11 +624,11 @@
     computed: {
     },
     created () {
-      console.log("[UserManagement] = ", "created --");
+      // console.log("[UserManagement] = ", "created --");
     },
     methods: {
       makeData () {
-        console.log("makeData--");
+        // console.log("makeData--");
         // this.recvData = [
         //   {make: 'Toyota', model: 'Celica', price: 35000},
         //   {make: 'Ford', model: 'Mondeo', price: 32000},
