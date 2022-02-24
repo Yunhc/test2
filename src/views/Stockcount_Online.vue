@@ -16,13 +16,12 @@
       </div>
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
-          :style="{width:'80px'}">SC Type
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">SC Type
         </span>
-        <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="SC Type" aria-label="SC Type" aria-describedby="basic-addon1"
-          id="sctype"
-          ref="sctype"
-          @keyup.enter ='keyupenter'
-          v-model="req_param.sctype">
+        <label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="SC Type" aria-label="SC Type" aria-describedby="basic-addon1"
+            :style="{'text-align':'left'}">
+            {{lblSCType}}
+        </label>
       </div>
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
@@ -44,7 +43,7 @@
         id="agGrid1"
         class="ag-theme-alpine"
         headerHeight='35'
-        style="width: 1910px; height:100%"
+        style="width: 900px; height:100%"
         :rowData="recvData.value"
         :gridOptions="gridOptions"
         allow_unsafe_jscode="True"
@@ -63,8 +62,12 @@
       </div>
       <div class="input-group mb-3"
         :style="{height:'48px', margin:'-14px 0px 0px 0px', background:'gainsboro'}">
-        <p :style="{margin:'2px 0px 0px 0px', background:'transparent'}">
-          Msg :{{msg}}
+        <p :style="{margin:'2px 0px 0px 0px',
+                    background:'transparent',
+                    'font-size':'16px',
+                    'font-weight':'bold',
+                    color:msg_color}">
+          Msg:{{msg}}
         </p>
       </div>
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
@@ -84,6 +87,7 @@
   import {AgGridVue} from 'ag-grid-vue3'
   import { useStore } from 'vuex';
   import { getdata } from '@/helper/filter.js';
+  import { PlaySound } from '@/helper/util.js';
   import { searchSelectBox } from '@/helper/sql.js';
 
   export default {
@@ -102,22 +106,25 @@
       let recvData = reactive([]);
       let gridApi = ref(null);
       //focus 이동을 위한 변수
-      let sctype = ref(null);
+      // let sctype = ref(null);
       let rowno = ref(null);
-      let stoc_loc = ref(null);
+      let stor_loc = ref(null);
       let scan = ref(null);
+
+      let lblSCType = ref(null);
       //데이터 바인딩
-      let req_param = reactive({stor_loc:"", sctype:"", rowno:"", scan:""});
+      let req_param = reactive({stor_loc:"", rowno:"", scan:""});
       let msg = ref(null);
+      let msg_color = ref(null);
 
       let columnDefs= reactive([
-        {headerName: 'Barcode', field: 'barno', width: 80, sortable: true, pinned: 'left'},
-        {headerName: 'Material', field: 'matnr', width: 100, sortable: true, pinned: 'left'},
-        {headerName: 'Quantity', field: 'qty', width: 100, pinned: 'left'},
-        {headerName: 'Plant', field: 'werks', hide: true, width: 100, cellStyle: { color: 'red', textAlign: "left", backgroundColor: "white" }},
-        {headerName: 'S/L', field: 'lgort', width: 250, sortable: true, filter: true},
-        {headerName: 'Row NO', field: 'rowno', width: 250},
-        {headerName: 'Material Description', field: 'desc'},
+        {headerName: 'Barcode', field: 'barno', width: 100, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        {headerName: 'Material', field: 'matnr', width: 100, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        {headerName: 'Quantity', field: 'qty', width: 80, cellStyle: {textAlign: "center"}, pinned: 'left'},
+        {headerName: 'Plant', field: 'werks', hide: true, width: 60, cellStyle: { color: 'red', textAlign: "center", backgroundColor: "white" }},
+        {headerName: 'S/L', field: 'lgort', width: 60, cellStyle: {textAlign: "center"}, sortable: true, filter: true},
+        {headerName: 'Row NO', field: 'rowno', width: 80, cellStyle: {textAlign: "center"}},
+        {headerName: 'Material Description', field: 'desc', width: 200},
       ]);
       var gridOptions = {
         defaultColDef: {
@@ -198,12 +205,71 @@
         console.log("[Stockcount_offline/initSelectBox] = options data -- ", options);
       }
 
+      async function search_SCInfo() {
+        let urlPost = url.value + '/dw/stc/pda/search';
+
+        console.log("[req_param]", req_param);
+        console.log("[stor_loc]", getdata(req_param.stor_loc));
+
+        //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
+        await $axios.post(urlPost, {
+            i_lang: "KR",
+            i_werks: getdata(store.state.auth.user[0].plantcd),
+            i_userid: store.state.auth.user[0].userid,
+            i_lgort:getdata(req_param.stor_loc),
+        })
+        .then((res) => {
+          console.log("[response data]", res.data);
+
+          if(res.data.length > 0) {
+            if (res.data[0].code == "NG") {
+              msg_color.value = "red";
+              msg.value = res.data[0].message;
+              lblSCType.value = "";
+              req_param.rowno = "";
+              stor_loc.value.focus();
+            } else {
+              msg_color.value = "blue";
+              msg.value = "실사가 진행중입니다.";
+              PlaySound("OK");
+
+              // recvData.value = res.data;
+              // console.log("[PO_Search] -> recvData.length/recvData : ", recvData.value.length, "/", recvData);
+              lblSCType.value = res.data[0].silsatype;
+
+              // scan.value.focus();
+              // scan.value.select();
+            }
+          }
+          else {
+            msg_color.value = "red";
+            msg.value = "진행중인 실사가 없습니다.";
+            lblSCType.value = "";
+            req_param.rowno = "";
+            stor_loc.value.focus();
+          }
+
+          // setTimeout(function () {
+          //   autoSizeAll(false);
+          // }, 500);
+          // gridApi.value.setPinnedBottomRowData(columnsum);
+          // gridApi.value.setPinnedTopRowData(columnsum);
+        }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+          //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+        .catch(err => {
+          alert(err);
+          console.error(err)
+        })
+      }
+
       function keyupenter(e){
         if (e.target.id == "stor_loc"){
-          sctype.value.focus();
-        }
-        else if (e.target.id == "sctype"){
-          rowno.value.focus();
+          console.log("stor_loc : ", req_param.stor_loc)
+          if (req_param.stor_loc != ""){
+            search_SCInfo();
+            rowno.value.focus();
+            rowno.value.select();
+          }
         }
         else if (e.target.id == "rowno"){
           // console.log("[Stockcount_Online/keyupenter] = rowno -- ");
@@ -231,7 +297,7 @@
 
 
       function fn_SendAPI(){
-        let urlPost = url.value + '/dwt/stc/pda/scan';
+        let urlPost = url.value + '/dw/stc/pda/scan';
 
         console.log("[req_param]", req_param);
         console.log(getdata(req_param.stor_loc));
@@ -251,12 +317,20 @@
           console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
           console.log("[response data] = eq_param.scan -- ", req_param.scan);
 
-          if (res.data[0].barno != req_param.scan){
-            msg.value = res.data[0].message;
-          } else{
-            gridApi.value.updateRowData({add: [res.data[0]], addIndex:0});
-            // recvData.push(res.data[0]);
-            msg.value = res.data[0].message;
+          if(res.data.length > 0) {
+            if (res.data[0].code == "NG") {
+              msg_color.value = "red";
+              msg.value = res.data[0].message;
+            } else {
+              msg_color.value = "blue";
+              msg.value = "정상 처리되었습니다.";
+              gridApi.value.updateRowData({add: [res.data[0]], addIndex:0});
+              PlaySound("OK");
+            }
+          }
+          else {
+            msg_color.value = "red";
+            msg.value = "바코드 정보가 조회되지 않았습ㄴ디ㅏ.";
           }
 
           scan.value.focus();
@@ -285,12 +359,14 @@
       return {
         window_width,
         window_height,
-        stoc_loc,
-        sctype,
+        stor_loc,
+        // sctype,
         rowno,
         scan,
         req_param,
         msg,
+        msg_color,
+        lblSCType,
         scrollPostion : 0,
         defaultColGroupDef: null,
         columnTypes: null,
