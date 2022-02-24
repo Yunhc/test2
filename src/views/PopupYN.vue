@@ -52,9 +52,14 @@ export default {
     z-index: 100; //div를 최상위로 올린다.
   }
   .popup-white-bg{
-    width: 100%;
+    width: 90%;
     background: white;
     border-radius: 8px;
     padding: 20px;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 </style>
