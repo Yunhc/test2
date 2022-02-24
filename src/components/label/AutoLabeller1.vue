@@ -109,7 +109,7 @@
 					v-model="l_qty"
 				>
 			</div>
-			<div class="div-close" :style="{height:'90px', margin:'-16px 0px 0px 0px', 'z-index': '27'}">
+			<div class="div-close" :style="{height:'90px', margin:'-15.5px 0px 0px 0px', 'z-index': '27'}">
 				<div class="bardiv-normal al-left-box"
 					align='center'
 					:style="{height:'85px', margin:'0px 0px 0px 0px', border:'1px solid transparent'}"
