@@ -366,6 +366,7 @@
       }
 
       async function fn_POSearch(){
+        // store.commit('loading/startLoading');
         let urlPost = url.value + '/dw/good_receipt/detail_search';
 
         console.log("[req_param]", req_param);
@@ -437,6 +438,7 @@
           console.error(err)
         })
 
+        // store.commit('loading/endLoading');
         return true;
       }
 
