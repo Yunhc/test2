@@ -250,11 +250,14 @@
       }
 
       function displayClick(){
+        // store.commit('loading/startLoading');
         //PO 조회 API전송
         fn_POSearch();
+        // store.commit('loading/endLoading');
       }
 
       function fn_POSearch(){
+        store.commit('loading/startLoading');
         let urlPost = url.value + '/dw/good_receipt/search';
         // console.log("[req_param]", req_param);
 				// clear data
@@ -341,6 +344,7 @@
           alert(err);
           console.error(err)
         })
+        store.commit('loading/endLoading');
       }
 
       function GRcloseClick(){
