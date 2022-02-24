@@ -3,7 +3,18 @@
 @import "~@syncfusion/ej2-icons/styles/material.css";
 @import "~@syncfusion/ej2-vue-barcode-generator/styles/material.css";
 /******************************************************************************/
-
+// 프린터 대상을 화면 최상위로 띄운다(화면 디자인할 때 필요)
+.print-view{
+	width: 100%;
+	height: 100%;
+	background: white;
+	position: fixed;
+	top: 109px;
+	left: 0px;
+	overflow-x:auto;
+	z-index: 1000; //div를 최상위로 올린다.
+}
+/******************************************************************************/
 .print-mdf-1 {
 	background:white;
 	height: 380px;
@@ -18,20 +29,13 @@
 }
 /******************************************************************************/
 /*오토라벨러 라벨 형식*/
-.print-autolabeller {
-	// height: 374px;
-	height: 748px;
-	width: 522px;
-}
 .print-autolabeller1 {
 	height: 374px;
-	// height: 748px;
 	width: 522px;
 	page-break-after: always;
 }
 .print-autolabeller2 {
 	height: 374px;
-	// height: 748px;
 	width: 522px;
 	page-break-after: always;
 }

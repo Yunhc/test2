@@ -176,11 +176,11 @@
         </label>
       </div>
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
-        <!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'100px'}"
-          @click='printClick_3'>라벨발행-3</button> -->
+        <!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'150px'}"
+          @click='printClick_3'>라벨발행-TEST</button> -->
 				<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'100px'}"
-					v-print="printObj"
-					@click='printClick'>
+					@click='printClick'
+					v-print="printObj">
 					라벨발행
 				</button>
 				<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 0px 0px 0px', width:'100px'}"
@@ -192,8 +192,9 @@
 
 		<!--라벨 발행 포맷 -->
 		<div class="print" id="print_me" v-if="print_yn_1">
-			<div class="print-autolabeller" v-for="(item, index) in printData" :key="index"
-				:id="'print_me' + index" style="page-break-after:always;">
+			<div v-for="(item, index) in printData" :key="index"
+				:id="'print_me' + index">
+				<!-- style="page-break-after:always;"> -->
 					<div>
 						<AutoLabeller1
 						:barno="item.barno"
@@ -231,6 +232,9 @@ import { getdata, formatDate, addDate } from '@/helper/filter.js';
 import { searchSelectBox } from '@/helper/sql.js';
 import AutoLabeller1 from "@/components/label/AutoLabeller1.vue";
 import AutoLabeller2 from "@/components/label/AutoLabeller2.vue";
+
+import printJs from 'print-js';
+import * as print_css from 'print-js/dist/print.css';
 
 export default {
 	name:'label_print_hist',
@@ -581,16 +585,17 @@ export default {
 			printClick();
 
 			if(printData.length>0){
-				var newWin = window.open('', "PrintWindow",
-										"toolbars=no, scrollbars=no, status=no, resizable=no, location=no");// 새로운 빈 창을 엽니 다
+				var newWin = window.open("");// 새로운 빈 창을 엽니 다
+				// var newWin = window.open('', "PrintWindow",
+				// 	"toolbars=no, scrollbars=no, status=no, resizable=no, location=no");// 새로운 빈 창을 엽니 다
 
 				for(var i=0; i<printData.length; i++ ){
 
 					var imageToPrint = document.getElementById("print_me" + i); // 인쇄하는 데 필요한 콘텐츠를
 					newWin.document.write(imageToPrint.outerHTML);					// 컨텐츠를 추가하면 새 창에 인쇄해야
 				}
-				// const styleSheet = '<style>li{list-style==none; border: 1px solid #e8e8e8;}</style>';
-				// newWin.document.head.innerHTML = styleSheet;
+				const styleSheet = '<style>li{list-style==none; border: 1px solid #e8e8e8;}</style>';
+				newWin.document.head.innerHTML = styleSheet;
 				newWin.document.close();
 
 				newWin.focus();
@@ -662,13 +667,14 @@ export default {
 		}
 
 		function printClick_3(){
-			// div = document.getElementById("print_me");
+			printClick();
 
-			// window.onbeforeprint = beforePrint;
-			// window.onafterprint = afterPrint;
-			// window.print();
+			printJs({
+        printable: "print_me",       //Id to print content
+        type: "html",             //You can print html, img details can be found in the official document https://printjs.crabbly.com/
+        style: print_css.printcss,  	//The printed content does not have css style, here need string type css style
+      });
 
-			this.$htmlToPaper('printMe')
 		}
 
 		function closeClick(){

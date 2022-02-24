@@ -169,6 +169,7 @@ export default {
   },
 	methods : {
 		print_window(){
+      console.log('print_window');
       window.print();
 		},
     print_1() {
