@@ -7,10 +7,25 @@
 					<img class="login-img-content" alt="bg_wms" src="../assets/bg_wms.png">
 				</div>
 		</div>
-		<div align="right"
-			:class="['login-right-box', window_width>800 ? {horizontal:true}:{vertical:true}]">
+		<div :class="['login-right-box', window_width>800 ? {horizontal:true}:{vertical:true}]">
+			<div align="right" style="margin:5px 0px 0px 10px; color:black;">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="languageRadios"
+						v-model="rdoEN">
+					<label class="form-check-label">
+						English
+					</label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="languageRadios"
+						v-model="rdoKR">
+					<label class="form-check-label">
+						Korean
+					</label>
+				</div>
+			</div>
 			<div class="login-wrap">
-				<div class="login-center-box">
+				<div class="login-center-box" align="right">
 					<div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
 						<span class="input-group-text btn-sm" id="basic-addon1">사용자ID</span>
 						<input type="text" class="form-control btn-sm" placeholder="UserID" aria-label="UserID" aria-describedby="basic-addon1"
@@ -35,7 +50,7 @@
 						<label class="form-check-label" for="defaultCheck1"
 							:style="{ margin:'0px 0px 0px 0px', color:'rgb(34, 33, 33)', 'font-size':'14px'}"
 						>
-							사용자ID 저장
+							&nbsp;&nbsp;사용자ID 저장
 						</label>
 					</div>
 					<button class="btn btn-outline-success btn-sm" type="button"
@@ -68,6 +83,10 @@ export default {
 
 		let window_width = ref(window.innerWidth);
 		let window_height = ref(window.innerHeight);
+
+		//라디오버튼
+		let rdoEN = ref(false);
+		let rdoKR = ref(true);
 
 		// let name = ref("Login");
 		let user = ref({userid:"", password:""});
@@ -113,6 +132,9 @@ export default {
 		});
 
 		function handleLogin() {
+			console.log("EN = ", rdoEN.value);
+			console.log("KR = ", rdoKR.value);
+
 			if (user.value.userid && user.value.password) {
 				store.commit('loading/startLoading'); //진행표시 시작
 				setTimeout(function(){
@@ -189,6 +211,8 @@ export default {
 		return {
 			window_width,
 			window_height,
+			rdoEN,
+			rdoKR,
 			user,
 			userid,
 			password,
