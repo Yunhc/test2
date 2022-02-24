@@ -41,7 +41,7 @@
     >
       <ag-grid-vue
         id="agGrid1"
-        class="ag-theme-alpine"
+        class="ag-theme-balham"
         headerHeight='35'
         style="width: 900px; height:100%"
         :rowData="recvData.value"
