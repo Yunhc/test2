@@ -50,7 +50,7 @@ export default {
     left: 6px;
     width: 14px;
     background: #42b883;
-    animation: wl-loading 0.5s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+    animation: wl-loading 1s cubic-bezier(0, 0.5, 0.5, 1) infinite;
 }
 .wl-loading div:nth-child(1) {
     left: 6px;
@@ -58,39 +58,39 @@ export default {
 }
 .wl-loading div:nth-child(2) {
     left: 26px;
-    animation-delay: 0.05s;
+    animation-delay: 0.1s;
 }
 .wl-loading div:nth-child(3) {
     left: 46px;
-    animation-delay: 0.1s;
+    animation-delay: 0.2s;
 }
 .wl-loading div:nth-child(4) {
     left: 66px;
-    animation-delay: 0.15s;
+    animation-delay: 0.3s;
 }
 .wl-loading div:nth-child(5) {
     left: 86px;
-    animation-delay: 0.2s;
+    animation-delay: 0.4s;
 }
 .wl-loading div:nth-child(6) {
     left: 106px;
-    animation-delay: 0.25s;
+    animation-delay: 0.5s;
 }
 .wl-loading div:nth-child(7) {
     left: 126px;
-    animation-delay: 0.3s;
+    animation-delay: 0.6s;
 }
 .wl-loading div:nth-child(8) {
     left: 146px;
-    animation-delay: 0.35s;
+    animation-delay: 0.7s;
 }
 .wl-loading div:nth-child(9) {
     left: 166px;
-    animation-delay: 0.4s;
+    animation-delay: 0.8s;
 }
 .wl-loading div:nth-child(10) {
     left: 186px;
-    animation-delay: 0.45s;
+    animation-delay: 0.9s;
 }
 @keyframes wl-loading {
     0% {
