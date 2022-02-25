@@ -45,14 +45,15 @@
 			</div>
 			<div class="stc_off_grid1"
 				:style="{
-					'height': `calc(${window_height - 109 - 98 - 30 - 123}px)`
+					'height': `calc(${window_height - 109 - 98 - 30 - 123 + hoffset}px)`
+          //'height': `300px`
 				}"
 			>
 				<ag-grid-vue
 					id="agGrid1"
 					class="ag-theme-balham"
 					headerHeight='35'
-					style="width: 450px; height:100%"
+					style="width: 600px; height:100%"
 					:rowData="recvData.value"
 					:gridOptions="gridOptions"
 					allow_unsafe_jscode="True"
@@ -60,8 +61,44 @@
 				</ag-grid-vue>
 			</div>
 
+			<!-- 전송 현황 -->
+      <div v-if="isTransfer" class='stc-send-box'>
+        <div class='stc-send-box-1'>
+          <div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
+            <span class="input-group-text btn-sm" id="basic-addon1"
+              :style="{width:'70px', display:'inline-block', 'text-align':'right'}">전체건수
+            </span>
+            <label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Total Count"
+                aria-label="Total Count" aria-describedby="basic-addon1"
+                :style="{'text-align':'left'}">
+                {{lblTotCnt}}
+            </label>
+            <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'70px', height:'36px'}"
+            @click='sendcloseClick'>닫기</button>
+          </div>
+          <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
+            <span class="input-group-text btn-sm" id="basic-addon1"
+              :style="{width:'70px', display:'inline-block', 'text-align':'right'}">전송건수
+            </span>
+            <label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Transfer Count"
+                aria-label="Transfer Count" aria-describedby="basic-addon1"
+                :style="{'text-align':'left'}">
+                {{lblSendCnt}}
+            </label>
+            <span class="input-group-text btn-sm" id="basic-addon1"
+              :style="{width:'70px', display:'inline-block', 'text-align':'right'}">에러건수
+            </span>
+            <label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Error Count"
+                aria-label="Error Count" aria-describedby="basic-addon1"
+                :style="{'text-align':'left'}">
+                {{lblErrCnt}}
+            </label>
+          </div>
+        </div>
+      </div>
+
 			<!-- radio 버튼 -->
-			<div v-if="plant" class="input-group mb-0" :style="{ margin:'10px 0px 0px 10px'}">
+			<div v-if="isPlant" class="input-group mb-0" :style="{ margin:'10px 0px 0px 10px'}">
 				<input type="radio" id="box" value="box" v-model="radioValues" @change="radioChange">
 				<label class="form-check-label" for="box"
 					:style="{ margin:'-2px 0px 0px 5px', color:'rgb(34, 33, 33)', 'font-size':'14px'}">
@@ -75,7 +112,7 @@
 			</div>
 
 			<div class= "stc_off_save">
-				<div class="input-group mb-3" :style="{height:'30px', margin:'2px 0px 0px 0px'}">
+				<div class="input-group mb-3" :style="{height:'30px', margin:'2px 0px 0px 0px', 'z-index':'1'}">
 					<input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Scan barcode" aria-label="Scan barcode" aria-describedby="basic-addon1"
 						id="scan"
 						ref="scan"
@@ -83,7 +120,16 @@
 						@focus='fn_SelectAll'
 						data-ref="InputContent" inputmode="none"
 						v-model="req_param.scan">
-				</div>
+          <span class="input-group-text btn-sm" id="basic-addon1"
+            :style="{width:'75px', display:'inline-block', 'text-align':'right'}">스캔건수
+          </span>
+          <label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Scan Count"
+              aria-label="Scan Count" aria-describedby="basic-addon1"
+              :style="{'text-align':'left'}">
+              {{lblScanCnt}}
+          </label>
+        </div>
+
 				<div class="input-group mb-3"
 					:style="{height:'48px', margin:'-14px 0px 0px 0px', background:'gainsboro'}">
 					<p :style="{margin:'2px 0px 0px 0px',
@@ -131,11 +177,14 @@
       let window_width = ref(window.innerWidth);
       let window_height = ref(window.innerHeight);
 
-      // let popupTitle = ref(null);
-      // let popupMsg = ref(null);
-      // let popupisopen = ref(false);
+      let popupTitle = ref(null);
+      let popupMsg = ref(null);
+      let popupisopen = ref(false);
 
-			let plant = ref(false);
+			let isPlant = ref(true);
+      let isTransfer = ref(false);
+      let hoffset = ref(0);
+
       const store = useStore();	//스토어호출
       let options = reactive([]);
 
@@ -145,8 +194,13 @@
       let rowno = ref(null);
       let stor_loc = ref(null);
       let scan = ref(null);
+      let strCalltype = ref(null);
 
 			let lblSCType = ref(null);
+      let lblScanCnt = ref(0);
+      let lblTotCnt = ref(0);
+      let lblSendCnt = ref(0);
+      let lblErrCnt = ref(0);
 			let radioValues = ref("bundle");
       //데이터 바인딩
       let req_param = reactive({stor_loc:"", rowno:"", scan:""});
@@ -159,6 +213,7 @@
         {headerName: 'Barcode', field: 'barno', width: 100, cellStyle: {textAlign: "center"}, sortable: true, filter: true, pinned: 'left'},
         {headerName: 'S/L', field: 'lgort', width: 60, cellStyle: {textAlign: "center"}, sortable: true, filter: true},
         {headerName: 'Row No', field: 'rowno', width: 80, cellStyle: {textAlign: "center"}, sortable: true, filter: true},
+        {headerName: 'Error Message', field: 'errmsg', width: 200, sortable: true},
       ]);
       var gridOptions = {
         defaultColDef: {
@@ -189,21 +244,24 @@
 
       onBeforeMount(()=>{
         console.log("[Stockcount_offline] = ", "onBeforeMount--");
-        initSelectBox();
+        initSelectBox();   
       });
 
       onMounted(() => {
         console.log("[Stockcount_offline] = ", "onMounted--");
         window.addEventListener('resize', handleResize);
 				var plantcd = getdata(store.state.auth.user[0].plantcd).substr(0,3);
-				console.log("plant.substr(0,3) : ", plantcd)
-				// if (plantcd == "K14" || plantcd == "K15"){
-				if (plantcd != "K14" && plantcd != "K15"){
-					plant = true;
+				console.log("플랜트 3자리 : ", plantcd)
+				if (plantcd == "K14" || plantcd == "K15"){
+					isPlant.value = false;
+          hoffset.value = 30; //true:0, false:30
+          radioValues.value = 'bundle';
 				} else {
-					plant = false;
+					isPlant.value = true;
+          hoffset.value = 0;  //true:0, false:30
+          radioValues.value = 'box';
 				}
-				console.log("건장재 플랜트?", plant)
+				console.log("건장재 플랜트?", isPlant.value)
       });
 
       onUnmounted(() =>{
@@ -246,7 +304,6 @@
           }
         }
         console.log("[Stockcount_offline/initSelectBox] = options data -- ", options);
-				console.log("건장재 프랜트?? : ", plant);
       }
 
       async function search_SCInfo() {
@@ -277,12 +334,7 @@
               msg.value = "실사가 진행중입니다.";
               PlaySound("OK");
 
-              // recvData.value = res.data;
-              // console.log("[PO_Search] -> recvData.length/recvData : ", recvData.value.length, "/", recvData);
               lblSCType.value = res.data[0].silsatype;
-
-              // scan.value.focus();
-              // scan.value.select();
             }
           }
           else {
@@ -379,6 +431,7 @@
 						scan.value.select();
 						msg_color.value = "blue";
 						msg.value = "스캔한 바코드가 추가되었습니다.";
+            lblScanCnt.value += 1;
 					}
         }
 
@@ -392,6 +445,11 @@
         e.target.select();
       }
 
+      function sendcloseClick(){
+        hoffset.value += 85;
+        isTransfer.value = false;
+      }
+
       function scanClick() {
         console.log(req_param.scan);
         var txtscan = document.getElementById("scan");
@@ -401,25 +459,117 @@
         scan.value.focus();
       }
 
-      function closeClick(){
-        emit("component_close", "stockcount_offline");
+      function sendClick(){
+        popupTitle.value ="Stock Count (Offline)";
+        popupMsg.value = "전송하시겠습니까?";
+        strCalltype.value = "send";
+        popupisopen.value = true;
       }
 
-    function deleteClick(){
-      var selectedData = gridApi.value.getSelectedRows();
-      console.log("[selected row]", selectedData);
+      function closeClick(){
+        popupTitle.value ="Stock Count (Offline)";
+        popupMsg.value = "종료하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
+        strCalltype.value = "close";
+        popupisopen.value = true;
+      }
 
-      var removedRows = [];
-      selectedData.forEach( function(selectedRow){
-        removedRows.push(selectedRow);
-        gridApi.value.updateRowData({remove: [selectedRow]});
-      });
-      console.log("[removed row]", removedRows);      
-    }
+      function deleteClick(){
+        popupTitle.value ="Stock Count (Offline)";
+        popupMsg.value = "선택한 바코드를 삭제하시겠습니까?";
+        strCalltype.value = "delete";
+        popupisopen.value = true;
+      }
+
+      async function sendData() {
+        hoffset.value -= 85;
+        isTransfer.value = true;
+        lblTotCnt.value = lblScanCnt.value;
+
+        gridApi.value.forEachNode( (node) => {
+          console.log("[node.getdata]", node.rowIndex, " : ", node.data.barno, node.data.lgort, node.data.rowno);
+
+          let urlPost = url.value + '/dw/stc/pda/save';
+
+          //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
+           $axios.post(urlPost, {
+              i_lang: "KR",
+              i_werks: getdata(store.state.auth.user[0].plantcd),
+              i_userid: store.state.auth.user[0].userid,
+              i_lgort: node.data.lgort,
+              i_barno: node.data.barno,
+              i_qty: "0",
+              i_loc: node.data.rowno,
+              i_packtype: "",
+              i_area: "",
+          })
+          .then((res) => {
+            console.log("[response data]", res.data);
+
+            if(res.data.length > 0) {
+              if (res.data[0].code == "NG") {
+                node.setDataValue('errmsg', res.data[0].message);
+                lblErrCnt.value += 1;
+              } else if (res.data[0].code == "OK") {
+                //그리드에서 삭제
+                lblSendCnt.value += 1;
+              }
+            }
+            else {
+              msg_color.value = "red";
+              msg.value = "전송중 오류가 발생하였습니다.";
+            }
+          }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+            //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+          .catch(err => {
+            alert(err);
+            console.error(err)
+          })
+        });
+
+        return true;
+      }
+
+      async function yesClick() {
+        popupisopen.value = false;
+        if (strCalltype.value == "send"){
+          var bRtn = await sendData();      
+          if (bRtn){
+              msg_color.value = "red";
+              msg.value = "전송이 완료되었습니다. 처리결과를 확인하시기 바랍니다.";
+          }
+        }
+        else if (strCalltype.value == "close"){
+          emit("component_close", "stockcount_offline");
+        }
+        else if (strCalltype.value == "delete"){
+          var selectedData = gridApi.value.getSelectedRows();
+          console.log("[selected row]", selectedData);
+
+          var removedRows = [];
+          selectedData.forEach( function(selectedRow){
+            removedRows.push(selectedRow);
+            gridApi.value.updateRowData({remove: [selectedRow]});
+            lblScanCnt.value -= 1;
+          });
+          console.log("[removed row]", removedRows);
+          }
+      }
+      
+      function noClick(){
+        popupisopen.value = false;
+      }
 
       return {
         window_width,
         window_height,
+        popupTitle,
+        popupMsg,
+        popupisopen,
+        yesClick,
+        noClick,
+        isPlant,
+        isTransfer,
+        hoffset,
         stor_loc,
         rowno,
         scan,
@@ -427,6 +577,10 @@
         msg,
         msg_color,
         lblSCType,
+        lblScanCnt,
+        lblTotCnt,
+        lblSendCnt,
+        lblErrCnt,
 				radioValues,
         scrollPostion : 0,
         defaultColGroupDef: null,
@@ -437,10 +591,12 @@
         getSelectedRows,
 				radioChange,
         keyupenter,
+        sendClick,
         scanClick,
 				deleteClick,
         fn_SelectAll,
         closeClick,
+        sendcloseClick,
       };
     },
   }
@@ -477,5 +633,19 @@
     height : 123px;
     margin : 0px 5px 0px 5px;
     overflow-x: auto;
+  }
+
+  .stc-send-box {
+    margin: 2px 2px 0px 2px;
+    border: 2px solid $color-dw-green;
+    border-radius: 6px;
+  }
+  .stc-send-box-1 {
+    border: 1px solid gainsboro;
+    border-radius: 6px;
+    height: 75px;
+    // border: 1px solid $color-dw-green;
+    margin: 2px 2px 2px 2px;
+    padding: 2px 2px 2px 2px;
   }
 </style>
