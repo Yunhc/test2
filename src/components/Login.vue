@@ -10,7 +10,7 @@
 		<div :class="['login-right-box', window_width>800 ? {horizontal:true}:{vertical:true}]">
 			<div align="right" style="margin:5px 0px 0px 10px; color:black;">
 				<div class="form-check form-check-inline">
-					<input type="radio" name="languageRadios" value="EN"
+					<input type="radio" name="languageRadios" value="en"
 						v-model="rdoLang"
 						@change="radioChangeLang">
 					<label class="form-check-label">
@@ -18,7 +18,7 @@
 					</label>
 				</div>
 				<div class="form-check form-check-inline">
-					<input type="radio" name="languageRadios" value="KR"
+					<input type="radio" name="languageRadios" value="kr"
 						v-model="rdoLang"
 						@change="radioChangeLang">
 					<label class="form-check-label">
@@ -29,7 +29,7 @@
 			<div class="login-wrap">
 				<div class="login-center-box" align="right">
 					<div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
-						<span class="input-group-text btn-sm" id="basic-addon1">사용자ID</span>
+						<span class="input-group-text btn-sm" id="basic-addon1">{{lblUserID}}</span>
 						<input type="text" class="form-control btn-sm" placeholder="UserID" aria-label="UserID" aria-describedby="basic-addon1"
 							autocomplete="off"
 							id="userid"
@@ -38,7 +38,7 @@
 							v-model="user.userid">
 					</div>
 					<div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
-						<span class="input-group-text btn-sm" id="basic-addon1">비밀번호</span>
+						<span class="input-group-text btn-sm" id="basic-addon1">{{lblPassword}}</span>
 						<input type="password" class="form-control btn-sm" placeholder="Password" aria-label="UserID" aria-describedby="basic-addon1"
 							autocomplete="off"
 							id="password"
@@ -52,12 +52,12 @@
 						<label class="form-check-label" for="defaultCheck1"
 							:style="{ margin:'0px 0px 0px 0px', color:'rgb(34, 33, 33)', 'font-size':'14px'}"
 						>
-							&nbsp;&nbsp;사용자ID 저장
+							&nbsp;&nbsp;{{lblCheckID}}
 						</label>
 					</div>
 					<button class="btn btn-outline-success btn-sm" type="button"
 						:style="{ margin:'4px 10px 0px 0px', width:'70px'}"
-						@click='handleLogin'>로그인</button>
+						@click='handleLogin'>{{lblLogin}}</button>
 
 					<div align="center" class="login-desc">
 						<p>Copyright (C) DONGWHA CO,.LTD. reserved</p>
@@ -78,6 +78,7 @@
 import {onMounted, onUnmounted, ref,reactive} from 'vue'
 import {useStore} from 'vuex';
 import {useRouter} from 'vue-router';
+import language from '@/assets/language.js';
 
 export default {
 	setup(){
@@ -88,6 +89,13 @@ export default {
 
 		//라디오버튼
 		let rdoLang = ref(null);
+
+		//컴포넌트 라벨 설정
+		let lblUserID = ref("사용자ID");
+		let lblPassword = ref("비밀번호");
+		let lblCheckID = ref("사용자ID 저장");
+		let lblLogin = ref("로그인");
+
 
 		// let name = ref("Login");
 		let user = ref({userid:"", password:""});
@@ -105,6 +113,8 @@ export default {
 		const store = useStore();	//스토어호출
 		const router = useRouter();	//라우터호출
 
+		let lang = ref(language);
+
 		// user.value.userid = "ADMIN";
 		// user.value.password = "wavelink";
 
@@ -114,11 +124,17 @@ export default {
 			// console.log("[login] = saveid --", store.state.saveid.id);
 
 			window.addEventListener('resize', handleResize);
+
 			//언어 초기값 설정
-			if(store.state.setup.language)
+			// console.log("storage Language = ", store.state.setup);
+			if(store.state.setup.language){
 				rdoLang.value = store.state.setup.language;
-			else
-				rdoLang.value ="KR";
+			}
+			else{
+				rdoLang.value ="kr";
+			}
+
+			setLanguage();
 
 			if(store.state.saveid.id){
 				// console.log("[login] = saveid -- exist");
@@ -140,11 +156,14 @@ export default {
 		function radioChangeLang()
 		{
 			store.dispatch("setup/setLanguage", rdoLang.value);
-			// console.log("Language = ", rdoLang.value);
-			// console.log("storage Language = ", store.state.setup.language);
+			console.log("Language = ", rdoLang.value);
+			console.log("storage Language = ", store.state.setup.language);
 		}
 
 		function handleLogin() {
+			console.log("language", lang.value.login[0][store.state.setup.language]);
+
+			lang.value.login[0].id;
 			if (user.value.userid && user.value.password) {
 				store.commit('loading/startLoading'); //진행표시 시작
 				setTimeout(function(){
@@ -218,11 +237,19 @@ export default {
 			console.log(store.state.loading.LoadingStatus);
     }
 
+		function setLanguage(){
+			lblUserID.value = lang.value.login[0].id;
+		}
+
 		return {
 			window_width,
 			window_height,
 			rdoLang,
 			radioChangeLang,
+			lblUserID,
+			lblPassword,
+			lblCheckID,
+			lblLogin,
 			user,
 			userid,
 			password,
