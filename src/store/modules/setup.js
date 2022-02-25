@@ -1,19 +1,21 @@
 //환경변수 설정을 위한 전역 변수를 선언
 
-const lng = localStorage.getItem('language');
-const language = lng ? {language: lng} : {language: 'KR'};
+const lang = localStorage.getItem('language');
+const language = lang ? lang : 'KR';
 
 const port = localStorage.getItem('commport');
-const comm = port ? {commport: port} : {commport: 'COM1'};
+const commport = port ? port : 'COM1';
 
 export const setup =  {
 	namespaced: true,
-	language: language,
-	comm: comm,
+	state: {
+		language,
+		commport,
+	},
 	actions: {
-		setLanguage({ commit }, lng) {
-			localStorage.setItem('language', lng);
-			return commit('setLanguage', lng);
+		setLanguage({ commit }, lang) {
+			localStorage.setItem('language', lang);
+			return commit('setLanguage', lang);
 		},
 		setCommport({ commit }, port) {
 			localStorage.setItem('commport', port);
@@ -21,11 +23,11 @@ export const setup =  {
 		},
 	},
 	mutations: {
-		setLanguage(language, lng){
-			language.language= lng;
+		setLanguage(state, lang){
+			state.language= lang;
 		},
-		setCommport(comm, port){
-			comm.commport= port;
+		setCommport(state, port){
+			state.commport= port;
 		},
 	}
 }
