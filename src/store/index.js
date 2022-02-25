@@ -5,12 +5,14 @@ import { createStore } from 'vuex';
 import { auth } from './modules/auth';
 import { saveid } from './modules/saveid';
 import { loading } from './modules/loading';
+import { setup } from './modules/setup';
 
 
 export default createStore({
   modules: {
     auth,
     saveid,
-    loading
+    loading,
+    setup
   },
 });
