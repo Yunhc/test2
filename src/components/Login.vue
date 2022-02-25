@@ -29,7 +29,10 @@
 			<div class="login-wrap">
 				<div class="login-center-box" align="right">
 					<div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
-						<span class="input-group-text btn-sm" id="basic-addon1">{{lblUserID}}</span>
+						<span class="input-group-text btn-sm" id="basic-addon1"
+							style="width: 80px; display: inline-block; text-align: right;">
+							{{lblUserID}}
+						</span>
 						<input type="text" class="form-control btn-sm" placeholder="UserID" aria-label="UserID" aria-describedby="basic-addon1"
 							autocomplete="off"
 							id="userid"
@@ -38,7 +41,10 @@
 							v-model="user.userid">
 					</div>
 					<div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
-						<span class="input-group-text btn-sm" id="basic-addon1">{{lblPassword}}</span>
+						<span class="input-group-text btn-sm" id="basic-addon1"
+							style="width: 80px; display: inline-block; text-align: right;">
+							{{lblPassword}}
+						</span>
 						<input type="password" class="form-control btn-sm" placeholder="Password" aria-label="UserID" aria-describedby="basic-addon1"
 							autocomplete="off"
 							id="password"
@@ -90,7 +96,9 @@ export default {
 		//라디오버튼
 		let rdoLang = ref(null);
 
-		//컴포넌트 라벨 설정
+		//화면 언어 설정
+		let lang = ref(language.login);
+
 		let lblUserID = ref("사용자ID");
 		let lblPassword = ref("비밀번호");
 		let lblCheckID = ref("사용자ID 저장");
@@ -112,8 +120,6 @@ export default {
 
 		const store = useStore();	//스토어호출
 		const router = useRouter();	//라우터호출
-
-		let lang = ref(language);
 
 		// user.value.userid = "ADMIN";
 		// user.value.password = "wavelink";
@@ -156,14 +162,12 @@ export default {
 		function radioChangeLang()
 		{
 			store.dispatch("setup/setLanguage", rdoLang.value);
-			console.log("Language = ", rdoLang.value);
-			console.log("storage Language = ", store.state.setup.language);
+			// console.log("Language = ", rdoLang.value);
+			// console.log("storage Language = ", store.state.setup.language);
+			setLanguage();
 		}
 
 		function handleLogin() {
-			console.log("language", lang.value.login[0][store.state.setup.language]);
-
-			lang.value.login[0].id;
 			if (user.value.userid && user.value.password) {
 				store.commit('loading/startLoading'); //진행표시 시작
 				setTimeout(function(){
@@ -238,7 +242,10 @@ export default {
     }
 
 		function setLanguage(){
-			lblUserID.value = lang.value.login[0].id;
+			lblUserID.value = lang.value['lblUserID'][store.state.setup.language];
+			lblPassword.value = lang.value['lblPassword'][store.state.setup.language];
+			lblCheckID.value = lang.value['lblCheckID'][store.state.setup.language];
+			lblLogin.value = lang.value['lblLogin'][store.state.setup.language];
 		}
 
 		return {
