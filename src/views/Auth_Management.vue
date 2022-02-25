@@ -523,7 +523,15 @@ export default {
 
 		function testClick(){
 			// console.log("testClick");
-			gridApi2.value.deselectAll();
+			// gridApi2.value.deselectAll();
+			// gridApi.value.exportDataAsExcel();
+			gridApi.value.exportDataAsCsv(getParams());
+		}
+
+		function getParams() {
+			return {
+				fileName: "test.csv"
+			};
 		}
 
 		function chkFindClick(){
