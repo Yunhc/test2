@@ -11,7 +11,7 @@ export const auth = {
 	state: initialState,
 	actions: {
 		login({ commit }, user) {
-			// console.log("[auth] = login -- ", user);
+			// console.log("[actions - auth] = login -- ", user);
 			return AuthService.login(user).then(
 				user => {
 					commit('loginSuccess', user);
@@ -42,6 +42,7 @@ export const auth = {
 	},
 	mutations: {
 		loginSuccess(state, user) {
+			// console.log("[mutations - auth] = login -- ", user);
 			state.status.loggedIn = true;
 			state.user = user;
 		},
