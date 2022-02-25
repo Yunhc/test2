@@ -1,7 +1,7 @@
 <template>
   <popupyn v-if="popupisopen"
-    title="알림"
-    message="로그아웃 하시겠습니까?"
+    :title="lblNotice"
+    :message="lblLogoutMsg"
     @yesClick="yesClick"
     @noClick="popupisopen=false">
   </popupyn>
@@ -9,20 +9,20 @@
   <div class="mainheader">
     <div align="left" class="mainheader-left-box">
       <p :style="{ margin:'8px 0 0 10px'}">
-        {{title}}
+        {{lblTitle}}
       </p>
     </div>
     <div align="right" class="mainheader-right-box">
       <label class="btn-sm">
-        {{strPlant}}
+        {{lblPlant}}
       </label>
       <label class="btn-sm" style="color:blue; font-weight:bold;">
-        {{strUser}}&nbsp;
+        {{lblUser}}&nbsp;
       </label>
       <button type="button" class="btn btn-outline-dark btn-sm"
         style="margin:2px 5px 3px 3px; background:transparent; border:1px solid green; color:white; font-size:16px;}"
         @click=handleLogout>
-        Logout
+        {{lblLogout}}
       </button>
     </div>
   </div>
@@ -32,6 +32,7 @@
   import {useStore} from 'vuex';
   import {useRouter} from 'vue-router';
   import popupyn from '@/views/PopupYN.vue';
+  import language from '@/assets/language.js';
 
 
   export default{
@@ -43,15 +44,27 @@
       const store = useStore();	//스토어호출
       const router = useRouter();	//라우터호출
 
-      let title = ref(process.env.VUE_APP_TITLE);
-      let strPlant = ref(null);
-      let strUser = ref(null);
+      //화면 언어 설정==============================================================================//
+      let lang = ref(language.mainheader);
+      let msg = ref(language.message);
+
+      let lblTitle = ref(process.env.VUE_APP_TITLE);
+      let lblPlant = ref(null);
+      let lblUser = ref(null);
+      let lblLogout = ref("Logout");
+
+      let lblNotice = ref("알림");
+      let lblLogoutMsg = ref("로그아웃 하시겠습니까?");
+      //=============================================================================================//
+
       let popupisopen = ref(false);
 
       onMounted(() => {
         // console.log("user = ", store.state.auth.user);
-        strPlant.value = store.state.auth.user[0].plantcd;
-        strUser.value = store.state.auth.user[0].username;
+        lblPlant.value = store.state.auth.user[0].plantcd;
+        lblUser.value = store.state.auth.user[0].username;
+
+        setLanguage();
       });
 
       function handleLogout() {
@@ -70,11 +83,21 @@
         fnLogout();
       }
 
+      function setLanguage(){
+        lblNotice.value = msg.value['lblNotice'][store.state.setup.language];
+        lblLogoutMsg.value = msg.value['lblLogoutMsg'][store.state.setup.language];
+
+        lblLogout.value = lang.value['lblLogout'][store.state.setup.language];
+      }
+
       return{
         handleLogout,
-        title,
-        strPlant,
-        strUser,
+        lblNotice,
+        lblLogoutMsg,
+        lblTitle,
+        lblPlant,
+        lblUser,
+        lblLogout,
         yesClick,
         popupisopen
       }
