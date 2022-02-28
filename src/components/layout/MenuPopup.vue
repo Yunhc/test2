@@ -84,6 +84,7 @@ import {useRouter} from 'vue-router';
 
 import $axios from 'axios';
 import { useStore } from 'vuex';
+import language from '@/assets/language.js';
 import home2 from '@/views/Home2.vue';
 import about from '@/views/About.vue';
 import qrcode from '@/views/QRCode.vue';
@@ -142,6 +143,9 @@ export default {
 
 		const store = useStore();	//스토어호출
 		const router = useRouter();	//라우터호출
+
+		//화면 언어 설정
+		let lang = ref(language.menupopup);
 
 		let index = ref(-1); 						//누른 버튼의 인덱스
 		let isOpen = ref(false); 				//버튼 클릭시 창을 보였다 안보였다 한다.
@@ -347,7 +351,7 @@ export default {
 			let urlPost = process.env.VUE_APP_SERVER_URL + '/api/dw/menu/searchList';
 
 			$axios.post(urlPost, {
-				lang :"KR",
+				lang : store.state.setup.language,
 				userid: store.state.auth.user[0].userid,
 				menuid:"",
 				menuname: "",
@@ -359,7 +363,9 @@ export default {
 				if(res.data.length > 0){
           menus.splice(0, menus.length);
           for(var i=0; i<res.data.length; i++){
-              menus.push({id:res.data[i].menuid, name:res.data[i].menuname});
+
+              // menus.push({id:res.data[i].menuid, name:res.data[i].menuname});
+							menus.push({id:res.data[i].menuid, name:lang.value[res.data[i].menuid][store.state.setup.language]});
           }
         }
 
@@ -429,7 +435,7 @@ export default {
 		// width: 420px;
 		height: 40px;
 		padding: 0px 10px 0px 10px;
-		// margin:2px 2px 2px 2px;
+		margin: -2px 0px 0px 0px;
 		background:white;
 		position:fixed;
 		top: 38px;
