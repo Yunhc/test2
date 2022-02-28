@@ -14,7 +14,7 @@
 						v-model="rdoLang"
 						@change="radioChangeLang">
 					<label class="form-check-label">
-						English
+						&nbsp;English
 					</label>
 				</div>
 				<div class="form-check form-check-inline">
@@ -22,7 +22,7 @@
 						v-model="rdoLang"
 						@change="radioChangeLang">
 					<label class="form-check-label">
-						Korean
+						&nbsp;Korean
 					</label>
 				</div>
 			</div>
@@ -30,8 +30,8 @@
 				<div class="login-center-box" align="right">
 					<div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
 						<span class="input-group-text btn-sm" id="basic-addon1"
-							style="width: 80px; display: inline-block; text-align: right;">
-							{{lblUserID}}
+							style="width: 90px; display: inline-block; text-align: right;">
+							<b>{{lblUserID}}</b>
 						</span>
 						<input type="text" class="form-control btn-sm" placeholder="UserID" aria-label="UserID" aria-describedby="basic-addon1"
 							autocomplete="off"
@@ -42,8 +42,8 @@
 					</div>
 					<div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
 						<span class="input-group-text btn-sm" id="basic-addon1"
-							style="width: 80px; display: inline-block; text-align: right;">
-							{{lblPassword}}
+							style="width: 90px; display: inline-block; text-align: right;">
+							<b>{{lblPassword}}</b>
 						</span>
 						<input type="password" class="form-control btn-sm" placeholder="Password" aria-label="UserID" aria-describedby="basic-addon1"
 							autocomplete="off"
