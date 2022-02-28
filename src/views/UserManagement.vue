@@ -7,17 +7,17 @@
     <div class="usersearch1">
       <form class="d-flex" :style="{height:'37px'}" >
         <div class="input-group mb-3" :style="{ margin:'5px 5px 0px 5px'}">
-          <span class="input-group-text btn-sm" id="basic-addon1">사용자ID</span>
+          <span class="input-group-text btn-sm" id="basic-addon1">{{lblUserID}}</span>
           <input type="text" class="form-control btn-sm" placeholder="UserID" aria-label="UserID" aria-describedby="basic-addon1" v-model="user_param.userid">
         </div>
         <div class="input-group mb-3" :style="{ margin:'5px 5px 0px 0px'}">
-          <span class="input-group-text btn-sm" id="basic-addon1">사용자명</span>
+          <span class="input-group-text btn-sm" id="basic-addon1">{{lblUserName}}</span>
           <input type="text" class="form-control btn-sm" placeholder="UserName" aria-label="UserID" aria-describedby="basic-addon1" v-model="user_param.username">
         </div>
         <div class="input-group mb-3" :style="{ margin:'5px 5px 0px 0px'}">
-          <span class="input-group-text btn-sm" id="basic-addon1">사용유무</span>
+          <span class="input-group-text btn-sm" id="basic-addon1">{{lblUseFlag}}</span>
           <select class="form-select btn-sm" aria-label="Default select example" v-model="user_param.useflag">
-            <option disabled value="">사용유무</option>
+            <option disabled value="">ALL</option>
             <option v-for="(d, i) in options" :key="i" :value="d.id">{{ d.name }}</option>
             <!-- <option value="">All</option>
             <option value="Y">Yes</option>
@@ -32,12 +32,14 @@
           <option value="Y">YES</option>
           <option value="N">NO</option>
         </select> -->
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 10px', height:'32px'}"
-          @click='searchClick_post' >Search</button>
-        <!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 10px', height:'32px'}"
-          @click='searchSelectBox' >Test</button> -->
-        <!-- <button class="btn btn-outline-success" type="button" :style="{ margin:'0px 5px 0px 10px'}"
-          @click='searchClick' >Search</button> -->
+        <div>
+          <button class="btn btn-outline-success btn-sm" type="button" :style="{width:'70px', margin:'6px 5px 0px 10px', height:'30px'}"
+            @click='searchClick_post' >{{lblSearch}}</button>
+          <!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 10px', height:'32px'}"
+            @click='searchSelectBox' >Test</button> -->
+          <!-- <button class="btn btn-outline-success" type="button" :style="{ margin:'0px 5px 0px 10px'}"
+            @click='searchClick' >Search</button> -->
+        </div>
       </form>
     </div>
     <div class="usergrid1"
@@ -47,9 +49,10 @@
     >
       <ag-grid-vue
         id="agGrid1"
-        class="ag-theme-balham"
+        class="ag-theme-alpine"
         style="width: 1910px; height:100%"
         headerHeight='35'
+        :columnDefs="columnDefs"
         :rowData="recvData.value"
         :gridOptions="gridOptions"
         allow_unsafe_jscode="True"
@@ -70,13 +73,13 @@
 
     <div class= "usersave1" align="right">
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
-       @click='addClick'>추가</button>
+       @click='addClick'>{{lblAdd}}</button>
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
-        @click='deleteClick'>삭제</button>
+        @click='deleteClick'>{{lblDelete}}</button>
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
-        @click='saveClick'>저장</button>
+        @click='saveClick'>{{lblSave}}</button>
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 5px 0px 0px', width:'70px'}"
-        @click='closeClick'>Close</button>
+        @click='closeClick'>{{lblClose}}</button>
     </div>
 
     <!-- <div class="container">
@@ -136,6 +139,7 @@
   import { useStore } from 'vuex';
   import { AgGridVue } from 'ag-grid-vue3'
   import { getdata } from '@/helper/filter.js';
+  import language from '@/assets/language.js';
 
   export default {
     name: 'usermanagement',
@@ -178,6 +182,21 @@
       // ]);
       let options = reactive([]);
       const store = useStore();	//스토어호출
+
+      //화면 언어 설정==============================================================================//
+      let lang = ref(language.usermanagement);
+
+      let lblUserID = ref("사용자ID");
+      let lblUserName = ref("사용자명");
+      let lblUseFlag = ref("사용유무");
+      let lblSearch = ref("조회");
+      let lblAdd = ref("추가");
+      let lblDelete = ref("삭제");
+      let lblSave = ref("저장");
+      let lblClose = ref("종료");
+
+
+      //============================================================================================//
       let recvData = reactive([]);
       // let rtnmsg = reactive([]);
       // let selData = reactive({userid:"", username:"", plant:"", workcenter:"", warehoue:""
@@ -192,9 +211,9 @@
           {headerName: '선택', field: 'sel', width: 50, cellStyle: {textAlign: "center"},
             headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'},
           {headerName: '사용자ID', field: 'userid', width: 100, sortable: true, pinned: 'left'},
-          {headerName: '사용자명', field: 'username', width: 100, pinned: 'left'},
+          {headerName: '사용자명', field: 'username', width: 120, pinned: 'left'},
           {headerName: '패스워드', field: 'userpwd', hide: true, cellStyle: { color: 'red', textAlign: "left", backgroundColor: "white" }},
-          {headerName: '플랜드', field: 'plantcd', width: 250, sortable: true, filter: true},
+          {headerName: '플랜트', field: 'plantcd', width: 250, sortable: true, filter: true},
           {headerName: '작업장', field: 'wccode', hide: true},
           {headerName: '창고', field: 'warehouse'},
           {headerName: '조회그룹', field: 'auth'},
@@ -255,7 +274,7 @@
           lockPosition: true, //컬럼 드래그로 이동 방지
           cellStyle: {textAlign: "left"},
         },
-        columnDefs: columnDefs,
+        // columnDefs: columnDefs,
         rowData: null,
         rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
         suppressRowClickSelection: true,
@@ -304,6 +323,7 @@
         // searchClick_post();
         // recvData.value = null;
         // console.log("[ init recvData ] ", recvData);
+        setLanguage();
       });
       onUnmounted(() =>{
         // console.log("[UserManagement] = onUnmounted -- ");
@@ -457,7 +477,8 @@
       }
       function saveClick() {
         // alert("saveClick");
-        saveUser2("S");
+        // saveUser2("S");
+        setLanguage();
       }
       // function saveUser(sType) {
       //   var status = "NG";
@@ -584,29 +605,47 @@
       function closeClick(){
         emit("component_close", "usermanagement");
       }
+
+      function setLanguage(){
+        lblUserID.value = lang.value['lblUserID'][store.state.setup.language];
+        lblUserName.value = lang.value['lblUserName'][store.state.setup.language];
+        lblUseFlag.value = lang.value['lblUseFlag'][store.state.setup.language];
+        lblSearch.value = lang.value['lblSearch'][store.state.setup.language];
+        lblAdd.value = lang.value['lblAdd'][store.state.setup.language];
+        lblDelete.value = lang.value['lblDelete'][store.state.setup.language];
+        lblSave.value = lang.value['lblSave'][store.state.setup.language];
+        lblClose.value = lang.value['lblClose'][store.state.setup.language];
+
+        // console.log("lang = ", lang.value);
+        for(var i=0; i<columnDefs.length; i++){
+          // console.log("lang = ", lang.value['grid1'][i]['name'][store.state.setup.language]);
+          columnDefs[i].headerName = lang.value.grid1[i]['name'][store.state.setup.language];
+        }
+        // console.log("columnDefs = ", columnDefs);
+      }
+
       return {
         AA: "안녕하세요",
         BB: "반갑습니다.",
         photos: [],
         options,
+        columnDefs,
         searchSelectBox,
+        lblUserID,
+        lblUserName,
+        lblUseFlag,
+        lblSearch,
+        lblAdd,
+        lblDelete,
+        lblSave,
+        lblClose,
         userid: "",
         username: "",
         useflag: "",
         scrollPostion : 0,
         defaultColGroupDef: null,
         columnTypes: null,
-        // defaultColDef: {
-        //   width: 150,
-        //   editable: true,
-        //   // filter: 'agTextColumnFilter',
-        //   // floatingFilter: true,
-        //   resizable: true,
-        //   lockPosition: true, //컬럼 드래그로 이동 방지
-        //   cellStyle: {textAlign: "left"},
-        // },
         recvData,
-        // onGridReady,
         gridOptions,
         getSelectedRows,
         searchClick,
