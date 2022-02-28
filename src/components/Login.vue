@@ -10,18 +10,18 @@
 		<div :class="['login-right-box', window_width>800 ? {horizontal:true}:{vertical:true}]">
 			<div align="right" style="margin:5px 0px 0px 10px; color:black;">
 				<div class="form-check form-check-inline">
-					<input type="radio" name="languageRadios" value="en"
+					<input type="radio" id="en" name="languageRadios" value="en"
 						v-model="rdoLang"
 						@change="radioChangeLang">
-					<label class="form-check-label">
+					<label class="form-check-label" for="en">
 						&nbsp;English
 					</label>
 				</div>
 				<div class="form-check form-check-inline">
-					<input type="radio" name="languageRadios" value="kr"
+					<input type="radio" id="kr" name="languageRadios" value="kr"
 						v-model="rdoLang"
 						@change="radioChangeLang">
-					<label class="form-check-label">
+					<label class="form-check-label" for="kr">
 						&nbsp;Korean
 					</label>
 				</div>
@@ -53,9 +53,9 @@
 							v-model="user.password">
 					</div>
 					<div align="left">
-						<input class="form-check-input" type="checkbox" id="defaultCheck1"
+						<input class="form-check-input" type="checkbox" id="chkSaveID"
 							v-model="chkID">
-						<label class="form-check-label" for="defaultCheck1"
+						<label class="form-check-label" for="chkSaveID"
 							:style="{ margin:'0px 0px 0px 0px', color:'rgb(34, 33, 33)', 'font-size':'14px'}"
 						>
 							&nbsp;&nbsp;{{lblCheckID}}
@@ -96,14 +96,14 @@ export default {
 		//라디오버튼
 		let rdoLang = ref(null);
 
-		//화면 언어 설정
+		//화면 언어 설정==============================================================================//
 		let lang = ref(language.login);
 
 		let lblUserID = ref("사용자ID");
 		let lblPassword = ref("비밀번호");
 		let lblCheckID = ref("사용자ID 저장");
 		let lblLogin = ref("로그인");
-
+		//============================================================================================//
 
 		// let name = ref("Login");
 		let user = ref({userid:"", password:""});
