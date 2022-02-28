@@ -123,11 +123,11 @@
           <span class="input-group-text btn-sm" id="basic-addon1"
             :style="{width:'75px', display:'inline-block', 'text-align':'right'}">스캔건수
           </span>
-          <label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Scan Count"
+          <span autocomplete="off" class="input-group-text btn-sm ellipsis" placeholder="Scan Count"
               aria-label="Scan Count" aria-describedby="basic-addon1"
-              :style="{'text-align':'left'}">
+              style="width:100px; text-align:left; background:white;">
               {{lblScanCnt}}
-          </label>
+          </span>
         </div>
 
 				<div class="input-group mb-3"
@@ -362,6 +362,7 @@
           console.log("stor_loc : ", req_param.stor_loc)
           if (req_param.stor_loc != ""){
             search_SCInfo();
+            importTextFile(); //텍스트 파일 불러오기
             rowno.value.focus();
             rowno.value.select();
           }
@@ -425,8 +426,10 @@
 						// 맨밑에 추가
 						// this.gridOptions.api.updateRowData({add: [newData]});
 
-						// 특정위치에 추가
+						// 그리드 특정위치에 추가 
 						gridApi.value.updateRowData({add:[newData], addIndex:0});
+
+            exportTextFile();  //텍스트 파일로 저장
 
 						scan.value.select();
 						msg_color.value = "blue";
@@ -438,6 +441,39 @@
         // if(e.which == 13){
         //   console.log(text)
         // }
+      }
+
+      function exportTextFile() {
+        // const text = document.getElementById('text-data').value;
+        const text = "텍스트 저장 테스트입니다.\n2번째 줄입니다.";
+        // 저장하고자하는 파일명
+        const filename = '텍스트파일명';
+        const element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+        document.body.appendChild(element);
+        element.click();
+      }
+
+      function importTextFile() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'text/plain'; // 확장자가 xxx, yyy 일때, ".xxx, .yyy"
+        // this 접근을 위해 선언 필요
+        // const self = this;
+        input.onchange = function () {
+          const file = new FileReader();
+          file.onload = () => {
+            // document.getElementById('text-data').textContent = file.result;
+            // self.$data.textData = file.result;
+            var textData = file.result;
+            console.log("text file : ",textData)
+          };
+          file.readAsText(this.files[0]);
+          // console.log("text file : ",self.$data.textData)
+        };
+        input.click();
+        // console.log("text file : ",self.$data.textData)
       }
 
       function fn_SelectAll(e) {
@@ -485,13 +521,16 @@
         isTransfer.value = true;
         lblTotCnt.value = lblScanCnt.value;
 
-        gridApi.value.forEachNode( (node) => {
+        // gridApi.value.forEachNode( (node) => {
+        for (var i = gridApi.value.getDisplayedRowCount()-1; i>=0; i--) {
+          const node = gridApi.value.getDisplayedRowAtIndex(i);
           console.log("[node.getdata]", node.rowIndex, " : ", node.data.barno, node.data.lgort, node.data.rowno);
 
           let urlPost = url.value + '/dw/stc/pda/save';
 
           //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
-           $axios.post(urlPost, {
+           await $axios.post(urlPost, {
+          // $axios.post(urlPost, {  
               i_lang: "KR",
               i_werks: getdata(store.state.auth.user[0].plantcd),
               i_userid: store.state.auth.user[0].userid,
@@ -511,20 +550,24 @@
                 lblErrCnt.value += 1;
               } else if (res.data[0].code == "OK") {
                 //그리드에서 삭제
-                lblSendCnt.value += 1;
+                node.setDataValue('errmsg', res.data[0].message);
+                // const rowNode = gridApi.value.getDisplayedRowAtIndex(0);
+                node.setSelected(true);
+                gridApi.value.updateRowData({remove: [node.data]});
               }
             }
             else {
               msg_color.value = "red";
               msg.value = "전송중 오류가 발생하였습니다.";
             }
+            lblSendCnt.value += 1;
           }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
             //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
           .catch(err => {
             alert(err);
             console.error(err)
           })
-        });
+        }
 
         return true;
       }
@@ -534,7 +577,7 @@
         if (strCalltype.value == "send"){
           var bRtn = await sendData();      
           if (bRtn){
-              msg_color.value = "red";
+              msg_color.value = "blue";
               msg.value = "전송이 완료되었습니다. 처리결과를 확인하시기 바랍니다.";
           }
         }
