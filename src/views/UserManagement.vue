@@ -44,7 +44,7 @@
     </div>
     <div class="usergrid1"
       :style="{
-        'height': `calc(${window_height - 109 - 80}px)`
+        'height': `calc(${window_height - 109 - 80 - 40}px)`
       }"
     >
       <ag-grid-vue
@@ -72,8 +72,39 @@
     </div>
 
     <div class= "usersave1" align="right">
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'100px'}"
+        @click='selectIndexedDB'>{{"Select"}}</button>
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'100px'}"
+        @click='selectAllIndexedDB'>{{"SelectAll"}}</button>
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'120px'}"
+        @click='selectBoundIndexedDB'>{{"Select Bound"}}</button>
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'100px'}"
+        @click='writeIndexedDB'>{{"Data Add"}}</button>
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'100px'}"
+        @click='updateIndexedDB'>{{"Update"}}</button>
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'100px'}"
+        @click='deleteIndexedDB'>{{"Delete"}}</button>
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'100px'}"
+        @click='deleteAllIndexedDB'>{{"Delete All"}}</button>
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 5px 0px 0px', width:'100px'}"
+        @click='createIndexedDB'>{{"Create DB"}}</button>
+    </div>
+
+    <div class= "usersave1" align="right">
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
-       @click='addClick'>{{lblAdd}}</button>
+        @click='saveLocalStorage'>{{"Save"}}</button>
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
+        @click='loadLocalStorage'>{{"Load"}}</button>
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
+        @click='deleteLocalStorage'>{{"Delete"}}</button>
+
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'150px'}"
+        @click='exportJsonFile'>{{"Export JsonFile"}}</button>
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'150px'}"
+        @click='importJsonFile'>{{"Import JsonFile"}}</button>
+
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
+        @click='addClick'>{{lblAdd}}</button>
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
         @click='deleteClick'>{{lblDelete}}</button>
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
@@ -198,6 +229,7 @@
 
       //============================================================================================//
       let recvData = reactive([]);
+      let userData = reactive([]);
       // let rtnmsg = reactive([]);
       // let selData = reactive({userid:"", username:"", plant:"", workcenter:"", warehoue:""
       //                       , auth:"", role:"", use_role:"", uesflag:"", forklift:""
@@ -420,6 +452,7 @@
         .then((res) => {
           // console.log("[response data]", res.data);
           recvData.value = res.data;
+          userData = res.data;
           // console.log("[ received data ] ", recvData);
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
@@ -624,6 +657,469 @@
         // console.log("columnDefs = ", columnDefs);
       }
 
+      //##########################################################################################################################//
+      function importJsonFile() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'text/plain, .json'; // 확장자가 xxx, yyy 일때, ".xxx, .yyy" 'text/javascript'
+        // input.style.opacity = 0;
+
+        input.onchange = function () {
+          const reader = new FileReader();
+          reader.readAsText(input.files[0], "UTF-8");
+          // console.log("reader : ", reader);
+          reader.onload = (e) => {
+            // var textData = file.result;
+            var textData = e.target.result;
+            try {
+              var newArr = JSON.parse(textData);
+            } catch(e) {
+              alert("Sorry, your file doesn't appear to be valid JSON data.");
+            }
+            console.log("text file : ", newArr);
+          };
+        };
+        input.click();
+      }
+
+      function exportJsonFile() {
+        let cars = [
+          {
+            Name: "chevrolet chevelle malibu",
+            Miles_per_Gallon: 18,
+            Cylinders: 8,
+            Displacement: 307,
+            Horsepower: 130,
+            Weight_in_lbs: 3504,
+            Acceleration: 12,
+            Year: "1970-01-01",
+            Origin: "USA"
+          },
+          {
+            Name: "buick skylark 320",
+            Miles_per_Gallon: 15,
+            Cylinders: 8,
+            Displacement: 350,
+            Horsepower: 165,
+            Weight_in_lbs: 3693,
+            Acceleration: 11.5,
+            Year: "1970-01-01",
+            Origin: "USA"
+          }
+        ];
+
+        let data = JSON.stringify(cars);
+        // fs.writeFileSync("data.json", data);
+
+        var filename = "test1.json"
+        let blob = new Blob([data], { type: 'text/plain;charset=utf-8;' })
+        if (navigator.msSaveBlob) { // IE 10+
+          navigator.msSaveBlob(blob, filename)
+        } else {
+          let link = document.createElement('a')
+          if (link.download !== undefined) { // feature detection
+            // Browsers that support HTML5 download attribute
+            let url = URL.createObjectURL(blob)
+            link.setAttribute('href', url)
+            link.setAttribute('download', filename)
+            link.style.visibility = 'hidden'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+          }
+        }
+      }
+      //##########################################################################################################################//
+      //LocalStorage 테스트
+      let silsaFileName = ref("sila_test");
+      var silsaCount = 0;
+      function saveLocalStorage() {
+        try{
+          silsaFileName.value = "sila_test" + "_" + String(silsaCount++);
+          localStorage.setItem(silsaFileName.value, JSON.stringify(recvData.value));
+        }
+        catch(e) {
+          alert(e);
+        }
+      }
+
+      function loadLocalStorage() {
+        recvData.value = JSON.parse(localStorage.getItem(silsaFileName.value));
+      }
+
+      function deleteLocalStorage() {
+        var keys = Object.keys(localStorage);
+        // console.log("key = ", keys);
+
+        for(var i=0; i<keys.length; i++){
+          if(keys[i].length > 9){
+            if(keys[i].substr(0, 9) == "sila_test")
+              localStorage.removeItem(keys[i]);
+          }
+        }
+        // localStorage.removeItem(silsaFileName.value);
+      }
+
+      //##########################################################################################################################//
+      //IndexedDB 테스트
+
+      // const customerData = [
+      //   { ssn: "444-44-4444", name: "Bill", age: 35, email: "bill@company.com" },
+      //   { ssn: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" }
+      // ];
+
+      // function createIndexedDB(){
+      //   const dbName = "the_name";
+      //   var request = indexedDB.open(dbName, 2);
+
+      //   request.onerror = function() {
+      //     // Handle errors.
+      //   };
+      //   request.onupgradeneeded = function(event) {
+      //     var db = event.target.result;
+
+      //     // Create an objectStore to hold information about our customers. We're
+      //     // going to use "ssn" as our key path because it's guaranteed to be
+      //     // unique - or at least that's what I was told during the kickoff meeting.
+      //     var objectStore = db.createObjectStore("customers", { keyPath: "ssn" });
+
+      //     // Create an index to search customers by name. We may have duplicates
+      //     // so we can't use a unique index.
+      //     objectStore.createIndex("name", "name", { unique: false });
+
+      //     // Create an index to search customers by email. We want to ensure that
+      //     // no two customers have the same email, so use a unique index.
+      //     objectStore.createIndex("email", "email", { unique: true });
+
+      //     // Use transaction oncomplete to make sure the objectStore creation is
+      //     // finished before adding data into it.
+      //     objectStore.transaction.oncomplete = function() {
+      //       // Store values in the newly created objectStore.
+      //       var customerObjectStore = db.transaction("customers", "readwrite").objectStore("customers");
+      //       customerData.forEach(function(customer) {
+      //         customerObjectStore.add(customer);
+      //       });
+      //     };
+      //   };
+      // }
+
+
+
+      function createIndexedDB(){
+        if(!window.indexedDB){
+          alert("browser doesn't support IndexedDB");
+        }
+        else{
+          var request = indexedDB.open('silsaDB', 1);
+
+          request.onupgradeneeded = function(event){
+            var db = event.target.result;
+            // db.createObjectStore('silsa', {keyPath:'userid'});
+            // db.createObjectStore('silsa', {keyPath:'key', autoIncrement: true});
+            // var objectStore = db.createObjectStore('silsa', {keyPath:'key', autoIncrement: true});
+            // objectStore.put({key: 11, value: 33});  // OK, key generator set to 11
+            // objectStore.put({value: 66});           // OK, will have auto-generated key 12
+
+            var objectStore = db.createObjectStore('silsa', {keyPath:'userid'});
+            objectStore.createIndex("username", "username", { unique: false });
+            objectStore.createIndex("plantcd", "plantcd", { unique: false });
+            // objectStore.transaction.oncomplete = function() {
+            //   // Store values in the newly created objectStore.
+            //   var silsaObjectStore = db.transaction("silsa", "readwrite").objectStore("silsa");
+            //   userData.forEach(function(user) {
+            //     silsaObjectStore.add(user);
+            //   });
+            // };
+          }
+          request.onerror = function(event){
+            alert(event);
+          }
+          request.onsuccess = function(event){
+            console.log("success = ", event);
+          }
+        }
+      }
+
+      function writeIndexedDB(){
+        var request = indexedDB.open('silsaDB');
+
+        request.onerror = function(event){
+          alert('Database error: ' + event.traget.errorCode);
+        }
+
+        request.onsuccess = function(event){
+          var db = event.target.result;
+          var transaction = db.transaction(['silsa'], 'readwrite');
+
+          transaction.oncomplete = function(){
+            console.log("transaction done");
+          }
+          transaction.onerror = function(){
+            console.log("transaction fail");
+          }
+
+          var objectStore = transaction.objectStore('silsa');
+          for( var  user of userData){
+            // var request = objectStore.put({userid:bar.userid, value: strData});
+            var request = objectStore.add(user);
+            request.onsuccess = function(){
+              console.log("add success");
+              // console.log(event.target.result);
+            }
+            request.onerror = function(){
+              console.log("add fail");
+              // console.log(event.target.result);
+            }
+          }
+        }
+      }
+
+      function selectAllIndexedDB(){
+        var request = indexedDB.open('silsaDB');
+
+        request.onerror = function(event){
+          alert( event.traget.errorCode);
+        }
+
+        request.onsuccess = function(event){
+          var db = event.target.result;
+          var transaction = db.transaction(['silsa']);
+
+          transaction.oncomplete = function(){
+            console.log("transaction done");
+            gridApi.value.setRowData(recvData);
+          }
+          transaction.onerror = function(){
+            console.log("transaction fail");
+          }
+
+          //변수Clear
+          recvData.splice(0, recvData.length);
+
+          var objectStore = transaction.objectStore('silsa');
+          var request = objectStore.openCursor();
+          request.onsuccess = function(event){
+            var cursor = event.target.result;
+            if (cursor){
+              request = objectStore.get(cursor.key);
+              request.onsuccess = function(event){
+                recvData.push(event.target.result)
+                // console.log(event.target.result);
+              }
+              cursor.continue();
+            }
+          }
+
+          request.onerror = function(){
+            console.log("select all fail");
+          }
+        }
+      }
+
+      function selectBoundIndexedDB(){
+        var request = indexedDB.open('silsaDB');
+
+        request.onerror = function(event){
+          alert( event.traget.errorCode);
+        }
+
+        request.onsuccess = function(event){
+          var db = event.target.result;
+          var transaction = db.transaction(['silsa']);
+
+          transaction.oncomplete = function(){
+            console.log("transaction done");
+            gridApi.value.setRowData(recvData);
+          }
+          transaction.onerror = function(){
+            console.log("transaction fail");
+          }
+
+          //변수Clear
+          recvData.splice(0, recvData.length);
+
+          var objectStore = transaction.objectStore('silsa');
+          var singleKeyRange = IDBKeyRange.only("[K113] 동화기업 표면재공장");
+
+          // // Match anything past "Bill", including "Bill"
+          // var lowerBoundKeyRange = IDBKeyRange.lowerBound("Bill");
+          // // Match anything past "Bill", but don't include "Bill"
+          // var lowerBoundOpenKeyRange = IDBKeyRange.lowerBound("Bill", true);
+          // // Match anything up to, but not including, "Donna"
+          // var upperBoundOpenKeyRange = IDBKeyRange.upperBound("Donna", true);
+          // // Match anything between "Bill" and "Donna", but not including "Donna"
+          // var boundKeyRange = IDBKeyRange.bound("Bill", "Donna", false, true);
+
+          var index = objectStore.index("plantcd");
+          var request = index.openCursor(singleKeyRange);
+          request.onsuccess = function(event){
+            var cursor = event.target.result;
+            if (cursor){
+              recvData.push(cursor.value);
+              cursor.continue();
+            }
+          }
+
+          request.onerror = function(){
+            console.log("select all fail");
+          }
+        }
+      }
+
+      function selectIndexedDB(){
+        var request = indexedDB.open('silsaDB');
+
+        request.onerror = function(event){
+          alert( event.traget.errorCode);
+        }
+
+        request.onsuccess = function(event){
+          var db = event.target.result;
+          var transaction = db.transaction(['silsa']);
+
+          transaction.oncomplete = function(){
+            console.log("transaction done");
+          }
+          transaction.onerror = function(){
+            console.log("transaction fail");
+          }
+          var objectStore = transaction.objectStore('silsa');
+
+          var request = objectStore.get(user_param.userid);
+          request.onerror = function(){
+            console.log("select all fail");
+          }
+
+          request.onsuccess = function(event){
+            if(event.target.result == undefined){
+              alert("Not Exists");
+            }
+            else{
+              alert(JSON.stringify(event.target.result));
+            }
+          }
+
+          // //index를 조회한다.
+          // var index = objectStore.index("username");
+          // index.get(user_param.username).onsuccess = function(event){
+          //   if(event.target.result == undefined){
+          //     alert("Not Exists");
+          //   }
+          //   else{
+          //     alert(JSON.stringify(event.target.result));
+          //   }
+          // }
+        }
+      }
+
+      function updateIndexedDB() {
+        var request = indexedDB.open('silsaDB');
+
+        request.onerror = function(event){
+          alert('Database error: ' + event.traget.errorCode);
+        }
+
+        request.onsuccess = function(event){
+          var db = event.target.result;
+          var transaction = db.transaction(['silsa'], 'readwrite');
+
+          transaction.oncomplete = function(){
+            console.log("transaction done");
+          }
+          transaction.onerror = function(){
+            console.log("transaction fail");
+          }
+
+          var objectStore = transaction.objectStore('silsa');
+          var request = objectStore.get(user_param.userid);
+          request.onerror = function(){
+            console.log("select all fail");
+          }
+
+          request.onsuccess = function(event){
+            if(event.target.result == undefined){
+              alert("Not Exists");
+            }
+            else{
+              var data = event.target.result;
+              data.username = "K143";
+
+              var requestUpdate = objectStore.put(data);
+              requestUpdate.onerror = function(event) {
+                alert(event.target.error);
+              };
+              requestUpdate.onsuccess = function() {
+                // console.log(event.target.result);
+                alert("Success Update");
+              };
+            }
+          }
+        }
+      }
+
+      function deleteIndexedDB(){
+        var request = indexedDB.open('silsaDB');
+
+        request.onerror = function(event){
+          alert( event.traget.errorCode);
+        }
+
+        request.onsuccess = function(event){
+          var db = event.target.result;
+          var transaction = db.transaction(['silsa'], "readwrite");
+
+          transaction.oncomplete = function(){
+            console.log("transaction done");
+          }
+          transaction.onerror = function(){
+            console.log("transaction fail");
+          }
+
+          var objectStore = transaction.objectStore('silsa');
+          var request = objectStore.delete(user_param.userid);
+          request.onsuccess = function(event){
+            console.log(event.target.result);
+          }
+
+          // var request = db.transaction(["silsa"], "readwrite")
+          //                 .objectStore("silsa")
+          //                 .delete("143");
+          // request.onsuccess = function(event) {
+          //   // It's gone!
+          // };
+        }
+      }
+
+      function deleteAllIndexedDB(){
+        var request = indexedDB.open('silsaDB');
+
+        request.onerror = function(event){
+          alert( event.traget.errorCode);
+        }
+
+        request.onsuccess = function(event){
+          var db = event.target.result;
+          var transaction = db.transaction(['silsa'], "readwrite");
+
+          transaction.oncomplete = function(){
+            console.log("transaction done");
+          }
+          transaction.onerror = function(){
+            console.log("transaction fail");
+          }
+
+          var objectStore = transaction.objectStore('silsa');
+          var request = objectStore.clear();
+          request.onsuccess = function(){
+            alert("Success Delete All");
+          }
+        }
+      }
+
+
+
+
+      //##########################################################################################################################//
       return {
         AA: "안녕하세요",
         BB: "반갑습니다.",
@@ -658,6 +1154,20 @@
         window_width,
         window_height,
         closeClick,
+        importJsonFile,
+        exportJsonFile,
+        saveLocalStorage,
+        loadLocalStorage,
+        deleteLocalStorage,
+        createIndexedDB,
+        writeIndexedDB,
+        selectAllIndexedDB,
+        selectBoundIndexedDB,
+        selectIndexedDB,
+        updateIndexedDB,
+        deleteIndexedDB,
+        deleteAllIndexedDB,
+
       };
     },
     computed: {
