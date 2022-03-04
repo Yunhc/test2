@@ -44,7 +44,7 @@
     </div>
     <div class="usergrid1"
       :style="{
-        'height': `calc(${window_height - 109 - 80 - 40}px)`
+        'height': `calc(${window_height - 109 - 80}px)`
       }"
     >
       <ag-grid-vue
@@ -71,7 +71,7 @@
       </ag-grid-vue>
     </div>
 
-    <div class= "usersave1" align="right">
+    <!-- <div class= "usersave1" align="right">
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'100px'}"
         @click='selectIndexedDB'>{{"Select"}}</button>
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'100px'}"
@@ -88,10 +88,10 @@
         @click='deleteAllIndexedDB'>{{"Delete All"}}</button>
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 5px 0px 0px', width:'100px'}"
         @click='createIndexedDB'>{{"Create DB"}}</button>
-    </div>
+    </div> -->
 
     <div class= "usersave1" align="right">
-      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
+      <!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
         @click='saveLocalStorage'>{{"Save"}}</button>
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
         @click='loadLocalStorage'>{{"Load"}}</button>
@@ -101,7 +101,7 @@
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'150px'}"
         @click='exportJsonFile'>{{"Export JsonFile"}}</button>
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'150px'}"
-        @click='importJsonFile'>{{"Import JsonFile"}}</button>
+        @click='importJsonFile'>{{"Import JsonFile"}}</button> -->
 
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
         @click='addClick'>{{lblAdd}}</button>
