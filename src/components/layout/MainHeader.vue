@@ -13,7 +13,7 @@
       </p>
     </div>
     <div align="right" class="mainheader-right-box">
-      <label class="btn-sm">
+      <label class="btn-sm" v-if="bCheckWindowWidth">
         {{lblPlant}}
       </label>
       <label class="btn-sm" style="color:blue; font-weight:bold;">
@@ -28,7 +28,7 @@
   </div>
 </template>
 <script>
-  import {ref, onMounted } from 'vue'
+  import {ref, onMounted, onUnmounted } from 'vue'
   import {useStore} from 'vuex';
   import {useRouter} from 'vue-router';
   import popupyn from '@/views/PopupYN.vue';
@@ -57,15 +57,33 @@
       let lblLogoutMsg = ref("로그아웃 하시겠습니까?");
       //============================================================================================//
 
+      let window_width = ref(window.innerWidth);
+      let window_height = ref(window.innerHeight);
+      let bCheckWindowWidth = ref(true);
+
       let popupisopen = ref(false);
 
       onMounted(() => {
+        window.addEventListener('resize', handleResize);
         // console.log("user = ", store.state.auth.user);
         lblPlant.value = store.state.auth.user[0].plantcd;
         lblUser.value = store.state.auth.user[0].username;
 
         setLanguage();
       });
+
+      onUnmounted(() =>{
+        // console.log("onUnmounted -- ");
+        window.removeEventListener('resize', handleResize);
+      });
+
+      function handleResize() {
+        window_width.value = window.innerWidth;
+        window_height.value = window.innerHeight;
+
+        if (window_width.value > 800) bCheckWindowWidth.value = true;
+        else bCheckWindowWidth.value = false;
+      }
 
       function handleLogout() {
         popupisopen.value = true;
@@ -92,6 +110,7 @@
 
       return{
         handleLogout,
+        bCheckWindowWidth,
         lblNotice,
         lblLogoutMsg,
         lblTitle,
