@@ -92,6 +92,7 @@ import print from '@/views/Print.vue';
 import room from '@/views/OneRoom.vue';
 import good_receipt from '@/views/Good_Receipt.vue';
 import good_receipt_order from '@/views/Good_Receipt_Order.vue';
+import autolabeller_production_result from '@/views/Autolabeller_Production_Result.vue';
 import usermanagement from '@/views/UserManagement.vue';
 import auth_management from '@/views/Auth_Management.vue';
 import mdi from '@/views/Mdi.vue';
@@ -123,6 +124,7 @@ export default {
 		room,
 		good_receipt,
 		good_receipt_order,
+		autolabeller_production_result,
 		usermanagement,
 		auth_management,
 		mdi,
@@ -162,6 +164,7 @@ export default {
 			{pid: 'M200', id:'room', name:'Room'},
 			{pid: 'M200', id:'good_receipt', name:'구매입고'},
 			{pid: 'M200', id:'good_receipt_order', name:'구매오더 조회'},
+			{pid: 'M200', id:'autolabeller_production_result', name:'오토라벨러 생산입고'},
 			{pid: 'M250', id:'label_print_hist', name:'라벨 발행 이력'},
 			{pid: 'M250', id:'parents', name:'Slot 테스트'},
 			{pid: 'M520', id:'fg_receipt', name:'Finished Goods Receipt'},
