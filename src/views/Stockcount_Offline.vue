@@ -455,6 +455,8 @@
         element.click();
       }
 
+
+
       function importTextFile() {
         const input = document.createElement('input');
         input.type = 'file';
