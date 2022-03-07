@@ -49,15 +49,17 @@
 								</div>
 							</template>
 							<template v-else>
-								<span class="input-group-text btn-sm" id="basic-addon1"
-									:style="{width:'80px', margin:'0px 0px 0px 5px'}">
-									발행일자
-								</span>
-								<input class="form-control btn-sm"
-									:style="{'text-align':'center'}"
-									data-ref="InputContent" inputmode="none"
-									:value="inputValue"
-									v-on="inputEvents"/>
+								<div class="input-group mb-3" :style="{height:'36px'}">
+									<span class="input-group-text btn-sm" id="basic-addon1"
+										:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+										발행일자
+									</span>
+									<input class="form-control btn-sm"
+										:style="{'text-align':'center'}"
+										data-ref="InputContent" inputmode="none"
+										:value="inputValue"
+										v-on="inputEvents"/>
+								</div>
 							</template>
 						</template>
 					</v-date-picker>
@@ -154,13 +156,13 @@
       }"
     >
       <ag-grid-vue
-        class="ag-theme-balham"
+        class="ag-theme-alpine"
         headerHeight='35'
-        style="width: 1910px; height:100%"
+        :style="{width: `calc(${window_width - 10}px)`, height:'100%'}"
         :rowData="recvData.value"
         :gridOptions="gridOptions"
         allow_unsafe_jscode="True"
-        >
+      >
       </ag-grid-vue>
 		</div>
 
@@ -228,7 +230,8 @@ import $axios from 'axios';
 import { reactive, ref, onMounted, onUnmounted } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3'
 import { useStore } from 'vuex';
-import { getdata, formatDate, addDate } from '@/helper/filter.js';
+import { getdata, formatDate } from '@/helper/filter.js';
+// import { getdata, formatDate, addDate } from '@/helper/filter.js';
 import { searchSelectBox } from '@/helper/sql.js';
 import AutoLabeller1 from "@/components/label/AutoLabeller1.vue";
 import AutoLabeller2 from "@/components/label/AutoLabeller2.vue";
@@ -254,8 +257,8 @@ export default {
 		//달력
     let isDark = ref(false);
     let isRange = ref(true);
-		// let date = ref({start:new Date(), end:new Date()});
-    let date = ref({start:new Date(addDate("-6")), end:new Date()});
+		let date = ref({start:new Date(), end:new Date()});
+    // let date = ref({start:new Date(addDate("-6")), end:new Date()});
 
 		//check box
 		let chkStock = ref(false);
@@ -310,7 +313,6 @@ export default {
 			{headerName: 'S/O품번', field: 'kdpos', width: 80, cellStyle: {textAlign: "center"}},
 			{headerName: '발행일자', field: 'prodate', width: 80, cellStyle: {textAlign: "center"}},
 			{headerName: '갱신일자', field: 'upddate1', width: 80, cellStyle: {textAlign: "center"}},
-
 			{headerName: '패턴명', field: 'ptdesc', width: 80, cellStyle: {textAlign: "left"}},
 			{headerName: '패턴코드', field: 'ptcode', width: 80, cellStyle: {textAlign: "left"}},
 			{headerName: 'Lot No', field: 'lotno', width: 80, cellStyle: {textAlign: "left"}},
@@ -421,7 +423,7 @@ export default {
 				{	lang:"KR",
 					userid:store.state.auth.user[0].userid,
 					plantcd:getdata(store.state.auth.user[0].plantcd),
-					type1:"PLANT_MWMS_2",
+					type1:"PLANT_MWMS_3",
 					type2:"",
 					type3:"",
 					type4:"",
@@ -449,7 +451,7 @@ export default {
 				{	lang:"KR",
 					userid:store.state.auth.user[0].userid,
 					plantcd:getdata(req_param.cboPlant),
-					type1:"LGORT_MWMS",
+					type1:"STORE_LOC",
 					type2:"",
 					type3:"",
 					type4:"",
@@ -480,6 +482,8 @@ export default {
 		}
 
 		function searchClick(){
+			store.commit('loading/startLoading'); //진행표시 시작
+
 			let urlPost = url.value + '/dw_labelhistsearch_p_j';
 
 			req_param.f_date = formatDate(date.value.start, "YYYYMMDD");
@@ -539,6 +543,7 @@ export default {
 				gridApi.value.setPinnedBottomRowData(columnsum);
 				msg_color.value = "blue";
 				msg.value = "Total Count : " + recvData.value.length ;
+				store.commit('loading/endLoading'); //진행표시 중지
 			}) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
 				//.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
 			.catch(err => {
@@ -547,6 +552,7 @@ export default {
 
 				msg_color.value = "red";
         msg.value = err;
+				store.commit('loading/endLoading'); //진행표시 중지
 			})
 		}
 
