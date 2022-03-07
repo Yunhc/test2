@@ -50,13 +50,13 @@
       <ag-grid-vue
         id="agGrid1"
         class="ag-theme-alpine"
-        style="width: 1910px; height:100%"
+        :style="{width: `calc(${window_width - 10}px)`, height:'100%'}"
         headerHeight='35'
         :columnDefs="columnDefs"
         :rowData="recvData.value"
         :gridOptions="gridOptions"
         allow_unsafe_jscode="True"
-        >
+      >
         <!--
         style="width: 100%; height:100%"
         :defaultColDef="defaultColDef"
@@ -510,8 +510,8 @@
       }
       function saveClick() {
         // alert("saveClick");
-        // saveUser2("S");
-        setLanguage();
+        saveUser2("S");
+        // setLanguage();
       }
       // function saveUser(sType) {
       //   var status = "NG";
