@@ -274,7 +274,7 @@
             i_date_to: formatDate(new Date(), "YYYYMMDD"),
         })
         .then((res) => {
-          // console.log("[response data]", res.data);
+          console.log("[response data]", res.data);
           if(res.data.length > 0) {
             if (res.data[0].code == "NG"){
               msg_color.value = "red";
