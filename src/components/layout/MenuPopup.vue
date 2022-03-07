@@ -9,6 +9,7 @@
 						:title="menus[i].name"
 						:button_id="menus[i].id"
 						@click="clickMainButton(i)">
+						<!-- @mouseover="clickMainButton(i)" -->
 						{{ menus[i].name }}
 					</button>
 				</section>
@@ -100,6 +101,7 @@ import parents from '@/views/Parents.vue';
 import fg_receipt from '@/views/FG_Receipt.vue';
 import good_issue from '@/views/Good_Issue.vue';
 import good_issue_cancel from '@/views/Good_Issue_Cancel.vue';
+import stock_search from '@/views/Stock_Search.vue';
 import stockcount_online from '@/views/Stockcount_Online.vue';
 import stockcount_offline from '@/views/Stockcount_Offline.vue';
 
@@ -131,6 +133,7 @@ export default {
 		fg_receipt,
 		good_issue,
 		good_issue_cancel,
+		stock_search,
 		stockcount_online,
 		stockcount_offline,
   },
@@ -167,6 +170,7 @@ export default {
 			{pid: 'M520', id:'fg_receipt', name:'Finished Goods Receipt'},
 			{pid: 'M520', id:'good_issue', name:'Good Issue'},
 			{pid: 'M520', id:'good_issue_cancel', name:'Issue Cancel'},
+			{pid: 'M500', id:'stock_search', name:'재고 현황'},
 			{pid: 'M520', id:'stockcount_online', name:'Stock Count(Online)'},
 			{pid: 'M520', id:'stockcount_offline', name:'Stock Count(Offline)'},
 		]);
@@ -359,7 +363,6 @@ export default {
 			})
 			.then((res) => {
 				// console.log("[response data]", res.data);
-
 				if(res.data.length > 0){
           menus.splice(0, menus.length);
           for(var i=0; i<res.data.length; i++){
@@ -462,14 +465,14 @@ export default {
     // border-bottom:1px solid green;
 	}
 	.menupopup-black-bg{
-		width: 70%;
-		// height: 30%;
+		width: 100%;
+		height: 300px;
 		// background: rgba(0,0,0,255);
 		background: white;
 		position: fixed;
 		top: 75px;
-		padding: 1px;
-		margin: 0px 0px 0px 5px;
+		padding: 1px 5px 1px 5px;
+		margin: 0px 0px 0px 0px;
 		z-index: 1; //div를 최상위로 올린다.
 	}
 	.menupopup-white-bg{
