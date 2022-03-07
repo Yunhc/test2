@@ -254,6 +254,16 @@
 	}
 }
 
+.window-box-2px-green {
+	margin:2px 5px 0px 5px;
+	border-radius: 5px;
+	// overflow:auto;
+	border: 2px solid $color-dw-green;
+	// label{
+	// 	border: 1px solid transparent;
+	// }
+}
+
 .order-gr {
 	height: 230px;
 	width: 98%;
