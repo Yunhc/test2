@@ -24,9 +24,10 @@
           @keyup.enter='displayClick'
           @focus='fn_SelectAll'
           data-ref="InputContent" inputmode="numeric"
-          v-model="req_param.txtPO">
+          v-model="req_param.txtPO"
+          v-bind:disabled="lblMaktx === null ? false : true">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 10px 0px 5px', width:'70px'}"
-        @click='displayClick'>조회</button>
+          @click='displayClick'>조회</button>
       </div>
 
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
@@ -42,8 +43,8 @@
         </span>
         <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Total Production Qty"
             aria-label="Tot Prod Qty" aria-describedby="basic-addon1"
-            :style="{margin:'0px 10px 0px 0px', 'text-align':'left'}">
-            {{lblProdQty}}
+            :style="{color: 'gray', margin:'0px 10px 0px 0px', 'text-align':'left'}">
+            {{lblProcQty}}
         </label>
       </div>
     </div>
@@ -64,7 +65,7 @@
           locale="en"
           title-position="center"
           color="green"
-          :style="{width:'140px', margin:'0px 0px 0px -1px'}"
+          :style="{width:'200px', margin:'0px 0px 0px -1px'}"
           :is-dark="isDark"
           :is-range="isRange"
           :masks="{ input: ['YYYY-MM-DD', 'L'] }"
@@ -107,7 +108,7 @@
           locale="en"
           title-position="center"
           color="green"
-          :style="{width:'140px', margin:'0px 0px 0px -1px'}"
+          :style="{width:'200px', margin:'0px 0px 0px -1px'}"
           :is-dark="isDark"
           :is-range="isRange"
           :masks="{ input: ['YYYY-MM-DD', 'L'] }"
@@ -150,7 +151,7 @@
           locale="en"
           title-position="center"
           color="green"
-          :style="{width:'140px', margin:'0px 0px 0px -1px'}"
+          :style="{width:'200px', margin:'0px 0px 0px -1px'}"
           :is-dark="isDark"
           :is-range="isRange"
           :masks="{ input: ['YYYY-MM-DD', 'L'] }"
@@ -197,7 +198,7 @@
             v-model="req_param.txtBox">
         <label type="text" autocomplete="off" class="input-group-text btn-sm" placeholder="Box"
             aria-label="Box" aria-describedby="basic-addon1"
-            :style="{margin:'0px 20px 0px 0px', background:'white', width: '60px', 'text-align':'left'}">Box
+            :style="{border: 'none', margin:'0px 20px 0px 0px', background:'white', width: '60px', 'text-align':'left'}">Box
         </label>
       </div>
 
@@ -214,7 +215,7 @@
           <option disabled value="">생산조를 선택하세요</option>
           <option v-for="(d, i) in options" :key="i" :value="d.id">{{ d.id }}</option>
         </select>
-        <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Lot No."
+        <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Lot No를 입력하세요."
             aria-label="Lot No." aria-describedby="basic-addon1"
             :style="{margin:'0px 20px 0px 5px', width: '100px', 'text-align':'left'}"
             id="txtLotno"
@@ -252,7 +253,7 @@
   import $axios from 'axios';
   import { reactive, ref, onBeforeMount, onMounted, onUnmounted } from 'vue'
   import { useStore } from 'vuex';
-  import { getdata, formatDate } from '@/helper/filter.js';
+  // import { getdata, formatDate } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
   import popupautolabeller from '@/views/Autolabeller_Production_Result_Scan.vue';
 
@@ -261,6 +262,7 @@
     components:{
       popupautolabeller,
     },
+
     setup(props,{emit}){
       let url = ref(process.env.VUE_APP_SERVER_URL);
       let window_width = ref(window.innerWidth);
@@ -272,6 +274,10 @@
       let options = reactive([]);
 
       let recvData = reactive([]);
+      let lblMaktx = ref(null);
+      let lblProcQty = ref(null);
+      let shift = ref(null);
+      var Validated = true;
 
 			//달력
 			let isDark = ref(false);
@@ -292,7 +298,7 @@
       let msg_color = ref(null);
 
       onBeforeMount(()=>{
-        console.log("[Stockcount_offline] = ", "onBeforeMount--");
+        console.log("[Autolabeller Production Result] = ", "onBeforeMount--");
         initSelectBox();   
       });
 
@@ -329,31 +335,39 @@
 
       function displayClick(){
         // store.commit('loading/startLoading');
-        //PO 조회 API전송
-        fn_POSearch();
+        console.log("Production Order : ", req_param.txtPO);
+
+        if (req_param.txtPO) {  //PO가 입력된 경우만 조회를 한다.
+          //PO 조회 API전송
+          fn_POSearch();
+        }
+        else {
+          // alert("Please input P/O number first.")
+          msg_color.value = "red";
+          msg.value = "Please input P/O number first.";
+          // PlaySound("OK");            
+          txtPO.value.focus();
+        }
         // store.commit('loading/endLoading');
       }
 
       function fn_POSearch(){
-        store.commit('loading/startLoading');
-        let urlPost = url.value + '/dw/autolabeller_production_result/search';
+        // store.commit('loading/startLoading');
+        let urlPost = url.value + '/dw/autolabeller/pda/search';
         // console.log("[req_param]", req_param);
 				// clear data
-				recvData.splice(0, recvData.length);
+				// recvData.splice(0, recvData.length);
 
         //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
         $axios.post(urlPost, {
             i_lang: "KR",
-            i_werks: getdata(store.state.auth.user[0].plantcd),
+            // i_werks: getdata(store.state.auth.user[0].plantcd),
+            i_werks: "K143",
             i_userid: store.state.auth.user[0].userid,
             i_ord_no: req_param.txtPO,
-            i_date_hdf: formatDate(date_hdf.value, "YYYYMMDD"),
-            i_date_fmfm: formatDate(date_fmfm.value, "YYYYMMDD"),
-            i_date_prod: formatDate(date_prod.value, "YYYYMMDD"),
-            i_date_to: formatDate(new Date(), "YYYYMMDD"),
         })
         .then((res) => {
-          // console.log("[response data]", res.data);
+          console.log("[response data]", res.data);
           if(res.data.length > 0) {
             if (res.data[0].code == "NG"){
               msg_color.value = "red";
@@ -361,56 +375,11 @@
             } else{
               msg_color.value = "blue";
               msg.value = "OK";
+              lblMaktx.value = res.data[0].maktx;
+              lblProcQty.value = res.data[0].procqty.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");  //천단위 콤마
+              Validated = true;
+              txtBox.value.focus();
               PlaySound("OK");
-
-							let tmpNo = "";
-							for(var i=0; i<res.data.length; i++){
-								if(tmpNo == res.data[i].ebeln){
-                  recvData[recvData.length - 1].data.push({
-                    ebeln:res.data[i].ebeln,
-                    ebelp:res.data[i].ebelp,
-                    burks:res.data[i].burks,
-                    ekgrp:res.data[i].ekgrp,
-                    bstyp:res.data[i].bstyp,
-                    ematn:res.data[i].ematn,
-                    txz01:res.data[i].txz01,
-                    werks:res.data[i].werks,
-                    lgort:res.data[i].lgort,
-                    menge:res.data[i].menge,
-                    meins:res.data[i].meins,
-                  });
-								}
-								else{
-                  recvData.push({
-                    order:
-                    [{
-                      ebeln:res.data[i].ebeln,
-                      bsart:res.data[i].bsart,
-                      bedat:res.data[i].bedat,
-                      lifnr:res.data[i].lifnr,
-                      name1:res.data[i].name1,
-                      procqty:res.data[i].procqty,
-                      procflag:res.data[i].procflag
-                    }],
-                    data:
-                    [{
-                      ebeln:res.data[i].ebeln,
-                      ebelp:res.data[i].ebelp,
-                      burks:res.data[i].burks,
-                      ekgrp:res.data[i].ekgrp,
-                      bstyp:res.data[i].bstyp,
-                      ematn:res.data[i].ematn,
-                      txz01:res.data[i].txz01,
-                      werks:res.data[i].werks,
-                      lgort:res.data[i].lgort,
-                      menge:res.data[i].menge,
-                      meins:res.data[i].meins,
-                    }]
-                  });
-								}
-								tmpNo = res.data[i].ebeln;
-							}
-							// console.log("[recvData data]", recvData);
             }
           }
           else {
@@ -423,11 +392,15 @@
           alert(err);
           console.error(err)
         })
-        store.commit('loading/endLoading');
+        // store.commit('loading/endLoading');
       }
 
       function continueClick(){
         console.log("continue button click");
+        // if (lblMaktx=""){
+
+        // }
+
         popupautoisopen.value = true;
       }
 
@@ -459,9 +432,14 @@
         }
       }
 
+
       return {
         window_width,
         window_height,
+        Validated,
+        lblMaktx,
+        lblProcQty,
+        shift,
 				isDark,
 				isRange,
 				date_hdf,
@@ -486,6 +464,18 @@
         keyupenter,
       };
     },
+
+    // computed: {
+    //   clickable(e) {
+    //     console.log("isTrue: ", e);
+    //     if (e == false){
+    //       return false;
+    //     }
+    //     else {
+    //       return true;
+    //     }
+    //   }
+    // }    
   }
 </script>
 <style lang="scss">
