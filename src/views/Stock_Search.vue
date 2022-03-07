@@ -1,0 +1,692 @@
+<template>
+	<div class="window-main">
+		<div class="window-search-div-3">
+			<div class="window-div-left" :style="{height:'114px'}">
+				<div class="input-group mb-3 window-div-left-top" >
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+						플랜트
+					</span>
+					<select class="form-select btn-sm" aria-label="Default select example"
+						id="cboPlant"
+						ref="cboPlant"
+						@change ='keyupenter'
+						v-model="req_param.cboPlant">
+						<!-- <option disabled value="">Select plant</option> -->
+						<option v-for="(d, i) in optionPlant" :key="i" :value="d.id">{{ d.id }}</option>
+					</select>
+				</div>
+				<div class="input-group mb-3 window-div-left-center">
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+						자재코드
+					</span>
+					<input type="text" class="form-control btn-sm" placeholder="Material" aria-label="UserID" aria-describedby="basic-addon1"
+						autocomplete="off"
+						id="txtMatnr"
+						ref="txtMatnr"
+						@keyup.enter='keyupenter'
+						v-model="req_param.matnr"
+					>
+				</div>
+				<div class="input-group mb-3 window-div-left-center">
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{ width:'80px', margin:'0px 0px 0px 5px'}">
+						고객사
+					</span>
+					<input type="text" class="form-control btn-sm" placeholder="Customer" aria-label="UserID" aria-describedby="basic-addon1"
+						autocomplete="off"
+						id="txtCustomer"
+						ref="txtCustomer"
+						@keyup.enter='keyupenter'
+						v-model="req_param.customer"
+					>
+				</div>
+			</div>
+			<div class="window-div-left" :style="{height:'114px'}">
+				<div class="input-group mb-3 window-div-left-top">
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+						저장위치
+					</span>
+					<select class="form-select btn-sm" aria-label="Default select example"
+						id="cboLgort"
+						ref="cboLgort"
+						@change ='keyupenter'
+						v-model="req_param.cboLgort">
+						<option disabled value="">Select location</option>
+						<option v-for="(d, i) in optionLgort" :key="i" :value="d.id">{{ d.id }}</option>
+					</select>
+				</div>
+				<div class="input-group mb-3 window-div-left-center">
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+						자재내역
+					</span>
+					<input type="text" class="form-control btn-sm" placeholder="Description" aria-label="UserID" aria-describedby="basic-addon1"
+						autocomplete="off"
+						id="txtMaktx"
+						ref="txtMaktx"
+						@keyup.enter='keyupenter'
+						v-model="req_param.maktx"
+					>
+				</div>
+				<div class="input-group mb-3 window-div-left-center">
+					<v-date-picker
+						mode="date"
+						v-model="date"
+						locale="en"
+						title-position="center"
+						color="green"
+						:style="{margin:'0px 0px 0px 0px'}"
+						:is-dark="isDark"
+						:is-range="isRange"
+						:masks="{ input: ['YYYY-MM-DD', 'L'] }"
+					>
+						<template #default="{ inputValue, inputEvents }">
+							<template v-if="isRange">
+								<div class="input-group mb-3" :style="{height:'36px'}">
+									<span class="input-group-text btn-sm" id="basic-addon1"
+										:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+										재고일자
+									</span>
+									<input class="form-control btn-sm"
+										:style="{'text-align':'center'}"
+										data-ref="InputContent" inputmode="none"
+										:value="inputValue.start"
+										v-on="inputEvents.start"/>
+									<span class="input-group-text btn-sm" :style="{background:'transparent', border:'transparent'}">~</span>
+									<input class="form-control btn-sm"
+										:style="{'text-align':'center'}"
+										data-ref="InputContent" inputmode="none"
+										:value="inputValue.end"
+										v-on="inputEvents.end"/>
+								</div>
+							</template>
+							<template v-else>
+								<div class="input-group mb-3" :style="{height:'36px'}">
+									<span class="input-group-text btn-sm" id="basic-addon1"
+										:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+										재고일자
+									</span>
+									<input class="form-control btn-sm"
+										:style="{'text-align':'center'}"
+										data-ref="InputContent" inputmode="none"
+										:value="inputValue"
+										v-on="inputEvents"/>
+								</div>
+							</template>
+						</template>
+					</v-date-picker>
+				</div>
+			</div>
+			<div class="window-div-left" :style="{height:'114px'}">
+				<div class="input-group mb-3 window-div-left-top" >
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+						상태
+					</span>
+					<select class="form-select btn-sm" aria-label="Default select example"
+						id="cboStatus"
+						ref="cboStatus"
+						@change ='keyupenter'
+						v-model="req_param.cboStatus">
+						<option disabled value="[A] Select Status">[A] Select Status</option>
+						<option v-for="(d, i) in optionStatus" :key="i" :value="d.id">{{ d.id }}</option>
+					</select>
+				</div>
+				<div class="input-group mb-3 window-div-left-center">
+					<span class="input-group-text btn-sm" id="basic-addon1"
+						:style="{width:'80px', margin:'0px 0px 0px 5px'}">
+						자재유형
+					</span>
+					<select class="form-select btn-sm" aria-label="Default select example"
+						id="cboMatType"
+						ref="cboMatType"
+						@change ='keyupenter'
+						v-model="req_param.cboMatType">
+						<option disabled value="">Select Material Type</option>
+						<option v-for="(d, i) in optionMatType" :key="i" :value="d.id">{{ d.id }}</option>
+					</select>
+				</div>
+				<div class="input-group mb-3 window-div-left-center">
+				</div>
+			</div>
+			<div class="window-div-right" :style="{height:'114px'}">
+				<div class= "input-group mb-3 window-div-left-top">
+				</div>
+				<div class= "input-group mb-3 window-div-left-center">
+				</div>
+				<div class= "window-div-left-center"
+					align="right">
+					<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'2px 5px 0px 0px', height:'32px'}"
+						@click='searchClick' >Search</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="window-grid-1"
+      :style="{
+        'height': `calc(${window_height - 109 - 115 - 75}px)`
+      }"
+    >
+      <ag-grid-vue
+        class="ag-theme-alpine"
+        headerHeight='35'
+				:style="{width: `calc(${window_width - 10}px)`, height:'100%'}"
+        :rowData="recvData.value"
+        :gridOptions="gridOptions"
+        allow_unsafe_jscode="True"
+      >
+      </ag-grid-vue>
+		</div>
+
+		<div class= "window-save-b">
+      <div class="input-group mb-3" :style="{ padding:'2px 0px 0px 0px'}">
+				<label type="text" autocomplete="off" class="form-control btn-sm ellipsis"
+            aria-label="Customer" aria-describedby="basic-addon1"
+            :style="{'text-align':'left',
+											border:'transparent',
+											background:'gainsboro',
+											color:msg_color}">
+            Msg :&nbsp;{{msg}}
+        </label>
+      </div>
+      <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
+        <!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'150px'}"
+          @click='printClick_3'>라벨발행-TEST</button> -->
+				<!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'100px'}"
+					@click='printClick'>
+					라벨발행
+				</button> -->
+				<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 0px 0px 0px', width:'100px'}"
+					@click='closeClick'>
+					종료
+				</button>
+			</div>
+    </div>
+	</div>
+</template>
+<script>
+import $axios from 'axios';
+import { reactive, ref, onMounted, onUnmounted } from 'vue'
+import { AgGridVue } from 'ag-grid-vue3'
+import { useStore } from 'vuex';
+import { getdata, formatDate } from '@/helper/filter.js';
+import { searchSelectBox } from '@/helper/sql.js';
+
+export default {
+	name:'stock_search',
+	components:{
+    AgGridVue,
+	},
+	setup(props, {emit}) {
+		// let url = ref(process.env.VUE_APP_SERVER_URL);
+		let window_width = ref(window.innerWidth);
+		let window_height = ref(window.innerHeight);
+		const store = useStore();	//스토어호출
+		const $url_rest = process.env.VUE_APP_SERVER_URL;
+    let url = ref($url_rest);
+
+		//달력
+    let isDark = ref(false);
+    let isRange = ref(false);
+		// let date = ref({start:new Date(), end:new Date()});
+    let date = ref({start:new Date(), end:new Date()});
+
+		//check box
+		let chkStock = ref(false);
+
+		//조회조건 데이터 바인딩
+		let req_param = reactive({cboPlant:"",
+															cboLgort:"",
+															cboStatus:"",
+															matnr:"",
+															maktx:"",
+															cboMatType:"",
+															customer:"",
+															date:""});
+
+		let optionPlant = reactive([]);
+		let optionLgort = reactive([]);
+		let optionStatus = reactive([]);
+		let optionMatType = reactive([]);
+
+		//focus 이동을 위한 변수
+		let cboPlant = ref(null);
+		let cboLgort = ref(null);
+		let cboStatus = ref(null);
+		let cboMatType = ref(null);
+		let txtMatnr = ref(null);
+		let txtMaktx = ref(null);
+		let txtCustomer = ref(null);
+
+
+		let msg = ref(null);
+    let msg_color = ref(null);
+
+
+		// ag-grid 데이터 변수
+		let recvData = reactive([]);
+		let gridApi = ref(null);
+    let columnApi = ref(null);
+		let columnDefs= reactive([
+			{headerName: '', 						field: 'sel', 			width: 35, 	hide: true, 	cellStyle: {textAlign: "center"}, pinned: 'left', headerCheckboxSelection: true, checkboxSelection: true},
+			{headerName: '플랜트', 			field: 'werks', 		width: 80, 	hide: true, 	cellStyle: {textAlign: "center"}, pinned: 'left'},
+			{headerName: '플랜트명', 		field: 'werksnm', 	width: 80, 	hide: true, 	cellStyle: {textAlign: "left"}, pinned: 'left'},
+			{headerName: '상태', 				field: 'status2', 	width: 80, 	hide: false,	cellStyle: {textAlign: "center"}, pinned: 'left'},
+			{headerName: '저장위치', 		field: 'lgort', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}, pinned: 'left'},
+			{headerName: '저장위치명', 	field: 'lgortnm', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}, pinned: 'left'},
+			{headerName: '고객사', 			field: 'customer', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}, pinned: 'left'},
+			{headerName: '자재코드', 		field: 'matnr', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}, pinned: 'left'},
+			{headerName: '자재내역', 		field: 'maktx', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+			{headerName: '물분사', 			field: 'wtschk', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+			{headerName:'전체수량',
+				children:[
+					{headerName: '수량', 				field: 'qty', 			width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+					{headerName: '단위', 				field: 'meins', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+					{headerName: '환산수량', 		field: 'uqty', 			width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+					{headerName: '환산단위', 		field: 'umeins', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+				]},
+			{headerName:'예탁재고수량',
+				children:[
+					{headerName: '수량', 				field: 'preqty', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+					{headerName: '단위', 				field: 'premeins', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+					{headerName: '환산수량', 		field: 'preuqty', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+					{headerName: '환산단위', 		field: 'preumeins', width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+				]},
+			{headerName:'정상수량',
+				children:[
+					{headerName: '수량', 				field: 'qty_n', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+					{headerName: '단위', 				field: 'meins_n', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+					{headerName: '환산수량', 		field: 'uqty_n', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+					{headerName: '환산단위', 		field: 'umeins_n', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+				]},
+			{headerName:'체화수량',
+				children:[
+					{headerName: '수량', 				field: 'qty_c', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+					{headerName: '단위', 				field: 'meins_c', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+					{headerName: '환산수량', 		field: 'uqty_c',		width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+					{headerName: '환산단위', 		field: 'umeins_c', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+				]},
+			{headerName:'자재특성',
+				children:[
+					{headerName: '상태코드', 		field: 'status', 		width: 80, 	hide: true, 	cellStyle: {textAlign: "left"}},
+					{headerName: 'LPM전면(외)', field: 'lpm_fo', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}},
+					{headerName: 'LPM전면(내)', field: 'lpm_fi', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}},
+					{headerName: 'LPM후면(외)', field: 'lpm_bo', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}},
+					{headerName: 'LPM후면(내)', field: 'lpm_bi', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}},
+					{headerName: '경면판(전)', 	field: 'plate_f', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}},
+					{headerName: '경면판(후)', 	field: 'plate_b', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}},
+				]},
+		]);
+
+		// let columnDefs= reactive([
+		// 	{headerName: '', 						field: 'sel', 			width: 35, 	hide: true, 	cellStyle: {textAlign: "center"}, pinned: 'left', headerCheckboxSelection: true, checkboxSelection: true},
+		// 	{headerName: '플랜트', 			field: 'werks', 		width: 80, 	hide: true, 	cellStyle: {textAlign: "center"}, pinned: 'left'},
+		// 	{headerName: '플랜트명', 		field: 'werksnm', 	width: 80, 	hide: true, 	cellStyle: {textAlign: "left"}, pinned: 'left'},
+		// 	{headerName: '상태', 				field: 'status2', 	width: 80, 	hide: false,	cellStyle: {textAlign: "center"}, pinned: 'left'},
+		// 	{headerName: '저장위치', 		field: 'lgort', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}, pinned: 'left'},
+		// 	{headerName: '저장위치명', 	field: 'lgortnm', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}, pinned: 'left'},
+		// 	{headerName: '고객사', 			field: 'customer', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}, pinned: 'left'},
+		// 	{headerName: '자재코드', 		field: 'matnr', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}, pinned: 'left'},
+		// 	{headerName: '자재내역', 		field: 'maktx', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+		// 	{headerName: '물분사', 			field: 'wtschk', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+
+		// 	{headerName: '수량', 				field: 'qty', 			width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+		// 	{headerName: '단위', 				field: 'meins', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+		// 	{headerName: '환산수량', 		field: 'uqty', 			width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+		// 	{headerName: '환산단위', 		field: 'umeins', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+		// 	{headerName: '수량', 				field: 'preqty', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+		// 	{headerName: '단위', 				field: 'premeins', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+		// 	{headerName: '환산수량', 		field: 'preuqty', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+		// 	{headerName: '환산단위', 		field: 'preumeins', width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+
+
+		// 			{headerName: '수량', 				field: 'qtyn', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+		// 			{headerName: '단위', 				field: 'meinsn', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+		// 			{headerName: '환산수량', 		field: 'uqtyn', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+		// 			{headerName: '환산단위', 		field: 'umeinsn', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+
+
+		// 			{headerName: '수량', 				field: 'qtyc', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+		// 			{headerName: '단위', 				field: 'meinsc', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+		// 			{headerName: '환산수량', 		field: 'uqtyc',		width: 80, 	hide: false, 	cellStyle: {textAlign: "right"}},
+		// 			{headerName: '환산단위', 		field: 'umeinsc', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+
+		// 			{headerName: '상태코드', 		field: 'status', 		width: 80, 	hide: true, 	cellStyle: {textAlign: "left"}},
+		// 			{headerName: 'LPM전면(외)', field: 'lpmfo', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}},
+		// 			{headerName: 'LPM전면(내)', field: 'lpmfi', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}},
+		// 			{headerName: 'LPM후면(외)', field: 'lpmbo', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}},
+		// 			{headerName: 'LPM후면(내)', field: 'lpmbi', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}},
+		// 			{headerName: '경면판(전)', 	field: 'platef', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}},
+		// 			{headerName: '경면판(후)', 	field: 'plateb', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "left"}},
+
+		// ]);
+		let columnsum= ([{
+			werks:'합계',
+			qty:0,
+			prtcnt:0,
+		}]);
+
+		var gridOptions = {
+			defaultColDef: {
+				width:150,
+				editable:false,
+				resizable:true,
+				sortable:true,
+				lockPosition:true, //컬럼 드래그로 이동 방지
+				cellStyle: {textAlign: "left"},
+			},
+			columnDefs:columnDefs,
+			rowData:null,
+			rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
+			suppressRowClickSelection:false,
+			onGridReady: function(event) {
+				setTimeout(function () {
+					event.api.setRowData(recvData);
+				}, 1000);
+				gridApi.value = event.api;
+				columnApi.value = event.columnApi;
+				event.api.sizeColumnsToFit();
+			},
+			getRowHeight: function() {
+				return 35;
+			},
+			// pinnedBottomRowData:[{
+			// 	werks:'합계',
+			// 	qty:0,
+			// 	prtcnt:0,
+			// }],
+			pinnedBottomRowData:columnsum,
+		};
+
+		onMounted(() => {
+			// console.log("[label_print_hist] = ", "onMounted--");
+			window.addEventListener('resize', handleResize);
+
+			if (isRange.value == true){
+        // console.log("[label_print_hist] = onMounted -- start --", date.value.start);
+        // console.log("[label_print_hist] = onMounted -- end --", date.value.end);
+      }
+      else{
+        date.value = new Date();
+        // console.log("[label_print_hist] = onMounted -- date --", date.value);
+      }
+
+			initSelectBox_Plant();
+		});
+
+		onUnmounted(() =>{
+			// console.log("[label_print_hist] = onUnmounted -- ");
+			window.removeEventListener('resize', handleResize);
+		});
+
+		function handleResize() {
+			window_width.value = window.innerWidth;
+			window_height.value = window.innerHeight;
+		}
+
+		// 순차적으로 호출 하지 않으면 응답값이 중복 처리되는 경우 있음.
+		// function initSelectBox(){
+		// 	initSelectBox_Plant();
+		// 	initSelectBox_Status();
+		// 	initSelectBox_MatType();
+		// }
+
+		async function initSelectBox_Plant() {
+			let send_param = reactive(
+				{	lang:"KR",
+					userid:store.state.auth.user[0].userid,
+					plantcd:getdata(store.state.auth.user[0].plantcd),
+					type1:"PLANT_MWMS_3",
+					type2:"",
+					type3:"",
+					type4:"",
+					space:"N",
+				}
+			);
+
+			// console.log("[label_print_hist/initSelectBox_plant] = req_param -- ", req_param);
+			let res = reactive([]);
+			res = await searchSelectBox(send_param);
+			// console.log("[res] = ", res);
+
+			if(res.data.length > 0){
+				optionPlant.splice(0, optionPlant.length);
+				for(var i=0; i<res.data.length; i++){
+						optionPlant.push({id:res.data[i].id, name:res.data[i].name});
+				}
+			}
+			// console.log("[optionPlant data]= ", optionPlant);
+			req_param.cboPlant = store.state.auth.user[0].plantcd;
+			initSelectBox_Lgort();
+		}
+
+		async function initSelectBox_Lgort() {
+			// console.log("[req_param] = ", req_param);
+			let send_param = reactive(
+				{	lang:"KR",
+					userid:store.state.auth.user[0].userid,
+					plantcd:getdata(req_param.cboPlant),
+					type1:"STORE_LOC",
+					type2:"",
+					type3:"",
+					type4:"",
+					space:"Y",
+				}
+			);
+			let res = reactive([]);
+			res = await searchSelectBox(send_param);
+
+			if(res.data.length > 0){
+				optionLgort.splice(0, optionLgort.length);
+				for(var i=0; i<res.data.length; i++){
+						optionLgort.push({id:res.data[i].id, name:res.data[i].name});
+				}
+			}
+			// console.log("[optionLgort data] = ", optionLgort);
+
+			initSelectBox_Status();
+		}
+
+		async function initSelectBox_Status() {
+			let send_param = reactive(
+				{	lang: store.state.setup.language,
+					userid: store.state.auth.user[0].userid,
+					plantcd: getdata(store.state.auth.user[0].plantcd),
+					type1: "STATUS",
+					type2: "",
+					type3: "",
+					type4: "",
+					space: "N",
+				}
+			);
+
+			// console.log("[label_print_hist/initSelectBox_plant] = req_param -- ", req_param);
+			let res = reactive([]);
+			res = await searchSelectBox(send_param);
+			// console.log("[res] = ", res);
+
+			if(res.data.length > 0){
+				optionStatus.splice(0, optionStatus.length);
+				for(var i=0; i<res.data.length; i++){
+						optionStatus.push({id:res.data[i].id, name:res.data[i].name});
+				}
+			}
+			// console.log("[optionStatus data]= ", optionStatus);
+			req_param.cboStatus = "[A] Select Status";
+
+			initSelectBox_MatType();
+		}
+
+		async function initSelectBox_MatType() {
+			let send_param = reactive(
+				{	lang: store.state.setup.language,
+					userid: store.state.auth.user[0].userid,
+					plantcd: getdata(store.state.auth.user[0].plantcd),
+					type1: "MATTYPE",
+					type2: "",
+					type3: "",
+					type4: "",
+					space: "Y",
+				}
+			);
+
+			// console.log("[label_print_hist/initSelectBox_plant] = req_param -- ", req_param);
+			let res = reactive([]);
+			res = await searchSelectBox(send_param);
+			// console.log("[res] = ", res);
+
+			if(res.data.length > 0){
+				optionMatType.splice(0, optionMatType.length);
+				for(var i=0; i<res.data.length; i++){
+						optionMatType.push({id:res.data[i].id, name:res.data[i].name});
+				}
+			}
+			// console.log("[optionMatType data]= ", optionMatType);
+		}
+
+		function keyupenter(e){
+			if (e.target.id == "cboPlant"){
+				// console.log("[req_param.cboPlant] =  -- ", req_param.cboPlant);
+				initSelectBox_Lgort();
+				cboLgort.value.focus();
+			}
+			else if (e.target.id == "cboLgort"){
+				cboStatus.value.focus();
+			}
+			else if (e.target.id == "cboStatus"){
+				txtMatnr.value.focus();
+			}
+			else if (e.target.id == "txtMatnr"){
+				txtMaktx.value.focus();
+			}
+			else if (e.target.id == "txtMaktx"){
+				cboMatType.value.focus();
+			}
+			else if (e.target.id == "cboMatType"){
+				txtCustomer.value.focus();
+			}
+		}
+
+		function searchClick(){
+			store.commit('loading/startLoading'); //진행표시 시작
+
+			let urlPost = url.value + '/dw_stock_search_p_j';
+			req_param.date = formatDate(date.value, "YYYYMMDD");
+
+			// console.log("[req_param] = ", req_param);
+
+			$axios.post(urlPost, {
+				lang:"KR",
+				userid:store.state.auth.user[0].userid,
+				werks: req_param.cboPlant,
+				lgort: req_param.cboLgort,
+				status: req_param.cboStatus,
+				matnr: req_param.matnr,
+				maktx: req_param.maktx,
+				mattype: req_param.cboMatType,
+				customer: req_param.customer,
+				date: req_param.date
+			})
+			.then((res) => {
+				console.log("[res.data]", res.data);
+				recvData.value = res.data;
+				console.log("[recvData]", recvData.value);
+
+				columnsum[0].qty = 0;
+				columnsum[0].prtcnt = 0;
+				if(res.data.length > 0){
+					// columnsum[0].qty = recvData.value.reduce((prev, next) => {prev + next.qty});
+					// var nRtn = recvData.value.reduce(function(previousValue, currentValue, currentIndex, array1){
+					// 	var sum = 0;
+					// 	console.log("previousValue ", previousValue);
+					// 	console.log("currentValue ", currentValue);
+					// 	console.log("currentIndex ", currentIndex);
+					// 	console.log("array1 ", array1);
+					// 	sum = parseInt(previousValue.qty) + parseInt(currentValue.qty);
+					// 	return ({qty:sum});
+					// });
+
+					// var nRtn = recvData.value.reduce(function(previousValue, currentValue){
+					// 	var sumqty = 0;
+					// 	var sumprtcnt = 0;
+					// 	sumqty = parseFloat(previousValue.qty) + parseFloat(currentValue.qty);
+					// 	sumprtcnt = parseFloat(previousValue.prtcnt) + parseFloat(currentValue.prtcnt);
+					// 	return ({qty:sumqty, prtcnt:sumprtcnt});
+					// });
+					// columnsum[0].qty = nRtn.qty;
+					// columnsum[0].prtcnt = nRtn.prtcnt;
+					// // console.log("[columnsum data]", columnsum);
+
+					setTimeout(function () {
+						autoSizeAll(false);
+					});
+				}
+
+				gridApi.value.setPinnedBottomRowData(columnsum);
+				msg_color.value = "blue";
+				msg.value = "Total Count : " + recvData.value.length ;
+
+				store.commit('loading/endLoading'); //진행표시 중지
+			}) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+				//.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+			.catch(err => {
+				alert(err);
+				console.error(err)
+
+				msg_color.value = "red";
+        msg.value = err;
+
+				store.commit('loading/endLoading'); //진행표시 중지
+			})
+		}
+
+		function autoSizeAll(skipHeader) {
+			const allColumnIds = [];
+			columnApi.value.getAllColumns().forEach((column) => {
+				if (column.colId != 'sel'){
+          allColumnIds.push(column.colId);
+        }
+			});
+			columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
+		}
+
+		function closeClick(){
+			emit("component_close", "label_print_hist");
+		}
+
+		return {
+			window_width,
+			window_height,
+			recvData,
+			gridOptions,
+			isDark,
+			isRange,
+			date,
+			chkStock,
+			req_param,
+			cboPlant,
+			optionPlant,
+			cboLgort,
+			optionLgort,
+			cboStatus,
+			optionStatus,
+			cboMatType,
+			optionMatType,
+			txtMatnr,
+			txtMaktx,
+			txtCustomer,
+			keyupenter,
+			searchClick,
+			msg,
+			msg_color,
+			closeClick
+		}
+	},
+}
+</script>
+
+<style lang="scss">
+</style>
