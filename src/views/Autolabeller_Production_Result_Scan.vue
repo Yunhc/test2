@@ -9,7 +9,7 @@
     <div class="pop-up-window-grid-1"
       align="left"
       :style="{ margin:'2px',
-        //109:헤더(위 3줄 메뉴까지) - 28(팝업화면 헤더) - 115(하단박스) - 20(바코드스캔) - 48(하단 메시지) - 40 (하단버튼) - 7 (행간여백)
+        //109:헤더(위 3줄 메뉴까지) - 28(팝업화면 헤더) - 115(하단박스) - 34(바코드스캔) - 48(하단 메시지) - 40 (하단버튼) - 7 (행간여백)
         'height': `calc(${window_height - 109 - 28 - 115 - 34 - 48 - 40 - 7}px)`
       }"
     >
@@ -49,7 +49,7 @@
         <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Scan Count"
             aria-label="Scan Count" aria-describedby="basic-addon1"
             :style="{margin:'0px 10px 0px 0px', 'text-align':'left'}">
-            {{lblScan}}
+            {{lblScancnt}}
         </label>
       </div>
 
@@ -107,6 +107,7 @@
   import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
   import {AgGridVue} from 'ag-grid-vue3'
   // import { useStore } from 'vuex';
+  import { formatDate } from '@/helper/filter.js';
   // import { PlaySound } from '@/helper/util.js';
 
 export default {
@@ -126,13 +127,18 @@ export default {
     let msg_color = ref(null);
 
     let strPO = ref(props.strPO);
-    let date_hdf = ref(props.date_hdf);
-    let date_fmfm = ref(props.date_fmfm);
-    let date_prod = ref(props.date_prod);
+    let date_hdf = ref(formatDate(props.date_hdf, "YYYYMMDD"));
+    let date_fmfm = ref(formatDate(props.date_fmfm, "YYYYMMDD"));
+    let date_prod = ref(formatDate(props.date_prod, "YYYYMMDD"));
     let strBox = ref(props.strBox);
     let strLotno = ref(props.strLotno);
 
+    let lblLotno = ref(strLotno);
+    var lblScancnt = 0;
+    let lblGrpbarno = ref(null);
+
     console.log("Setup - parameter  : ",strPO.value, date_hdf.value, date_fmfm.value, date_prod.value, strBox.value, strLotno.value);
+    console.log("lblLotno/lblScancnt/lblGrpbarno", lblLotno.value, lblScancnt, lblGrpbarno.value)
 
     let options = reactive([]);
 
@@ -179,6 +185,7 @@ export default {
       console.log("[Autolabeller Production Result Barcode Scan] = ", "onMounted--");
       window.addEventListener('resize', handleResize);
       console.log("scan screen")
+
     });
 
     onUnmounted(() =>{
@@ -233,6 +240,9 @@ export default {
     return{
       window_width,
       window_height,
+      lblLotno,
+      lblScancnt,
+      lblGrpbarno,
       msg,
       msg_color,
       options,
