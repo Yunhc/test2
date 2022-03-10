@@ -136,7 +136,7 @@
     // border-bottom:1px solid #070707;
   }
   .mainheader-left-box {
-    background:rgb(97, 170, 47);
+    background:$color-dw-green;
     // border-bottom:1px solid #35495e;
     // background:white;
     float: left;
@@ -144,7 +144,7 @@
     height: 38px;
   }
   .mainheader-right-box {
-    background:rgb(97, 170, 47);
+    background:$color-dw-green;
     // border-bottom:1px solid #35495e;
     // background: white;
     float: right;
