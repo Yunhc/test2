@@ -500,7 +500,7 @@ export default {
 	.tab-button {
 		font-size:14px;
 		height: 33px;
-		padding: 6px 2px 6px 20px;
+		padding: 3px 2px 6px 20px;
 		border-top-left-radius: 10px;
 		border-top-right-radius: 10px;
 		border: 1px solid #ccc;
