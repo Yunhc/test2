@@ -339,6 +339,7 @@ export default {
 			onGridReady: function(event) {
 				setTimeout(function () {
 					event.api.setRowData(recvData);
+					autoSizeAll(false);
 				}, 1000);
 				gridApi.value = event.api;
 				columnApi.value = event.columnApi;
