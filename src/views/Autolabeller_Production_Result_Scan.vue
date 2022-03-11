@@ -1,5 +1,13 @@
 <template>
 	<div class="pop-up-window-main">
+    <!-- Send버튼 클릭후 입력한 박스수량보다 스캔수량이 적을 경우 처리 여부 문의 팝업화면 / 초기화 및 닫기 선택시 문의 -->
+     <popupyn v-if="popupisopen"
+      :title="popupTitle"
+      :message="popupMsg"
+      @yesClick="yesClick"
+      @noClick="popupisopen=false">
+    </popupyn>
+
     <div class="pop-up-window-header"
       align="left">
       <p :style="{padding:'2px 0px 0px 0px', 'text-align':'center'}">박스 바코드 스캔
@@ -49,7 +57,7 @@
         <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Scan Count"
             aria-label="Scan Count" aria-describedby="basic-addon1"
             :style="{margin:'0px 10px 0px 0px', 'text-align':'left'}">
-            {{lblScancnt}}
+            {{lblScanCnt}}
         </label>
       </div>
 
@@ -71,10 +79,10 @@
         <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Scan barcode" aria-label="바코드 스캔" aria-describedby="basic-addon1"
           id="scan"
           ref="scan"
-          @keyup.enter='scanEnter'
+          @keyup.enter='keyupenter'
           @focus='fn_SelectAll'
           data-ref="InputContent" inputmode="none"
-          v-model="txtScan">
+          v-model="req_param.txtScan">
       </div>      
       <div class="input-group mb-3"
         :style="{height:'48px', margin:'-14px 0px 0px 0px', background:'gainsboro'}">
@@ -102,27 +110,43 @@
 
 </template>
 <script>
+  import $axios from 'axios';
   import { reactive, ref, onMounted, onUnmounted } from 'vue'
   import 'ag-grid-community/dist/styles/ag-grid.css';
   import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
   import {AgGridVue} from 'ag-grid-vue3'
-  // import { useStore } from 'vuex';
+  import { useStore } from 'vuex';
   import { formatDate } from '@/helper/filter.js';
-  // import { PlaySound } from '@/helper/util.js';
+  import { PlaySound } from '@/helper/util.js';
+  import popupyn from '@/views/PopupYN.vue';
 
 export default {
   name:'popupautolabeller',
   props:['strPO', 'date_hdf', 'date_fmfm', 'date_prod', 'strBox', 'strLotno'],
   components:{
     AgGridVue,
+    popupyn,
   },
 
   setup(props, {emit}){
+    let url = ref(process.env.VUE_APP_SERVER_URL);
     let window_width = ref(window.innerWidth);
     let window_height = ref(window.innerHeight);
 
-    // const store = useStore();	//스토어호출
+    const store = useStore();	//스토어호출
 
+    let popupTitle = ref(null);
+    let popupMsg = ref(null);
+    let popupisopen = ref(false);
+
+    //focus 이동을 위한 변수
+    let scan = ref(null);
+    // let scan = ref("1220310100001");
+    let strCalltype = ref(null);
+
+    //데이터 바인딩
+    let req_param = reactive({txtScan:"1220310100001"});
+    // let req_param = reactive({txtScan:""});
     let msg = ref(null);
     let msg_color = ref(null);
 
@@ -132,13 +156,14 @@ export default {
     let date_prod = ref(formatDate(props.date_prod, "YYYYMMDD"));
     let strBox = ref(props.strBox);
     let strLotno = ref(props.strLotno);
-
+    var bakLotno = strLotno.value; 
     let lblLotno = ref(strLotno);
-    var lblScancnt = 0;
+    let lblScanCnt = ref("0 / "+strBox.value+" Box");
     let lblGrpbarno = ref(null);
+    let strScanCnt = ref(0);
 
     console.log("Setup - parameter  : ",strPO.value, date_hdf.value, date_fmfm.value, date_prod.value, strBox.value, strLotno.value);
-    console.log("lblLotno/lblScancnt/lblGrpbarno", lblLotno.value, lblScancnt, lblGrpbarno.value)
+    console.log("lblLotno/lblScanCnt/lblGrpbarno", lblLotno.value, lblScanCnt, lblGrpbarno.value)
 
     let options = reactive([]);
 
@@ -147,9 +172,11 @@ export default {
     let columnApi = ref(null);
 
     let columnDefs= reactive([
-      {headerName: '', field: 'sel', width: 10, cellStyle: {textAlign: "center"},
-        headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'},
-      {headerName: '바코드', field: 'barno', width: 20, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+      {headerName: '', field: 'sel', width: 10, cellStyle: {textAlign: "center"}, hide: true,
+        headerCheckboxSelection: true, checkboxSelection: true},
+      //행번호
+      {headerName: '번호', field: 'seq', width: 10, cellStyle: {textAlign: "center"}, sortable: true, valueGetter: (params) => { return params.node.rowIndex + 1 } },  
+      {headerName: '바코드', field: 'barno', width: 20, cellStyle: {textAlign: "center"}, sortable: true},
     ]);
     var gridOptions = {
       defaultColDef: {
@@ -184,8 +211,10 @@ export default {
     onMounted(() => {
       console.log("[Autolabeller Production Result Barcode Scan] = ", "onMounted--");
       window.addEventListener('resize', handleResize);
-      console.log("scan screen")
+      console.log("scan screen");
 
+      scan.value.focus();
+      // req_param.txtScan = "1220310100001";
     });
 
     onUnmounted(() =>{
@@ -205,14 +234,140 @@ export default {
       alert(`Selected nodes: ${selectedDataStringPresentation}`);
     };
 
+    function keyupenter(e){
+      if (e.target.id == "scan"){
+        console.log("scan: ",req_param.txtScan);
+        var tmpscan = document.getElementById("scan");
+        tmpscan.setAttribute('inputmode','none');
+        console.log(tmpscan.inputMode);
 
-    function autocloseClick(){
-      emit("autocloseClick");
+        if (strScanCnt.value >= strBox.value) {
+          alert('스캔수량이 다 찼습니다.')
+          return;
+        }
+
+        var strBar = req_param.txtScan;
+        console.log("바코드 첫번재 숫자: ", strBar.substr(0,1))
+
+        if (strBar.length != 13){
+          alert('유효하지 않은 바코드번호입니다.')
+          return;
+        }
+
+        if (strBar.substr(0,1) != "1") {
+          alert('박스바코드를 스캔하세요')
+          return;
+        }
+
+        var isfind = false;
+
+        if (strScanCnt.value == 0) {
+          lblGrpbarno.value = "9" + strBar.substr(1,12)
+        }
+        else {
+          //중복 스캔 체크
+          gridApi.value.forEachNode( (node) => {
+            console.log("[node.getdata]", node.rowIndex, " : ", node.data.barno);
+            if (node.data.barno == strBar) {
+              alert('이미 스캔한 바코드입니다.')
+              // return;
+              isfind = true;
+            }
+          });
+        }
+
+        if (isfind == false) {
+          //그리드에 데이터 추가
+          var newData = {
+            barno:req_param.txtScan,
+          };
+          // 맨밑에 추가
+          // this.gridOptions.api.updateRowData({add: [newData]});
+
+          // 그리드 특정위치에 추가 
+          gridApi.value.updateRowData({add:[newData], addIndex:0});
+
+          // scan.value.select();
+          // req_param.txtScan = "";
+          msg_color.value = "blue";
+          msg.value = "스캔한 바코드가 추가되었습니다.";
+          strScanCnt.value += 1;
+          lblScanCnt.value = strScanCnt.value + " / " + strBox.value + " Box";
+        }
+      }
+
+      // if(e.which == 13){
+      //   console.log(text)
+      // }
     }
 
-    function fn_BarcodeList(){
-      console.log("PO No / Item No : ", strPO.value);
-    
+    function fn_SelectAll(e) {
+      //<input @focus="$event.target.select()" value="select me" />
+      e.target.select();
+    }
+
+    function enclotnoClick(){
+      var tmpLotno = Number(lblLotno.value.substr(1,lblLotno.value.length-1)) + 1;  
+      // 999인 경우 처리확인 필요
+
+      console.log("lblLono/tmpLotno ", lblLotno.value, lblLotno.value.length, tmpLotno);
+      lblLotno.value = lblLotno.value.substr(0,1) + tmpLotno;
+    }
+
+    function scanClick() {
+      var tmpscan = document.getElementById("scan");
+      tmpscan.setAttribute('inputmode','numeric');
+      console.log(tmpscan.inputMode);
+
+      // req_param.txtScan = "";
+      req_param.txtScan = "1220310100001";
+      scan.value.focus();
+      // scan.value.select();
+    }
+
+    function sendClick(){
+      if (strScanCnt.value == 0) {    //스캔수량이 0이면 전송하지 않는다.
+        alert("Please scan barcode first");
+        return;
+      } else if (strScanCnt.value < strBox.value) { //스캔수량이 입력한 박스수보다 작으면 전송여부 확인후 Yes선택시에만 전송      
+        popupMsg.value = "스캔수량이 입력한 박스수량보다 적습니다. \n이대로 전송하시겠습니까?";
+      } else {
+        popupMsg.value = "전송하시겠습니까?";
+      }
+      popupTitle.value ="Autolabeller Production Result";
+      strCalltype.value = "send";
+      popupisopen.value = true;
+    }
+      
+    function clearClick(){
+      popupTitle.value ="Autolabeller Production Result";
+      popupMsg.value = "모든 데이터를 초기화하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
+      strCalltype.value = "clear";
+      popupisopen.value = true;
+    }
+
+    function autocloseClick(){
+      popupTitle.value ="Autolabeller Production Result";
+      popupMsg.value = "종료하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
+      strCalltype.value = "close";
+      popupisopen.value = true;
+    }
+
+    function clearData(){
+      console.log("strLotno: ", strLotno.value, bakLotno);
+      // lblLotno.value = strLotno.value;   //동작 안된다.
+      lblLotno.value = bakLotno;
+      strScanCnt.value = 0;
+      lblScanCnt.value = "0 / " + strBox.value + " Box";
+      lblGrpbarno.value = "";
+      // req_param.txtScan = "";
+      req_param.txtScan = "1220310100001";
+      msg.value = "";
+
+      //grid clear
+      gridApi.value.setRowData([]);
+
+      scan.value.focus();
     }
 
     function selectAllClick(){
@@ -220,11 +375,91 @@ export default {
       // gridApi.value.deselectAll();
     }
 
-    function deleteClick(){
-      var selectedData = gridApi.value.getSelectedRows();
-      //var selectedData = this.gridOptions.api.getSelectedRows();
-      console.log("[selected row]", selectedData);
+    async function sendData() {
+      var rtn = false;
+      var barlist = "";
+      //그리드의 마지막 row부터 전송하기 위하여 forEachNode를 사용하지 않는다.
+      // gridApi.value.forEachNode( (node) => {
+      for (var i = gridApi.value.getDisplayedRowCount()-1; i>=0; i--) {
+        const node = gridApi.value.getDisplayedRowAtIndex(i);
+        if (i==0) {  //마지막 데이터이면 구분자(콤마)를 넣지 않는다.
+          barlist = barlist + node.data.barno
+        } else {
+          barlist = barlist + node.data.barno + ",";
+        }
+      }
+      console.log("barlist: ", barlist);
+      // console.log("Setup - parameter  : ",strPO.value, date_hdf.value, date_fmfm.value, date_prod.value, strBox.value, strLotno.value);
+      // console.log("lblLotno/lblScanCnt/lblGrpbarno", lblLotno.value, lblScanCnt, lblGrpbarno.value)
+      
+      let urlPost = url.value + '/dw/autolabeller/pda/save';
 
+      //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
+      // $axios.post(urlPost, {
+      await $axios.post(urlPost, {
+          i_lang: "KR",
+          // i_werks: getdata(store.state.auth.user[0].plantcd),
+          i_werks: "K143",    //test를 위해 K143으로 임시고정.
+          i_userid: store.state.auth.user[0].userid,
+          i_ord_no: strPO.value,
+          i_grpbarno: lblGrpbarno.value,
+          i_date_hdf: date_hdf.value,
+          i_date_fmfm: date_fmfm.value,
+          i_date_prod: date_prod.value,
+          i_lotno: lblLotno.value,
+          i_barno: barlist,
+          // i_device: "",
+          // i_ipaddress: "",
+          // i_model: "",
+          // i_osversion: "",
+      })
+      .then((res) => {
+        console.log("[response data]", res.data);
+
+        if(res.data.length > 0) {
+          if (res.data[0].code == "NG") {
+            msg_color.value = "red";
+            msg.value = res.data[0].message;
+            rtn = false;
+          } else if (res.data[0].code == "OK") {
+            clearData();
+            msg_color.value = "blue";
+            msg.value = res.data[0].message;
+            PlaySound("OK");
+            rtn = true;
+          }
+        }
+        scan.value.focus();
+      }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+        //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+      .catch(err => {
+        alert(err);
+        console.error(err)
+        rtn = false;
+      })
+
+      return rtn;
+    }
+
+    function noClick(){
+      popupisopen.value = false;
+    }
+
+    async function yesClick() {
+      popupisopen.value = false;
+      if (strCalltype.value == "send"){
+        //여기서는 전송후 처리할게 없으므로 async 전송이 필요없으나 그냥 async로 처리함.
+        var bRtn = await sendData();
+        if (bRtn){
+          console("처리완료!!");
+        }
+      }
+      else if (strCalltype.value == "close"){
+        emit("autocloseClick");
+      }
+      else if (strCalltype.value == "clear"){
+        clearData();
+      }
     }
 
     // function autoSizeAll(skipHeader) {
@@ -240,9 +475,16 @@ export default {
     return{
       window_width,
       window_height,
+      popupTitle,
+      popupMsg,
+      popupisopen,
+      yesClick,
+      noClick,      
       lblLotno,
-      lblScancnt,
+      lblScanCnt,
       lblGrpbarno,
+      scan,
+      req_param,
       msg,
       msg_color,
       options,
@@ -250,9 +492,13 @@ export default {
       gridOptions,
       getSelectedRows,
       autocloseClick,
-      fn_BarcodeList,
       selectAllClick,
-      deleteClick,
+      keyupenter,
+      fn_SelectAll,
+      scanClick,
+      sendClick,
+      clearClick,
+      enclotnoClick,
     }
   },
 }
