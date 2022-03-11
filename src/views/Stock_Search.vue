@@ -217,7 +217,7 @@ import { AgGridVue } from 'ag-grid-vue3'
 import { useStore } from 'vuex';
 import { getdata, formatDate } from '@/helper/filter.js';
 import { searchSelectBox } from '@/helper/sql.js';
-import { inputNumberFormat, BoldRenderer } from '@/helper/ag-grid.js';
+import { inputNumberFormat, BoldRenderer, autoSizeAll } from '@/helper/ag-grid.js';
 
 export default {
 	name:'stock_search',
@@ -290,77 +290,92 @@ export default {
 		let gridApi = ref(null);
     let columnApi = ref(null);
 		let columnDefs= reactive([
-			{headerName: '', 						field: 'sel', 			width: 35, 	hide: true, 	cellStyle: {textAlign: "center"},
-				headerCheckboxSelection: true, 		checkboxSelection: true,
-				headerClass: 'header-row-span-2-pinned',
-				pinned: 'left'},
-			{headerName: '플랜트',	headerClass: 'header-row-span-2-pinned-top',
+			{headerName: '',	headerClass: 'header-row-span-2-pinned',
 				children:[
-					{headerName: '플랜트', 				field: 'werks', 		width: 80, 	hide: true, 	cellStyle: {textAlign: "center"},
-						headerClass: 'header-row-span-2-pinned-bottom',
+					{headerName: '선택', 					field: 'sel', 		width: 60, 	hide: true, 	cellStyle: {textAlign: "center"},
+						headerCheckboxSelection: true, 		checkboxSelection: true,
+						headerClass: 'header-row-span-2-pinned',
 						pinned: 'left'
 					},
 				],
 			},
-			{headerName: '플랜트명',	headerClass: 'header-row-span-2-pinned-top',
+			{headerName: '',	headerClass: 'header-row-span-2-pinned',
+				children:[
+					{headerName: '플랜트', 			field: 'werks', 		width: 80, 	hide: true, 	cellStyle: {textAlign: "center"},
+						headerClass: 'header-row-span-2-pinned',
+						pinned: 'left'
+					},
+				],
+			},
+			{headerName: '',	headerClass: 'header-row-span-2-pinned',
 				children:[
 					{headerName: '플랜트명', 		field: 'werksnm', 	width: 80, 	hide: true, 	cellStyle: {textAlign: "left"},
-						headerClass: 'header-row-span-2-pinned-bottom',
+						headerClass: 'header-row-span-2-pinned',
 						pinned: 'left'
 					},
 				],
 			},
-			{headerName: '상태',		headerClass: 'header-row-span-2-pinned-top',
+			{headerName: '',		headerClass: 'header-row-span-2-pinned',
 				children:[
-					{headerName: '상태', 				field: 'status2', 	width: 80, 	hide: false,	cellStyle: {textAlign: "center"},
+					{headerName: '상태', 				field: 'status2', 	width: 80, 	hide: false,	cellStyle: {textAlign: "left"},
 						// rowSpan: rowSpan,
 						// cellClassRules: {
 						//   'cell-span': "value==='가용재고' || value==='QI보류'",
 						// },
 						// rowGroup: true
-						headerClass: 'header-row-span-2-pinned-bottom',
+						headerClass: 'header-row-span-2-pinned',
 						pinned: 'left',
 					},
 				],
 			},
-			{headerName: '저장위치',		headerClass: 'header-row-span-2-pinned-top',
+			{headerName: '',		headerClass: 'header-row-span-2-pinned',
 				children:[
 					{headerName: '저장위치', 		field: 'lgort', width: 80, 	hide: false, 	cellStyle: {textAlign: "center"},
-						headerClass: 'header-row-span-2-pinned-bottom',
+						headerClass: 'header-row-span-2-pinned',
 						pinned: 'left',
 					},
 				],
 			},
-			{headerName: '저장위치명',		headerClass: 'header-row-span-2-pinned-top',
+			{headerName: '',		headerClass: 'header-row-span-2-pinned',
 				children:[
 					{headerName: '저장위치명',	field: 'lgortnm', width: 80, 	hide: false, 	cellStyle: {textAlign: "left"},
-						headerClass: 'header-row-span-2-pinned-bottom',
+						headerClass: 'header-row-span-2-pinned',
 						pinned: 'left',
 					},
 				],
 			},
-			{headerName: '고객사',		headerClass: 'header-row-span-2-pinned-top',
+			{headerName: '',		headerClass: 'header-row-span-2-pinned',
 				children:[
 					{headerName: '고객사', 			field: 'customer', width: 80, 	hide: false, 	cellStyle: {textAlign: "left"},
-						headerClass: 'header-row-span-2-pinned-bottom',
+						headerClass: 'header-row-span-2-pinned',
 						pinned: 'left',
 						cellRenderer: BoldRenderer
 					},
 				],
 			},
-			{headerName: '자재코드',		headerClass: 'header-row-span-2-pinned-top',
+			{headerName: '',		headerClass: 'header-row-span-2-pinned',
 				children:[
-					{headerName: '자재코드', 		field: 'matnr', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "left"},
-						headerClass: 'header-row-span-2-pinned-bottom',
+					{headerName: '자재코드', 		field: 'matnr', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"},
+						headerClass: 'header-row-span-2-pinned',
 						pinned: 'left',
 						cellRenderer: BoldRenderer
 					},
 				],
 			},
-			{headerName: '자재내역', 		field: 'maktx', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"},
-				headerClass: 'header-row-span-2'},
-			{headerName: '물분사', 			field: 'wtschk', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"},
-				headerClass: 'header-row-span-2'},
+			{headerName: '', headerClass: 'header-row-span-2',
+				children:[
+					{headerName: '자재내역', 		field: 'maktx',			width: 80, 	hide: false, 	cellStyle: {textAlign: "left"},
+						headerClass: 'header-row-span-2',
+					},
+				],
+			},
+			{headerName: '', headerClass: 'header-row-span-2',
+				children:[
+					{headerName: '물분사', 			field: 'wtschk', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"},
+						headerClass: 'header-row-span-2',
+					},
+				],
+			},
 			{headerName:'전체수량',
 				children:[
 					{headerName: '수량', 				field: 'qty', 			width: 80, 	hide: false, 	cellStyle: {textAlign: "right"},
@@ -455,7 +470,7 @@ export default {
 			onGridReady: function(event) {
 				setTimeout(function () {
 					event.api.setRowData(recvData);
-					autoSizeAll(false);
+					autoSizeAll(false, columnApi);
 				}, 1000);
 				gridApi.value = event.api;
 				columnApi.value = event.columnApi;
@@ -721,7 +736,7 @@ export default {
 					// console.log("[columnsum data]", columnsum);
 
 					setTimeout(function () {
-						autoSizeAll(false);
+						autoSizeAll(false, columnApi);
 					});
 				}
 
@@ -741,16 +756,6 @@ export default {
 
 				store.commit('loading/endLoading'); //진행표시 중지
 			})
-		}
-
-		function autoSizeAll(skipHeader) {
-			const allColumnIds = [];
-			columnApi.value.getAllColumns().forEach((column) => {
-				if (column.colId != 'sel'){
-          allColumnIds.push(column.colId);
-        }
-			});
-			columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
 		}
 
 		function closeClick(){
@@ -789,24 +794,24 @@ export default {
 </script>
 
 <style lang="scss">
-.header-row-span-2-pinned-top {
-	top: -43px;
-	height: 120px;
-	padding-top : 35px;
-}
+// .header-row-span-2-pinned-top {
+// 	top: -43px;
+// 	height: 120px;
+// 	padding-top : 35px;
+// }
 
-.header-row-span-2-pinned-bottom {
-	top: -43px;
-	height: 120px;
-	padding-bottom : 35px;
-}
+// .header-row-span-2-pinned-bottom {
+// 	top: -43px;
+// 	height: 120px;
+// 	padding-bottom : 35px;
+// }
 
-.header-row-span-2-pinned-test1 {
-	position: absolute;
-	top: -18px;
+.header-row-span-2-pinned {
+	position: fixed;
+	top: 227px;
+	margin-left: 5.5px;
 	height: 70px;
-	padding-bottom : 35px;
-	border: 1px solid red;
+	// border: 1px solid red;
 }
 
 .header-row-span-2 {
@@ -815,4 +820,11 @@ export default {
 	height: 250px;
 	// border: 1px solid red;
 }
+
+// .header-row-span-2 {
+// 	position: fixed;
+// 	top: -1px;
+// 	height: 70px;
+// 	// border: 1px solid red;
+// }
 </style>
