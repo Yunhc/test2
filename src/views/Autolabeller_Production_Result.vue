@@ -2,6 +2,14 @@
 
   <div class="window-main">
 
+    <!-- 초기화 및 닫기 선택시 문의 팝업화면 -->
+     <popupyn v-if="popupisopen"
+      :title="popupTitle"
+      :message="popupMsg"
+      @yesClick="yesClick"
+      @noClick="popupisopen=false">
+    </popupyn>
+
     <!-- 박스바코드 스캔 화면으로 이동 -->
     <popupautolabeller v-if="popupautoisopen"
       :strPO="req_param.txtPO"
@@ -257,11 +265,13 @@
   // import { getdata, formatDate } from '@/helper/filter.js';
   import { formatDate } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
+  import popupyn from '@/views/PopupYN.vue';
   import popupautolabeller from '@/views/Autolabeller_Production_Result_Scan.vue';
 
   export default {
     name:'autolabeller_production_result',
     components:{
+      popupyn,
       popupautolabeller,
     },
 
@@ -270,7 +280,11 @@
       let window_width = ref(window.innerWidth);
       let window_height = ref(window.innerHeight);
 
+      let popupTitle = ref(null);
+      let popupMsg = ref(null);
+      let popupisopen = ref(false);
       let popupautoisopen = ref(false);
+      let strCalltype = ref(null);
 
       const store = useStore();	//스토어호출
       let options = reactive([]);
@@ -332,6 +346,7 @@
         options.push({id:"B", name:"B조"});
         options.push({id:"C", name:"C조"});
         options.push({id:"D", name:"D조"});
+        options.push({id:"E", name:"E조"});
       }
 
       function POClick(){
@@ -431,6 +446,13 @@
       }
 
       function clearClick(){
+        popupTitle.value ="Autolabeller Production Result";
+        popupMsg.value = "모든 데이터를 초기화하시겠습니까?";
+        strCalltype.value = "clear";
+        popupisopen.value = true;
+      }
+
+      function clearData(){
         req_param.txtPO = "";
         lblMaktx.value = null;  //null로 처리해야 txtPO 입력필드 disable이 enable로 변경된다.
         lblProcQty.value = "";
@@ -448,7 +470,24 @@
       }
 
       function closeClick(){
-        emit("component_close", "autolabeller_production_result");
+        popupTitle.value ="Autolabeller Production Result";
+        popupMsg.value = "종료하시겠습니까?";
+        strCalltype.value = "close";
+        popupisopen.value = true;
+      }
+
+      function noClick(){
+        popupisopen.value = false;
+      }
+
+      function yesClick() {
+        popupisopen.value = false;
+        if (strCalltype.value == "close"){
+          emit("component_close", "autolabeller_production_result");
+        }
+        else if (strCalltype.value == "clear"){
+          clearData();
+        }
       }
 
       function fn_SelectAll(e) {
@@ -468,6 +507,11 @@
       return {
         window_width,
         window_height,
+        popupTitle,
+        popupMsg,
+        popupisopen,
+        yesClick,
+        noClick,
         lblMaktx,
         lblProcQty,
         cboShift,
