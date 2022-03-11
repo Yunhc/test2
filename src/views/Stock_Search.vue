@@ -194,12 +194,8 @@
         </label>
       </div>
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
-        <!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'150px'}"
-          @click='printClick_3'>라벨발행-TEST</button> -->
-				<!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'100px'}"
-					@click='printClick'>
-					라벨발행
-				</button> -->
+        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'150px'}"
+          @click='testClick'>TEST</button>
 				<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 0px 0px 0px', width:'100px'}"
 					@click='closeClick'>
 					종료
@@ -210,19 +206,19 @@
 </template>
 <script>
 import $axios from 'axios';
-import { reactive, ref, onMounted, onUnmounted } from 'vue'
-import { AgGridVue } from 'ag-grid-vue3'
-// import { AgGridVue } from 'ag-grid-enterprise'
+import { reactive, ref, onMounted, onUnmounted } from 'vue';
+import { AgGridVue } from 'ag-grid-vue3';
+// import { AgGridVue } from 'ag-grid-enterprise';
 // import { RowGroupingModule } from '@ag-grid-enterprise/row-grouping';
 import { useStore } from 'vuex';
 import { getdata, formatDate } from '@/helper/filter.js';
 import { searchSelectBox } from '@/helper/sql.js';
-import { inputNumberFormat, BoldRenderer, autoSizeAll } from '@/helper/ag-grid.js';
+import { inputNumberFormat, BoldRenderer, autoSizeAll, refreshAll } from '@/helper/ag-grid.js';
 
 export default {
 	name:'stock_search',
 	components:{
-    AgGridVue,
+    'ag-grid-vue': AgGridVue,
 		// CustomPinnedRowRenderer,
 		// RowGroupingModule,
 	},
@@ -270,20 +266,16 @@ export default {
 		let msg = ref(null);
     let msg_color = ref(null);
 
-		// const rowSpan = function rowSpan(params) {
-		// 	var strStatus = params.data.status2;
-		// 	// console.log("strStatus = ", strStatus);
-		// 	if (strStatus === '가용재고') {
-		// 		// have all Russia age columns width 2
-		// 		return 2;
-		// 	} else if (strStatus === 'QI보류') {
-		// 		// have all United States column width 4
-		// 		return 4;
+		// function rowSpan(param) {
+		// 	var strStatus = param.data.status2;
+		// 	// console.log("strStatus = ", param);
+		// 	if (strStatus === 'QI보류 - 시생산') {
+		// 		console.log("strStatus = ", strStatus);
+		// 		return 3;
 		// 	} else {
-		// 		// all other rows should be just normal
 		// 		return 1;
 		// 	}
-		// };
+		// }
 
 		// ag-grid 데이터 변수
 		let recvData = reactive([]);
@@ -465,7 +457,7 @@ export default {
 			// },
 			rowData:null,
 			rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
-			suppressRowClickSelection:false,
+			// suppressRowClickSelection:false,
 			suppressRowTransform:true,
 			onGridReady: function(event) {
 				setTimeout(function () {
@@ -762,6 +754,10 @@ export default {
 			emit("component_close", "label_print_hist");
 		}
 
+		function testClick(){
+			refreshAll(gridApi);
+		}
+
 		return {
 			window_width,
 			window_height,
@@ -787,7 +783,8 @@ export default {
 			searchClick,
 			msg,
 			msg_color,
-			closeClick
+			closeClick,
+			testClick,
 		}
 	},
 }
