@@ -22,3 +22,21 @@ export const rowPinnedRenderer = function (params) {
 		return params.value;
 	}
 };
+
+export function autoSizeAll(skipHeader, columnApi) {
+	const allColumnIds = [];
+	columnApi.value.getAllColumns().forEach((column) => {
+		if (column.colId != 'sel'){
+			allColumnIds.push(column.colId);
+		}
+	});
+	columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
+}
+
+export function refreshAll(gridApi) {
+	var params = {
+		force: true,
+		suppressFlash: true,
+	};
+	gridApi.value.refreshCells(params);
+}
