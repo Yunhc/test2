@@ -38,7 +38,7 @@
 							v-if="tab.id != 'home2'"
 							@click="exitComponent(tab)"
 						>
-							X
+							x
 						</button>
 					</button>
 				</vue-horizontal>
