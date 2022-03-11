@@ -4,6 +4,7 @@ import router from './router';
 import store from './store';
 import VCalendar from 'v-calendar';
 
+
 // import VueHtmlToPaper from 'vue-html-to-paper';
 // import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 // Import Bootstrap an BootstrapVue CSS files (order is important)
@@ -15,6 +16,10 @@ import './assets/style/index.scss';
 import axios from 'axios';
 import print from 'vue3-print-nb';
 // import {Tabs, Tab} from 'vue3-tabs-component';
+
+// import 'ag-grid-enterprise';
+// import { LicenseManager } from  'ag-grid-enterprise';
+// LicenseManager.setLicenseKey("0123456789");
 
 
 
