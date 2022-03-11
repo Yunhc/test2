@@ -144,6 +144,7 @@ import { AgGridVue } from 'ag-grid-vue3'
 import { useStore } from 'vuex';
 import { searchSelectBox } from '@/helper/sql.js';
 import { getdata } from '@/helper/filter.js';
+import { BoldRenderer } from '@/helper/ag-grid.js';
 
 export default {
 	name:'auth_management',
@@ -178,10 +179,6 @@ export default {
 		//리턴값 표시
 		let msg = ref(null);
     let msg_color = ref(null);
-
-		const BoldRenderer = function (params) {
-			return '<b>' + params.value + '</b>';
-		};
 
 		const CheckboxRenderer = function (params) {
 			// return `<input type='checkbox' ${params.value=='4' ? 'checked' : ''} />`;
