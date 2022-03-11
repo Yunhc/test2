@@ -144,7 +144,7 @@ import { AgGridVue } from 'ag-grid-vue3'
 import { useStore } from 'vuex';
 import { searchSelectBox } from '@/helper/sql.js';
 import { getdata } from '@/helper/filter.js';
-import { BoldRenderer } from '@/helper/ag-grid.js';
+import { BoldRenderer, autoSizeAll, refreshAll } from '@/helper/ag-grid.js';
 
 export default {
 	name:'auth_management',
@@ -221,7 +221,7 @@ export default {
 				}
 				params.node.data['sel'] = "-1";
 
-				refreshAll();
+				refreshAll(gridApi2);
 			});
       return input;
 		};
@@ -231,10 +231,16 @@ export default {
 		let gridApi = ref(null);
     let columnApi = ref(null);
 		let columnDefs= reactive([
-			{headerName: '선택', 			field: 'sel', 			hide:true, 		pinned: 'left'},
-			{headerName: '사용자ID', 	field: 'userid', 		hide:false,		width: 80, cellStyle: {textAlign: "center"}, pinned: 'left',
-				cellRenderer: BoldRenderer},
-			{headerName: '사용자명', 	field: 'username', 	hide:false,		width: 80, cellStyle: {textAlign: "left"}, pinned: 'left'},
+			{headerName: '선택', 			field: 'sel', 			hide:true,
+				pinned: 'left'
+			},
+			{headerName: '사용자ID', 	field: 'userid', 		hide:false,		width: 80, cellStyle: {textAlign: "center"},
+				cellRenderer: BoldRenderer,
+				pinned: 'left',
+			},
+			{headerName: '사용자명', 	field: 'username', 	hide:false,		width: 80, cellStyle: {textAlign: "left"},
+				pinned: 'left'
+			},
 			{headerName: '패스워드', 	field: 'userpwd', 	hide: true},
 			{headerName: '플랜드', 		field: 'plant', 		hide:false,		width: 250, sortable: true, filter: true},
 			{headerName: '작업장', 		field: 'wc', 				hide:false,		width: 250, sortable: true, filter: true},
@@ -351,7 +357,7 @@ export default {
 				recvData.value = res.data;
 				if(res.data.length > 0){
 					setTimeout(function () {
-						autoSizeAll(false);
+						autoSizeAll(false, columnApi);
 					});
 				}
 				msg_color.value = "blue";
@@ -378,7 +384,7 @@ export default {
 				recvData2.value = res.data;
 				if(res.data.length > 0){
 					setTimeout(function () {
-						autoSizeAll2(false);
+						autoSizeAll(false, columnApi2);
 					});
 				}
 				msg_color.value = "blue";
@@ -423,26 +429,6 @@ export default {
 			searchAuth();
 		}
 
-		function autoSizeAll(skipHeader) {
-			const allColumnIds = [];
-			columnApi.value.getAllColumns().forEach((column) => {
-				if (column.colId != 'sel'){
-          allColumnIds.push(column.colId);
-        }
-			});
-			columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
-		}
-
-		function autoSizeAll2(skipHeader) {
-			const allColumnIds = [];
-			columnApi2.value.getAllColumns().forEach((column) => {
-				if (column.colId != 'sel'){
-          allColumnIds.push(column.colId);
-        }
-			});
-			columnApi2.value.autoSizeColumns(allColumnIds, skipHeader);
-		}
-
 		async function saveClick(){
 			var bRtn = await saveAuth();
 			console.log("bRtn = ", bRtn);
@@ -453,7 +439,7 @@ export default {
 						// console.log(node.data['sel']);
 					}
 				});
-				refreshAll();
+				refreshAll(gridApi2);
 				initSelectBox_AuthHist();
 			}
 		}
@@ -550,7 +536,7 @@ export default {
 					}
 				}
 			});
-			refreshAll();
+			refreshAll(gridApi2);
 		}
 
 		function chkNewClick(){
@@ -571,7 +557,7 @@ export default {
 					}
 				}
 			});
-			refreshAll();
+			refreshAll(gridApi2);
 		}
 
 		function chkSaveClick(){
@@ -592,7 +578,7 @@ export default {
 					}
 				}
 			});
-			refreshAll();
+			refreshAll(gridApi2);
 		}
 
 		function chkExpClick(){
@@ -613,15 +599,7 @@ export default {
 					}
 				}
 			});
-			refreshAll();
-		}
-
-		function refreshAll() {
-			var params = {
-				force: true,
-				suppressFlash: true,
-			};
-			gridApi2.value.refreshCells(params);
+			refreshAll(gridApi2);
 		}
 
 		return {
