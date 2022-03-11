@@ -3,6 +3,9 @@
 @import "~ag-grid-community/dist/styles/ag-grid.css";
 @import "~ag-grid-community/dist/styles/ag-theme-alpine.css";
 @import "~ag-grid-community/dist/styles/ag-theme-balham.css";
+
+// @import "~ag-grid-enterprise/dist/styles/ag-grid.css";
+// @import "~ag-grid-enterprise/dist/styles/ag-theme-alpine.css";
 /******************************************************************************/
 /* WMS 윈도우 분할 layout */
 .window-main {
@@ -95,6 +98,16 @@
 	overflow-x:auto;
 	// border:1px solid red;
 }
+/******************************************************************************/
+//ag-grid 설정
+.ag-header-cell-label {
+	justify-content: center;
+}
+
+.ag-header-group-cell-label {
+	justify-content: center !important;
+}
+
 /******************************************************************************/
 /* 팝업 화면 layout */
 .pop-up-window-main{
