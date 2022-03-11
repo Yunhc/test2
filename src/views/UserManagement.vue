@@ -171,6 +171,7 @@
   import { AgGridVue } from 'ag-grid-vue3'
   import { getdata } from '@/helper/filter.js';
   import language from '@/assets/language.js';
+  import { BoldRenderer, autoSizeAll } from '@/helper/ag-grid.js';
 
   export default {
     name: 'usermanagement',
@@ -241,8 +242,11 @@
 
       let columnDefs= reactive([
           {headerName: '선택', field: 'sel', width: 50, cellStyle: {textAlign: "center"},
-            headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'},
-          {headerName: '사용자ID', field: 'userid', width: 100, sortable: true, pinned: 'left'},
+            headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'
+          },
+          {headerName: '사용자ID', field: 'userid', width: 100, sortable: true, pinned: 'left',
+            cellRenderer: BoldRenderer,
+          },
           {headerName: '사용자명', field: 'username', width: 120, pinned: 'left'},
           {headerName: '패스워드', field: 'userpwd', hide: true, cellStyle: { color: 'red', textAlign: "left", backgroundColor: "white" }},
           {headerName: '플랜트', field: 'plantcd', width: 250, sortable: true, filter: true},
@@ -314,7 +318,7 @@
         onGridReady: function(event) {
           setTimeout(function () {
             event.api.setRowData(recvData);
-          }, 1000);
+          }, 500);
           // event.api.sizeColumnsToFit();
 
           gridApi.value = event.api;
@@ -430,6 +434,7 @@
         .then((res) => {
           // console.log(res.data);
           recvData.value = res.data;
+          autoSizeAll(false, columnApi);
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => {
@@ -453,6 +458,10 @@
           // console.log("[response data]", res.data);
           recvData.value = res.data;
           userData = res.data;
+
+          setTimeout(function () {
+						autoSizeAll(false, columnApi);
+					});
           // console.log("[ received data ] ", recvData);
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
