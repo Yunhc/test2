@@ -239,6 +239,10 @@ import AutoLabeller2 from "@/components/label/AutoLabeller2.vue";
 import printJs from 'print-js';
 import * as print_css from 'print-js/dist/print.css';
 
+import { inputNumberFormat, BoldRenderer, autoSizeAll } from '@/helper/ag-grid.js';
+
+
+
 export default {
 	name:'label_print_hist',
 	components:{
@@ -294,15 +298,23 @@ export default {
 			{headerName: '플랜트', field: 'werks', width: 80, cellStyle: {textAlign: "center"}, pinned: 'left'},
 			{headerName: '플랜트명', field: 'plant', width: 80, cellStyle: {textAlign: "left"}, pinned: 'left'},
 			{headerName: '', field: 'sel', width: 35, cellStyle: {textAlign: "center"}, pinned: 'left',
-				headerCheckboxSelection: true, checkboxSelection: true},
-			{headerName: '바코드', field: 'barno', width: 80, cellStyle: {textAlign: "center"}, pinned: 'left'},
+				headerCheckboxSelection: true, checkboxSelection: true
+			},
+			{headerName: '바코드', field: 'barno', width: 80, cellStyle: {textAlign: "center"},
+				cellRenderer: BoldRenderer,
+				pinned: 'left'
+			},
 			{headerName: '저장위치', field: 'lgort', width: 80, cellStyle: {textAlign: "center"}},
 			{headerName: '저장위치명', field: 'slname', width: 80, cellStyle: {textAlign: "left"}},
 			{headerName: '자재코드', field: 'matnr', width: 80, cellStyle: {textAlign: "center"}},
 			{headerName: '자재내역', field: 'maktx', width: 80, cellStyle: {textAlign: "left"}},
 			{headerName: '기본단위', field: 'meins', width: 80, cellStyle: {textAlign: "center"}},
-			{headerName: '수량', field: 'qty', width: 80, cellStyle: {textAlign: "right"}},
-			{headerName: '발행횟수', field: 'prtcnt', width: 80, cellStyle: {textAlign: "right"}},
+			{headerName: '수량', field: 'qty', width: 80, cellStyle: {textAlign: "right"},
+				cellRenderer: inputNumberFormat,
+			},
+			{headerName: '발행횟수', field: 'prtcnt', width: 80, cellStyle: {textAlign: "right"},
+				cellRenderer: inputNumberFormat,
+			},
 			{headerName: '구매오더', field: 'ebeln', width: 80, cellStyle: {textAlign: "center"}},
 			{headerName: '구매품번', field: 'ebelp', width: 80, cellStyle: {textAlign: "center"}},
 			{headerName: '예정오더', field: 'rsnum', width: 80, cellStyle: {textAlign: "center"}},
@@ -339,7 +351,7 @@ export default {
 			onGridReady: function(event) {
 				setTimeout(function () {
 					event.api.setRowData(recvData);
-					autoSizeAll(false);
+					autoSizeAll(false, columnApi);
 				}, 1000);
 				gridApi.value = event.api;
 				columnApi.value = event.columnApi;
@@ -354,6 +366,11 @@ export default {
 			// 	prtcnt:0,
 			// }],
 			pinnedBottomRowData:columnsum,
+			getRowStyle: function(params){
+				if (params.node.rowPinned === 'bottom') {
+					return { "background-color": "white", "color":"red", "font-weight":"bold" };
+				}
+			}
 		};
 
 		let print_yn_1 = ref(false);
@@ -537,7 +554,7 @@ export default {
 					// console.log("[columnsum data]", columnsum);
 
 					setTimeout(function () {
-						autoSizeAll(false);
+						autoSizeAll(false, columnApi);
 					});
 				}
 
@@ -555,16 +572,6 @@ export default {
         msg.value = err;
 				store.commit('loading/endLoading'); //진행표시 중지
 			})
-		}
-
-		function autoSizeAll(skipHeader) {
-			const allColumnIds = [];
-			columnApi.value.getAllColumns().forEach((column) => {
-				if (column.colId != 'sel'){
-          allColumnIds.push(column.colId);
-        }
-			});
-			columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
 		}
 
 		function printClick(){
