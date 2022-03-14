@@ -87,6 +87,7 @@
       <div class="input-group mb-3"
         :style="{height:'48px', margin:'-14px 0px 0px 0px', background:'gainsboro'}">
         <p :style="{margin:'2px 5px 0px 5px',
+                    'text-align':'left',
                     background:'transparent',
                     'font-size':'16px',
                     'font-weight':'bold',
@@ -451,7 +452,7 @@ export default {
         //여기서는 전송후 처리할게 없으므로 async 전송이 필요없으나 그냥 async로 처리함.
         var bRtn = await sendData();
         if (bRtn){
-          console("처리완료!!");
+          console.log("처리완료!!");
         }
       }
       else if (strCalltype.value == "close"){
