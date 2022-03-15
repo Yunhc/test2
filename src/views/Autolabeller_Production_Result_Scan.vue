@@ -80,6 +80,7 @@
           id="scan"
           ref="scan"
           @keyup.enter='keyupenter'
+          @click='scanClick'
           @focus='fn_SelectAll'
           data-ref="InputContent" inputmode="none"
           v-model="req_param.txtScan">
@@ -142,12 +143,10 @@ export default {
 
     //focus 이동을 위한 변수
     let scan = ref(null);
-    // let scan = ref("1220310100001");
     let strCalltype = ref(null);
 
     //데이터 바인딩
-    let req_param = reactive({txtScan:"1220310100001"});
-    // let req_param = reactive({txtScan:""});
+    let req_param = reactive({txtScan:"1220315100001"});
     let msg = ref(null);
     let msg_color = ref(null);
 
@@ -215,7 +214,6 @@ export default {
       console.log("scan screen");
 
       scan.value.focus();
-      // req_param.txtScan = "1220310100001";
     });
 
     onUnmounted(() =>{
@@ -320,10 +318,8 @@ export default {
       tmpscan.setAttribute('inputmode','numeric');
       console.log(tmpscan.inputMode);
 
-      // req_param.txtScan = "";
-      req_param.txtScan = "1220310100001";
+      req_param.txtScan = "1220315100001";
       scan.value.focus();
-      // scan.value.select();
     }
 
     function sendClick(){
@@ -362,7 +358,7 @@ export default {
       lblScanCnt.value = "0 / " + strBox.value + " Box";
       lblGrpbarno.value = "";
       // req_param.txtScan = "";
-      req_param.txtScan = "1220310100001";
+      req_param.txtScan = "1220315100001";
       msg.value = "";
 
       //grid clear
