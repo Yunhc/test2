@@ -34,7 +34,7 @@
           @focus='fn_SelectAll'
           data-ref="InputContent" inputmode="numeric"
           v-model="req_param.txtPO"
-          v-bind:disabled="lblMaktx === null ? false : true">
+          v-bind:disabled="lblProcQty === null ? false : true">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 10px 0px 5px', width:'70px'}"
           @click='displayClick'>조회</button>
       </div>
@@ -42,7 +42,7 @@
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
         <label type="label" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Material Description"
             aria-label="Material Description" aria-describedby="basic-addon1"
-            :style="{color:'grey', margin:'0px 10px 0px 0px', display:'inline-block', 'text-align':'left'}">Material Description
+            :style="{color:'grey', margin:'0px 10px 0px 0px', display:'inline-block', 'text-align':'left'}">
             {{lblMaktx}}
         </label>
       </div>
@@ -221,12 +221,12 @@
           ref="cboShift"
           @change ='keyupenter'
           v-model="req_param.cboShift">
-          <option disabled value="">생산조를 선택하세요</option>
+          <option disabled value="">생산조 선택</option>
           <option v-for="(d, i) in options" :key="i" :value="d.id">{{ d.id }}</option>
         </select>
         <input type="text" autocomplete="off" class="form-control btn-sm" placeholder="Lot No를 입력하세요."
             aria-label="Lot No." aria-describedby="basic-addon1"
-            :style="{margin:'0px 20px 0px 5px', width: '100px', 'text-align':'left'}"
+            :style="{margin:'0px 20px 0px 5px', width: '20px', 'text-align':'left'}"
             id="txtLotno"
             ref="txtLotno"
             @keyup.enter='keyupenter'
@@ -262,11 +262,12 @@
   import $axios from 'axios';
   import { reactive, ref, onBeforeMount, onMounted, onUnmounted } from 'vue'
   import { useStore } from 'vuex';
-  // import { getdata, formatDate } from '@/helper/filter.js';
-  import { formatDate } from '@/helper/filter.js';
+  import { getdata, formatDate } from '@/helper/filter.js';
+  // import { formatDate } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
   import popupyn from '@/views/PopupYN.vue';
   import popupautolabeller from '@/views/Autolabeller_Production_Result_Scan.vue';
+  import { searchSelectBox } from '@/helper/sql.js';
 
   export default {
     name:'autolabeller_production_result',
@@ -308,13 +309,14 @@
       let cboShift = ref(null);
 
       //데이터 바인딩
-      let req_param = reactive({txtPO:"001000775432", txtBox:"", txtLotno:"", cboShift:""});
+      let req_param = reactive({txtPO:"001000775617", txtBox:"", txtLotno:"", cboShift:""});
       let msg = ref(null);
       let msg_color = ref(null);
 
       onBeforeMount(()=>{
         console.log("[Autolabeller Production Result] = ", "onBeforeMount--");
-        initSelectBox();   
+        initSelectBox();
+        lblMaktx.value = "자재 상세내역을 표시합니다."
       });
 
       onMounted(() => {
@@ -342,11 +344,34 @@
       }
 
       async function initSelectBox() {
-        options.push({id:"A", name:"A조"});
-        options.push({id:"B", name:"B조"});
-        options.push({id:"C", name:"C조"});
-        options.push({id:"D", name:"D조"});
-        options.push({id:"E", name:"E조"});
+        // options.push({id:"A", name:"A조"});
+        // options.push({id:"B", name:"B조"});
+        // options.push({id:"C", name:"C조"});
+        // options.push({id:"D", name:"D조"});
+        // options.push({id:"E", name:"E조"});
+
+        let req_param = reactive(
+          {	lang:"KR",
+            userid:store.state.auth.user[0].userid,
+            plantcd:getdata(store.state.auth.user[0].plantcd),
+            type1:"SHIFT",
+            type2:"",
+            type3:"",
+            type4:"",
+            space:"Y",
+          }
+        );
+        let res = reactive([]);
+        res = await searchSelectBox(req_param);
+        // console.log("[Stockcount_offline/initSelectBox] = res -- ", res);
+
+        if(res.data.length > 0){
+          options.splice(0, options.length);
+          for(var i=0; i<res.data.length; i++){
+              options.push({id:res.data[i].id, name:res.data[i].name});
+          }
+        }
+        console.log("[initSelectBox] = options data -- ", options);
       }
 
       function POClick(){
@@ -420,7 +445,7 @@
       function continueClick(){
         console.log("txtPO/lblMaktx/txtBox/txtLotno/cboShift", req_param.txtPO, lblMaktx.value, req_param.txtBox, req_param.txtLotno, req_param.cboShift, req_param.txtLotno.length);
         console.log("date_hdf/date_fmfm/date_prod", formatDate(date_hdf.value, 'YYYYMMDD'), formatDate(date_fmfm.value, 'YYYYMMDD'), formatDate(date_prod.value, 'YYYYMMDD'))
-        if (lblMaktx.value == "" | lblMaktx.value == null){
+        if (lblProcQty.value == "" | lblProcQty.value == null){
           alert("Please input P/O number first.");
           txtPO.value.focus();
         // } else if (req_param.txtBox == "" | req_param.txtBox == null){
@@ -454,8 +479,8 @@
 
       function clearData(){
         req_param.txtPO = "";
-        lblMaktx.value = null;  //null로 처리해야 txtPO 입력필드 disable이 enable로 변경된다.
-        lblProcQty.value = "";
+        lblMaktx.value = "자재 상세내역을 표시합니다.";
+        lblProcQty.value = null;  //null로 처리해야 txtPO 입력필드 disable이 enable로 변경된다.
         req_param.txtBox = "";
         req_param.txtLotno = "";
         req_param.cboShift="";
@@ -465,8 +490,11 @@
         date_fmfm.value = new Date();
         date_prod.value = new Date();
           
-        // txtPO = ref(null);
-        txtPO.value.focus();  //Question : focus가 작동하지 않는다.
+        // txtPO.value.focus();  //Question : focus가 작동하지 않는다.
+        setTimeout(function() {
+          txtPO.value.focus();
+          req_param.txtPO="001000775617";
+        }, 500);
       }
 
       function closeClick(){
