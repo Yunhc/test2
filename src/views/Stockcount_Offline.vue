@@ -204,10 +204,10 @@
       let lblErrCnt = ref(0);
 			let radioValues = ref("bundle");
       //데이터 바인딩
-      let req_param = reactive({stor_loc:"", rowno:"", scan:""});
+      let req_param = reactive({stor_loc:"", rowno:"1", scan:"1220315100001"});
       let msg = ref(null);
 			let msg_color = ref(null);
-      let stcData = reactive([]);
+      let stcData = ([]);
 
       let columnDefs= reactive([
 				{headerName: '', field: 'sel', width: 4, cellStyle: {textAlign: "center"},
@@ -451,7 +451,7 @@
 
       function writeIndexedDB(){
         var request = indexedDB.open('stcDB');
-
+        stcData.splice(0,stcData.length);
         request.onerror = function(event){
           alert('Database error: ' + event.traget.errorCode);
         }
@@ -468,12 +468,7 @@
           }
 
           var objectStore = transaction.objectStore('stc');
-          // stcData[0].stcno = strSilsano;
-          // stcData[0].werks = getdata(store.state.auth.user[0].plantcd);
-          // stcData[0].lgort = getdata(req_param.stor_loc);
-          // stcData[0].rowno = req_param.rowno;
-          // stcData[0].barno = req_param.scan;
-          // stcData[0].userid = store.state.auth.user[0].userid;
+
           stcData.push({stcno:strSilsano.value, 
                        werks:getdata(store.state.auth.user[0].plantcd),
                        lgort:getdata(req_param.stor_loc),
@@ -514,12 +509,13 @@
             // objectStore.put({key: 11, value: 33});  // OK, key generator set to 11
             // objectStore.put({value: 66});           // OK, will have auto-generated key 12
 
-            var objectStore = db.createObjectStore('stc', {keyPath:'stcno'});
+            var objectStore = db.createObjectStore('stc', {keyPath:['stcno','rowno','barno']});
             // var objectStore = db.createObjectStore('stc', ['stcno', 'rowno', 'barno']);
+            // objectStore.createIndex("stcno", "stcno", { unique: false });
             objectStore.createIndex("werks", "werks", { unique: false });
             objectStore.createIndex("lgort", "lgort", { unique: false });
-            objectStore.createIndex("rowno", "rowno", { unique: false });
-            objectStore.createIndex("barno", "barno", { unique: false });
+            // objectStore.createIndex("rowno", "rowno", { unique: false });
+            // objectStore.createIndex("barno", "barno", { unique: false });
             objectStore.createIndex("userid", "userid", { unique: false });
             // objectStore.transaction.oncomplete = function() {
             //   // Store values in the newly created objectStore.
@@ -535,6 +531,42 @@
           request.onsuccess = function(event){
             console.log("success = ", event);
           }
+        }
+      }
+
+      async function deleteIndexedDB(delstcno, delrowno, delbarno){
+        console.log("delete: ", delstcno, delrowno, delbarno);
+        var request = indexedDB.open('stcDB');
+
+        request.onerror = function(event){
+          alert( event.traget.errorCode);
+        }
+
+        request.onsuccess = function(event){
+          var db = event.target.result;
+          var transaction = db.transaction(['stc'], "readwrite");
+
+          transaction.oncomplete = function(){
+            console.log("transaction done");
+            return true;
+          }
+          transaction.onerror = function(){
+            console.log("transaction fail");
+            return false;
+          }
+
+          var objectStore = transaction.objectStore('stc');
+          var request = objectStore.delete([delstcno, delrowno, delbarno]);
+          request.onsuccess = function(event){
+            console.log(event.target.result);
+          }
+
+          // var request = db.transaction(["silsa"], "readwrite")
+          //                 .objectStore("silsa")
+          //                 .delete("143");
+          // request.onsuccess = function(event) {
+          //   // It's gone!
+          // };
         }
       }
 
@@ -649,6 +681,8 @@
                 // const rowNode = gridApi.value.getDisplayedRowAtIndex(0);
                 node.setSelected(true);
                 gridApi.value.updateRowData({remove: [node.data]});
+                // deleteIndexedDB(node.data.barno);
+                // deleteIndexedDB(strSilsano.value, node.data.rowno, node.data.barno);
               }
             }
             else {
@@ -687,6 +721,12 @@
           selectedData.forEach( function(selectedRow){
             removedRows.push(selectedRow);
             gridApi.value.updateRowData({remove: [selectedRow]});
+            console.log("삭제대상 바코드: ", selectedData[0].barno);
+            var bRtn = await deleteIndexedDB(strSilsano.value, selectedData[0].rowno, selectedData[0].barno);
+            if (bRtn){
+                msg_color.value = "blue";
+                // msg.value = "전송이 완료되었습니다. 처리결과를 확인하시기 바랍니다.";
+            }            
             lblScanCnt.value -= 1;
           });
           console.log("[removed row]", removedRows);
