@@ -230,7 +230,7 @@
 
       //============================================================================================//
       let recvData = reactive([]);
-      let userData = reactive([]);
+      let userData = ([]);
       // let rtnmsg = reactive([]);
       // let selData = reactive({userid:"", username:"", plant:"", workcenter:"", warehoue:""
       //                       , auth:"", role:"", use_role:"", uesflag:"", forklift:""
@@ -455,7 +455,7 @@
           useflag: user_param.useflag,
         })
         .then((res) => {
-          // console.log("[response data]", res.data);
+          console.log("[response data]", res.data);
           recvData.value = res.data;
           userData = res.data;
 
@@ -868,8 +868,10 @@
           }
 
           var objectStore = transaction.objectStore('silsa');
+          // console.log("userData: ", userData);
           for( var  user of userData){
             // var request = objectStore.put({userid:bar.userid, value: strData});
+            console.log("user: ", user);
             var request = objectStore.add(user);
             request.onsuccess = function(){
               console.log("add success");
