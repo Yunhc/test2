@@ -171,7 +171,7 @@
       }"
     >
       <ag-grid-vue
-        class="ag-theme-alpine"
+        class="ag-theme-balham"
         headerHeight='35'
 				:style="{width: `calc(${window_width - 10}px)`, height:'100%'}"
         :rowData="recvData.value"
@@ -194,8 +194,8 @@
         </label>
       </div>
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
-        <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'150px'}"
-          @click='testClick'>TEST</button>
+        <!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 5px 0px 0px', width:'150px'}"
+          @click='testClick'>TEST</button> -->
 				<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'3px 0px 0px 0px', width:'100px'}"
 					@click='closeClick'>
 					종료
@@ -208,6 +208,7 @@
 import $axios from 'axios';
 import { reactive, ref, onMounted, onUnmounted } from 'vue';
 import { AgGridVue } from 'ag-grid-vue3';
+// import { AgGridVue } from 'ag-grid-community';
 // import { AgGridVue } from 'ag-grid-enterprise';
 // import { RowGroupingModule } from '@ag-grid-enterprise/row-grouping';
 import { useStore } from 'vuex';
@@ -266,16 +267,41 @@ export default {
 		let msg = ref(null);
     let msg_color = ref(null);
 
-		// function rowSpan(param) {
-		// 	var strStatus = param.data.status2;
-		// 	// console.log("strStatus = ", param);
-		// 	if (strStatus === 'QI보류 - 시생산') {
-		// 		console.log("strStatus = ", strStatus);
-		// 		return 3;
-		// 	} else {
-		// 		return 1;
+		let arrSpan = reactive([]);
+
+		function rowSpan(param) {
+			var index = arrSpan.findIndex(v=>v.start===param.node.rowIndex);
+			if(index > -1){
+				// console.log(arrSpan);
+				return arrSpan[index].cnt;
+			}
+			else{
+				return 1;
+			}
+		}
+
+		// const ShowCellRenderer = function (param) {
+		// 	var sData = param.data.status2;
+		// 	if(sData=="합계"){
+		// 		return '<div class="show-name">' + param.value + '</div>';
 		// 	}
-		// }
+		// 	else{
+		// 		var index = arrSpan.findIndex(v=>v.status===sData);
+		// 		if(index > -1){
+		// 			if(param.node.rowIndex == arrSpan[index].start){
+		// 				return '<div class="show-name">' + param.value + '</div>';
+		// 			}else{
+		// 				return;
+		// 			}
+		// 		}
+		// 	}
+		// };
+
+		function onPaginationChanged(){
+			if(gridApi.value){
+				autoSizeAll(false, columnApi);
+			}
+		}
 
 		// ag-grid 데이터 변수
 		let recvData = reactive([]);
@@ -310,11 +336,14 @@ export default {
 			{headerName: '',		headerClass: 'header-row-span-2-pinned',
 				children:[
 					{headerName: '상태', 				field: 'status2', 	width: 80, 	hide: false,	cellStyle: {textAlign: "left"},
-						// rowSpan: rowSpan,
-						// cellClassRules: {
-						//   'cell-span': "value==='가용재고' || value==='QI보류'",
-						// },
-						// rowGroup: true
+						// cellRenderer: ShowCellRenderer,
+						rowSpan: rowSpan, //params => params.data.status2==='QI보류 - 시생산'?2:1,
+						cellClassRules: {
+							// 'cell-span-1': "value==='QI보류'",
+							'cell-span-1': "value!==''",
+							// 'cell-span-1': 'value!=undefined',
+							// 'cell-span-1':'true',
+						},
 						headerClass: 'header-row-span-2-pinned',
 						pinned: 'left',
 					},
@@ -341,7 +370,6 @@ export default {
 					{headerName: '고객사', 			field: 'customer', width: 80, 	hide: false, 	cellStyle: {textAlign: "left"},
 						headerClass: 'header-row-span-2-pinned',
 						pinned: 'left',
-						cellRenderer: BoldRenderer
 					},
 				],
 			},
@@ -349,8 +377,8 @@ export default {
 				children:[
 					{headerName: '자재코드', 		field: 'matnr', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"},
 						headerClass: 'header-row-span-2-pinned',
-						pinned: 'left',
-						cellRenderer: BoldRenderer
+						cellRenderer: BoldRenderer,
+						pinned: 'left'
 					},
 				],
 			},
@@ -365,6 +393,7 @@ export default {
 				children:[
 					{headerName: '물분사', 			field: 'wtschk', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"},
 						headerClass: 'header-row-span-2',
+						cellClassRules: {'cell-span':'true'},
 					},
 				],
 			},
@@ -377,7 +406,9 @@ export default {
 					{headerName: '환산수량', 		field: 'uqty', 			width: 80, 	hide: false, 	cellStyle: {textAlign: "right"},
 						cellRenderer: inputNumberFormat,
 					},
-					{headerName: '환산단위', 		field: 'umeins', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+					{headerName: '환산단위', 		field: 'umeins', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "center"},
+						cellClassRules: {'cell-span':'true'},
+					},
 				]},
 			{headerName:'예탁재고수량',
 				children:[
@@ -388,7 +419,9 @@ export default {
 					{headerName: '환산수량', 		field: 'preuqty', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "right"},
 						cellRenderer: inputNumberFormat,
 					},
-					{headerName: '환산단위', 		field: 'preumeins', width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+					{headerName: '환산단위', 		field: 'preumeins', width: 80, 	hide: false, 	cellStyle: {textAlign: "center"},
+						cellClassRules: {'cell-span':'true'},
+					},
 				]},
 			{headerName:'정상수량',
 				children:[
@@ -399,7 +432,9 @@ export default {
 					{headerName: '환산수량', 		field: 'uqty_n', 		width: 80, 	hide: false, 	cellStyle: {textAlign: "right"},
 						cellRenderer: inputNumberFormat,
 					},
-					{headerName: '환산단위', 		field: 'umeins_n', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+					{headerName: '환산단위', 		field: 'umeins_n', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"},
+						cellClassRules: {'cell-span':'true'},
+					},
 				]},
 			{headerName:'체화수량',
 				children:[
@@ -410,7 +445,9 @@ export default {
 					{headerName: '환산수량', 		field: 'uqty_c',		width: 80, 	hide: false, 	cellStyle: {textAlign: "right"},
 						cellRenderer: inputNumberFormat,
 					},
-					{headerName: '환산단위', 		field: 'umeins_c', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"}},
+					{headerName: '환산단위', 		field: 'umeins_c', 	width: 80, 	hide: false, 	cellStyle: {textAlign: "center"},
+						cellClassRules: {'cell-span':'true'},
+					},
 				]},
 			{headerName:'자재특성',
 				children:[
@@ -459,6 +496,9 @@ export default {
 			rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
 			// suppressRowClickSelection:false,
 			suppressRowTransform:true,
+			pagination: true,
+			paginationPageSize: 17,
+			// paginationAutoPageSize: true,
 			onGridReady: function(event) {
 				setTimeout(function () {
 					event.api.setRowData(recvData);
@@ -466,11 +506,11 @@ export default {
 				}, 1000);
 				gridApi.value = event.api;
 				columnApi.value = event.columnApi;
-				event.api.sizeColumnsToFit();
+				// event.api.sizeColumnsToFit();
 			},
-			getRowHeight: function(){
-				return 35;
-			},
+			// getRowHeight: function(){
+			// 	return 35;
+			// },
 			// pinnedBottomRowData:[{
 			// 	werks:'합계',
 			// 	qty:0,
@@ -481,7 +521,8 @@ export default {
 				if (params.node.rowPinned === 'bottom') {
 					return { "background-color": "white", "color":"red", "font-weight":"bold" };
 				}
-			}
+			},
+			onPaginationChanged :onPaginationChanged,
 		};
 
 		onMounted(() => {
@@ -674,19 +715,66 @@ export default {
 				date: req_param.date
 			})
 			.then((res) => {
-				// console.log("[res.data]", res.data);
-				recvData.value = res.data;
-				// console.log("[recvData]", recvData.value);
-
-				columnsum[0].qty = 0;
-				columnsum[0].uqty = 0;
-				columnsum[0].preqty = 0;
-				columnsum[0].preuqty = 0;
-				columnsum[0].qty_n = 0;
-				columnsum[0].uqty_n = 0;
-				columnsum[0].qty_c = 0;
-				columnsum[0].uqty_c = 0;
 				if(res.data.length > 0){
+					//==== rowSapn 처리를 위해 데이터 정보를 수집한다. ======================
+					// arrSpan.splice(0, arrSpan.length);
+					// for(var i=0; i<res.data.length; i++){
+					// 	var sData = res.data[i].status2;
+					// 	if(i==0){
+					// 		arrSpan.push({status:sData, cnt:1, start:i});
+					// 	}
+					// 	else{
+					// 		var index = arrSpan.findIndex(v=>v.status===sData);
+					// 		console.log("index = ", index);
+					// 		if(index > -1){
+					// 			arrSpan[index].cnt = arrSpan[index].cnt + 1;
+					// 		}
+					// 		else{
+					// 			arrSpan.push({status:sData, cnt:1, start:i});
+					// 		}
+					// 	}
+					// }
+					//==== paging처리시 rowSapn 처리를 위해 데이터 정보를 수집한다.==========
+					arrSpan.splice(0, arrSpan.length);
+					for(var i=0; i<res.data.length; i=i+17){
+						for(var j=0; j<17; j++){
+							if(i+j >= res.data.length) break;
+							var sData = res.data[i+j].status2;
+							if(j==0){
+								arrSpan.push({status:sData, cnt:1, start:i+j});
+							}
+							else{
+								var index = -1;
+								if(arrSpan[arrSpan.length-1].status === sData) {
+									index = arrSpan.length-1;
+								}
+								// console.log("index = ", index);
+								if(index > -1){
+									if(arrSpan[index].cnt>=17){
+										arrSpan.push({status:sData, cnt:1, start:i+j});
+									}
+									else{
+										arrSpan[index].cnt = arrSpan[index].cnt + 1;
+									}
+								}
+								else{
+									arrSpan.push({status:sData, cnt:1, start:i+j});
+								}
+							}
+						}
+					}
+					//======================================================================
+
+					recvData.value = res.data;
+					columnsum[0].qty = 0;
+					columnsum[0].uqty = 0;
+					columnsum[0].preqty = 0;
+					columnsum[0].preuqty = 0;
+					columnsum[0].qty_n = 0;
+					columnsum[0].uqty_n = 0;
+					columnsum[0].qty_c = 0;
+					columnsum[0].uqty_c = 0;
+
 					var nRtn = recvData.value.reduce(function(previousValue, currentValue){
 						var sum_qty = 0;
 						var sum_uqty = 0;
@@ -731,6 +819,9 @@ export default {
 						autoSizeAll(false, columnApi);
 					});
 				}
+				else{
+					recvData.value = res.data;
+				}
 
 				gridApi.value.setPinnedBottomRowData(columnsum);
 				msg_color.value = "blue";
@@ -751,11 +842,12 @@ export default {
 		}
 
 		function closeClick(){
-			emit("component_close", "label_print_hist");
+			emit("component_close", "stock_search");
 		}
 
 		function testClick(){
 			refreshAll(gridApi);
+			autoSizeAll(false, columnApi);
 		}
 
 		return {
@@ -824,4 +916,20 @@ export default {
 // 	height: 70px;
 // 	// border: 1px solid red;
 // }
+.cell-span {
+	// background-color: white;
+	// border-left: 1px solid lightgrey !important;
+  border-right: 1px solid lightgrey !important;
+  // border-bottom: 1px solid lightgrey !important;
+}
+.cell-span-1 {
+	background-color: white;
+	// border-left: 1px solid lightgrey !important;
+  border-right: 1px solid lightgrey !important;
+  border-bottom: 1px solid lightgrey !important;
+	// border:5x solid red;
+}
+.show-name{
+	font-weight:bold;
+}
 </style>
