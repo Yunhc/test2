@@ -534,7 +534,7 @@
         }
       }
 
-      async function deleteIndexedDB(delstcno, delrowno, delbarno){
+      function deleteIndexedDB(delstcno, delrowno, delbarno){
         console.log("delete: ", delstcno, delrowno, delbarno);
         var request = indexedDB.open('stcDB');
 
@@ -548,11 +548,9 @@
 
           transaction.oncomplete = function(){
             console.log("transaction done");
-            return true;
           }
           transaction.onerror = function(){
             console.log("transaction fail");
-            return false;
           }
 
           var objectStore = transaction.objectStore('stc');
@@ -644,9 +642,13 @@
       }
 
       async function sendData() {
+        var rowCnt = gridApi.value.getDisplayedRowCount();
         hoffset.value -= 85;
         isTransfer.value = true;
-        lblTotCnt.value = lblScanCnt.value;
+        // lblTotCnt.value = lblScanCnt.value;
+        lblTotCnt.value = rowCnt;
+        lblErrCnt.value = 0;
+        lblSendCnt.value = 0;
 
         // gridApi.value.forEachNode( (node) => {
         for (var i = gridApi.value.getDisplayedRowCount()-1; i>=0; i--) {
@@ -682,7 +684,8 @@
                 node.setSelected(true);
                 gridApi.value.updateRowData({remove: [node.data]});
                 // deleteIndexedDB(node.data.barno);
-                // deleteIndexedDB(strSilsano.value, node.data.rowno, node.data.barno);
+                console.log(strSilsano.value, node.data.rowno, node.data.barno);
+                deleteIndexedDB(strSilsano.value, node.data.rowno, node.data.barno);
               }
             }
             else {
@@ -716,17 +719,14 @@
         else if (strCalltype.value == "delete"){
           var selectedData = gridApi.value.getSelectedRows();
           console.log("[selected row]", selectedData);
-
+    
           var removedRows = [];
           selectedData.forEach( function(selectedRow){
             removedRows.push(selectedRow);
             gridApi.value.updateRowData({remove: [selectedRow]});
-            console.log("삭제대상 바코드: ", selectedData[0].barno);
-            var bRtn = await deleteIndexedDB(strSilsano.value, selectedData[0].rowno, selectedData[0].barno);
-            if (bRtn){
-                msg_color.value = "blue";
-                // msg.value = "전송이 완료되었습니다. 처리결과를 확인하시기 바랍니다.";
-            }            
+            console.log("삭제대상 바코드: ", selectedRow.barno);
+            deleteIndexedDB(strSilsano.value, selectedRow.rowno, selectedRow.barno);
+   
             lblScanCnt.value -= 1;
           });
           console.log("[removed row]", removedRows);
