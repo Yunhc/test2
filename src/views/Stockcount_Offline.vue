@@ -196,6 +196,7 @@
       let scan = ref(null);
       let strCalltype = ref(null);
 
+      let strSilsano = ref(null);
 			let lblSCType = ref(null);
       let lblScanCnt = ref(0);
       let lblTotCnt = ref(0);
@@ -206,6 +207,7 @@
       let req_param = reactive({stor_loc:"", rowno:"", scan:""});
       let msg = ref(null);
 			let msg_color = ref(null);
+      let stcData = reactive([]);
 
       let columnDefs= reactive([
 				{headerName: '', field: 'sel', width: 4, cellStyle: {textAlign: "center"},
@@ -334,7 +336,9 @@
               msg.value = "실사가 진행중입니다.";
               PlaySound("OK");
 
+              strSilsano.value = res.data[0].stc_no;
               lblSCType.value = res.data[0].silsatype;
+              console.log("실사번호 : ", strSilsano.value);
             }
           }
           else {
@@ -362,7 +366,8 @@
           console.log("stor_loc : ", req_param.stor_loc)
           if (req_param.stor_loc != ""){
             search_SCInfo();
-            importTextFile(); //텍스트 파일 불러오기
+            // importTextFile(); //텍스트 파일 불러오기
+            createIndexedDB();  //로컬DB 생성
             rowno.value.focus();
             rowno.value.select();
           }
@@ -429,7 +434,8 @@
 						// 그리드 특정위치에 추가 
 						gridApi.value.updateRowData({add:[newData], addIndex:0});
 
-            exportTextFile();  //텍스트 파일로 저장
+            // exportTextFile();  //텍스트 파일로 저장
+            writeIndexedDB();
 
 						scan.value.select();
 						msg_color.value = "blue";
@@ -443,40 +449,127 @@
         // }
       }
 
-      function exportTextFile() {
-        // const text = document.getElementById('text-data').value;
-        const text = "텍스트 저장 테스트입니다.\n2번째 줄입니다.";
-        // 저장하고자하는 파일명
-        const filename = '텍스트파일명';
-        const element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-        element.setAttribute('download', filename);
-        document.body.appendChild(element);
-        element.click();
+      function writeIndexedDB(){
+        var request = indexedDB.open('stcDB');
+
+        request.onerror = function(event){
+          alert('Database error: ' + event.traget.errorCode);
+        }
+
+        request.onsuccess = function(event){
+          var db = event.target.result;
+          var transaction = db.transaction(['stc'], 'readwrite');
+
+          transaction.oncomplete = function(){
+            console.log("transaction done");
+          }
+          transaction.onerror = function(){
+            console.log("transaction fail");
+          }
+
+          var objectStore = transaction.objectStore('stc');
+          // stcData[0].stcno = strSilsano;
+          // stcData[0].werks = getdata(store.state.auth.user[0].plantcd);
+          // stcData[0].lgort = getdata(req_param.stor_loc);
+          // stcData[0].rowno = req_param.rowno;
+          // stcData[0].barno = req_param.scan;
+          // stcData[0].userid = store.state.auth.user[0].userid;
+          stcData.push({stcno:strSilsano.value, 
+                       werks:getdata(store.state.auth.user[0].plantcd),
+                       lgort:getdata(req_param.stor_loc),
+                       rowno:req_param.rowno,
+                       barno:req_param.scan,
+                       userid:store.state.auth.user[0].userid});
+          console.log("stcData: ", stcData);
+
+          for( var  stc_off of stcData){
+            // var request = objectStore.put({userid:bar.userid, value: strData});
+            var request = objectStore.add(stc_off);
+            request.onsuccess = function(){
+              console.log("add success");
+              // console.log(event.target.result);
+            }
+            request.onerror = function(){
+              console.log("add fail");
+              // console.log(event.target.result);
+            }
+          }
+        }
       }
 
+      function createIndexedDB(){
+        if(!window.indexedDB){
+          alert("browser doesn't support IndexedDB");
+        }
+        else{
+          var name = 'stcDB';
+          var version = 1;
+          var request = indexedDB.open(name, version);
 
+          request.onupgradeneeded = function(event){
+            var db = event.target.result;
+            // db.createObjectStore('silsa', {keyPath:'userid'});
+            // db.createObjectStore('silsa', {keyPath:'key', autoIncrement: true});
+            // var objectStore = db.createObjectStore('silsa', {keyPath:'key', autoIncrement: true});
+            // objectStore.put({key: 11, value: 33});  // OK, key generator set to 11
+            // objectStore.put({value: 66});           // OK, will have auto-generated key 12
 
-      function importTextFile() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'text/plain'; // 확장자가 xxx, yyy 일때, ".xxx, .yyy"
-        // this 접근을 위해 선언 필요
-        // const self = this;
-        input.onchange = function () {
-          const file = new FileReader();
-          file.onload = () => {
-            // document.getElementById('text-data').textContent = file.result;
-            // self.$data.textData = file.result;
-            var textData = file.result;
-            console.log("text file : ",textData)
-          };
-          file.readAsText(this.files[0]);
-          // console.log("text file : ",self.$data.textData)
-        };
-        input.click();
-        // console.log("text file : ",self.$data.textData)
+            var objectStore = db.createObjectStore('stc', {keyPath:'stcno'});
+            // var objectStore = db.createObjectStore('stc', ['stcno', 'rowno', 'barno']);
+            objectStore.createIndex("werks", "werks", { unique: false });
+            objectStore.createIndex("lgort", "lgort", { unique: false });
+            objectStore.createIndex("rowno", "rowno", { unique: false });
+            objectStore.createIndex("barno", "barno", { unique: false });
+            objectStore.createIndex("userid", "userid", { unique: false });
+            // objectStore.transaction.oncomplete = function() {
+            //   // Store values in the newly created objectStore.
+            //   var silsaObjectStore = db.transaction("silsa", "readwrite").objectStore("silsa");
+            //   userData.forEach(function(user) {
+            //     silsaObjectStore.add(user);
+            //   });
+            // };
+          }
+          request.onerror = function(event){
+            alert(event);
+          }
+          request.onsuccess = function(event){
+            console.log("success = ", event);
+          }
+        }
       }
+
+      // function exportTextFile() {
+      //   // const text = document.getElementById('text-data').value;
+      //   const text = "텍스트 저장 테스트입니다.\n2번째 줄입니다.";
+      //   // 저장하고자하는 파일명
+      //   const filename = '텍스트파일명';
+      //   const element = document.createElement('a');
+      //   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      //   element.setAttribute('download', filename);
+      //   document.body.appendChild(element);
+      //   element.click();
+      // }
+
+      // function importTextFile() {
+      //   const input = document.createElement('input');
+      //   input.type = 'file';
+      //   input.accept = 'text/plain'; // 확장자가 xxx, yyy 일때, ".xxx, .yyy"
+      //   // this 접근을 위해 선언 필요
+      //   // const self = this;
+      //   input.onchange = function () {
+      //     const file = new FileReader();
+      //     file.onload = () => {
+      //       // document.getElementById('text-data').textContent = file.result;
+      //       // self.$data.textData = file.result;
+      //       var textData = file.result;
+      //       console.log("text file : ",textData)
+      //     };
+      //     file.readAsText(this.files[0]);
+      //     // console.log("text file : ",self.$data.textData)
+      //   };
+      //   input.click();
+      //   // console.log("text file : ",self.$data.textData)
+      // }
 
       function fn_SelectAll(e) {
         //<input @focus="$event.target.select()" value="select me" />
