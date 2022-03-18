@@ -4,6 +4,31 @@
 @import "~ag-grid-community/dist/styles/ag-theme-alpine.css";
 @import "~ag-grid-community/dist/styles/ag-theme-balham.css";
 
+@import "~ag-grid-community/src/styles/ag-grid.scss";
+@import "~ag-grid-community/src/styles/ag-theme-balham/sass/ag-theme-balham-mixin.scss";
+@import "~ag-grid-community/src/styles/ag-theme-alpine/sass/ag-theme-alpine-mixin.scss";
+
+.ag-theme-balham {
+	@include ag-theme-balham((
+		odd-row-background-color:#f1f2f3, //#fcfdfe  //#ace
+		header-column-separator-height: 100%,
+	));
+};
+
+.ag-theme-alpine {
+	@include ag-theme-alpine((
+		odd-row-background-color:#f1f2f3, //#fcfdfe  //#ace
+		header-column-separator: true,
+		header-column-separator-height: 100%,
+	));
+}
+// .ag-header-cell {
+//   background-color: #000;
+//   // background-color: var(--ag-foreground-color, #000);
+//   color: #fff;
+//   // color: var(--ag-background-color, #fff);
+// }
+
 // @import "~ag-grid-enterprise/dist/styles/ag-grid.css";
 // @import "~ag-grid-enterprise/dist/styles/ag-theme-alpine.css";
 /******************************************************************************/
