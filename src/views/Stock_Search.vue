@@ -900,23 +900,21 @@ export default {
 	position: fixed;
 	top: 227px;
 	margin-left: 5.5px;
-	height: 70px;
+	height: 71px;
 	// border: 1px solid red;
 }
-
-.header-row-span-2 {
-	position: fixed;
-	top: -90px;
-	height: 250px;
-	// border: 1px solid red;
-}
-
 // .header-row-span-2 {
 // 	position: fixed;
-// 	top: -1px;
-// 	height: 70px;
+// 	top: -90px;
+// 	height: 250px;
 // 	// border: 1px solid red;
 // }
+.header-row-span-2 {
+	position: fixed;
+	top: -1px;
+	height: 71px;
+	// border: 1px solid red;
+}
 .cell-span {
 	// background-color: white;
 	// border-left: 1px solid lightgrey !important;
