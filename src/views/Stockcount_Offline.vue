@@ -5,7 +5,7 @@
       :title="popupTitle"
       :message="popupMsg"
       @yesClick="yesClick"
-      @noClick="popupisopen=false">
+      @noClick="noClick">
     </popupyn>
 
 		<div class="stc_off">
@@ -352,6 +352,10 @@
                       console.log("rowCnt: -------------------- ", rowCnt);
                       if (rowCnt > 0) {
                         console.log("이전에 전송하지 않은 바코드 Data가 존재합니다.");
+                        popupTitle.value ="Stock Count (Offline)";
+                        popupMsg.value = "이전에 전송하지 않은 바코드 Data가 존재합니다. 데이터를 가져오시겠습니까? \n아니오를 선택하면 데이터는 삭제됩니다.";
+                        strCalltype.value = "dbload";
+                        popupisopen.value = true;
                       }
                       else{
                         console.log("Data가 존재하지 않습니다.");
@@ -393,14 +397,6 @@
           if (req_param.stor_loc != ""){
             // var bRtn1 = await search_SCInfo();
             search_SCInfo();
-            // console.log("bRtn1:" ,bRtn1);  //null?
-            // if (bRtn1) {
-            //   // importTextFile(); //텍스트 파일 불러오기
-            //   createIndexedDB();  //로컬DB 생성
-            //   // selectAllIndexedDB(); //모든 데이터를 조회한다.
-            //   // selectIndexedDB();  //F.key로 진행중인 실사번호만 조회한다. 에러
-            //   // selectBoundIndexedDB(); //index로 진행중인 실사번호만 조회한다. 에러
-            // }
             rowno.value.focus();
             rowno.value.select();
           }
@@ -694,13 +690,6 @@
         }
       }
 
-      // async function createIndexedDB() {
-      //   await createDB().then((res) =>{
-      //     console.log("응답:", res);
-      //     return res;
-      //   });
-      // }
-
       async function createIndexedDB(){
         return new Promise((bRtn) => {
           if(!window.indexedDB){
@@ -735,6 +724,37 @@
         });
       }
 
+      async function deleteAllIndexedDB(){
+        return new Promise((bRtn) => {
+          var request = indexedDB.open(dbname);
+
+          request.onerror = function(event){
+            alert( event.traget.errorCode);
+            bRtn(false);
+          }
+
+          request.onsuccess = function(event){
+            var db = event.target.result;
+            var transaction = db.transaction(['stc'], "readwrite");
+
+            transaction.oncomplete = function(){
+              console.log("deleteAllIndexedDB transaction done");
+            }
+            transaction.onerror = function(){
+              console.log("deleteAllIndexedDB transaction fail");
+              bRtn(false);
+            }
+
+            var objectStore = transaction.objectStore('stc');
+            var request = objectStore.clear();
+            request.onsuccess = function(){
+              console.log("Success Delete All");
+              bRtn(true);
+            }
+          }
+        });
+      }
+
       function deleteIndexedDB(delstcno, delrowno, delbarno){
         console.log("delete: ", delstcno, delrowno, delbarno);
         var request = indexedDB.open(dbname);
@@ -759,13 +779,6 @@
           request.onsuccess = function(event){
             console.log(event.target.result);
           }
-
-          // var request = db.transaction(["silsa"], "readwrite")
-          //                 .objectStore("silsa")
-          //                 .delete("143");
-          // request.onsuccess = function(event) {
-          //   // It's gone!
-          // };
         }
       }
 
@@ -830,7 +843,8 @@
 
       function closeClick(){
         popupTitle.value ="Stock Count (Offline)";
-        popupMsg.value = "종료하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
+        // popupMsg.value = "종료하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
+        popupMsg.value = "종료하시겠습니까?";
         strCalltype.value = "close";
         popupisopen.value = true;
       }
@@ -915,7 +929,18 @@
           }
         }
         else if (strCalltype.value == "close"){
-          emit("component_close", "stockcount_offline");
+          dbRowCount().then((rowCnt)=>{
+            console.log("rowCnt: -------------------- ", rowCnt);
+            if (rowCnt > 0) {
+              popupTitle.value ="Stock Count (Offline)";
+              popupMsg.value = "전송하지 않은 데이터가 있습니다. 삭제하시겠습니까?";
+              strCalltype.value = "close_delete";
+              popupisopen.value = true;
+              return;
+            } else {
+              emit("component_close", "stockcount_offline");
+            }
+          });
         }
         else if (strCalltype.value == "delete"){
           var selectedData = gridApi.value.getSelectedRows();
@@ -931,11 +956,43 @@
             lblScanCnt.value -= 1;
           });
           console.log("[removed row]", removedRows);
-          }
+        } else if (strCalltype.value == "dbload"){
+          selectAllIndexedDB(); //로컬DB 모든 데이터를 조회하여 Grid에 불러온다.
+          rowno.value.focus();
+        } else if (strCalltype.value == "close_delete"){
+          deleteAllIndexedDB().then(function(res){
+          // deleteAllIndexedDB()..then(res => {
+            console.log("rtn_close: ", res);
+            emit("component_close", "stockcount_offline");
+            rowno.value.focus();
+          })
+          // .catch(err => {
+          .catch(function(err){
+            alert(err);
+            console.error(err)
+          })
+        }
       }
 
       function noClick(){
         popupisopen.value = false;
+        console.log("noclick -> strCalltype", strCalltype.value);
+        if (strCalltype.value == "close_delete"){
+          console.log("close_delete -> delete no 선택");
+          emit("component_close", "stockcount_offline");
+        } else if (strCalltype.value == "dbload"){
+          deleteAllIndexedDB().then(function(res){
+          // deleteAllIndexedDB()..then(res => {
+            console.log("rtn_close: ", res);
+            gridApi.value.setRowData([]);
+            rowno.value.focus();
+          })
+          // .catch(err => {
+          .catch(function(err){
+            alert(err);
+            console.error(err)
+          })         
+        }
       }
 
       return {
