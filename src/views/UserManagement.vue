@@ -1,10 +1,10 @@
 <template>
-  <div class="mng">
+  <div class="window-main ">
 		<!-- <Search>
       <template #user>
       </template>
     </Search> -->
-    <div class="usersearch1">
+    <div class="window-search-1">
       <form class="d-flex" :style="{height:'37px'}" >
         <div class="input-group mb-3" :style="{ margin:'5px 5px 0px 5px'}">
           <span class="input-group-text btn-sm" id="basic-addon1">{{lblUserID}}</span>
@@ -42,7 +42,7 @@
         </div>
       </form>
     </div>
-    <div class="usergrid1"
+    <div class="window-grid-1"
       :style="{
         height: `calc(${window_height - 109 - 80}px)`,
         width: `calc(${window_width - 10}px)`
@@ -91,7 +91,7 @@
         @click='createIndexedDB'>{{"Create DB"}}</button>
     </div> -->
 
-    <div class= "usersave1" align="right">
+    <div class= "window-save" align="right">
       <!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
         @click='saveLocalStorage'>{{"Save"}}</button>
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
@@ -110,7 +110,7 @@
         @click='deleteClick'>{{lblDelete}}</button>
       <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
         @click='saveClick'>{{lblSave}}</button>
-      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 5px 0px 0px', width:'70px'}"
+      <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'4px 10px 0px 0px', width:'70px'}"
         @click='closeClick'>{{lblClose}}</button>
     </div>
 
@@ -456,7 +456,7 @@
           useflag: user_param.useflag,
         })
         .then((res) => {
-          console.log("[response data]", res.data);
+          // console.log("[response data]", res.data);
           recvData.value = res.data;
           userData = res.data;
 
@@ -1260,38 +1260,10 @@
   }
 </script>
 <style lang="scss">
-  .mng {
-		font-family: Avenir, Helvetica, Arial, sans-serif;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-		text-align: center;
-		color: #2c3e50;
-		width:100%;
-    // height:799px;
-    height:100%;
-    // border-top:1px solid #070707;
-    // border-bottom:1px solid #070707;
-		/* margin-top: 60px; */
-	}
-  .list {
-    /* height: calc(50vh - 70px); */
-    width : 100%;
-    height: 455px;
-    overflow: auto;
-  }
-  .usersearch1 {
-    height : 40px;
-    // border-bottom:1px solid #070707;
-    margin : -5px 0px 0px 0px;
-  }
-  .usergrid1 {
-    // width : 100%;
-    margin:0px 5px 0px 5px;
-    // height: 733px;
-    overflow: auto;
-  }
-  .usersave1 {
-    width : 100%;
-    height : 40px;
-  }
+.list {
+  /* height: calc(50vh - 70px); */
+  width : 100%;
+  height: 455px;
+  overflow: auto;
+}
 </style>
