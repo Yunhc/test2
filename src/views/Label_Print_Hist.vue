@@ -152,13 +152,14 @@
 
 		<div class="window-grid-1"
       :style="{
-        'height': `calc(${window_height - 109 - 115 - 75}px)`
+        height: `calc(${window_height - 109 - 115 - 75}px)`,
+				width: `calc(${window_width - 10}px)`
       }"
     >
       <ag-grid-vue
         class="ag-theme-alpine"
         headerHeight='35'
-        :style="{width: `calc(${window_width - 10}px)`, height:'100%'}"
+        :style="{width:'100%', height:'100%'}"
         :rowData="recvData.value"
         :gridOptions="gridOptions"
         allow_unsafe_jscode="True"
