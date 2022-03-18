@@ -298,7 +298,7 @@ export default {
 		let columnDefs= reactive([
 			{headerName: '플랜트', field: 'werks', width: 80, cellStyle: {textAlign: "center"}, pinned: 'left'},
 			{headerName: '플랜트명', field: 'plant', width: 80, cellStyle: {textAlign: "left"}, pinned: 'left'},
-			{headerName: '', field: 'sel', width: 35, cellStyle: {textAlign: "center"}, pinned: 'left',
+			{headerName: '', field: 'sel', width: 60, cellStyle: {textAlign: "center"}, pinned: 'left',
 				headerCheckboxSelection: true, checkboxSelection: true
 			},
 			{headerName: '바코드', field: 'barno', width: 80, cellStyle: {textAlign: "center"},
