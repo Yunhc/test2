@@ -44,13 +44,14 @@
     </div>
     <div class="usergrid1"
       :style="{
-        'height': `calc(${window_height - 109 - 80}px)`
+        height: `calc(${window_height - 109 - 80}px)`,
+        width: `calc(${window_width - 10}px)`
       }"
     >
       <ag-grid-vue
         id="agGrid1"
         class="ag-theme-alpine"
-        :style="{width: `calc(${window_width - 10}px)`, height:'100%'}"
+        :style="{width:'100%', height:'100%'}"
         headerHeight='35'
         :columnDefs="columnDefs"
         :rowData="recvData.value"
