@@ -340,14 +340,31 @@
               strSilsano.value = res.data[0].stc_no;
               lblSCType.value = res.data[0].silsatype;
               console.log("실사번호 : ", strSilsano.value);
-              createIndexedDB();  //로컬DB 생성
 
-              selectAllIndexedDB(); //모든 데이터를 조회한다.
-              var rowCnt = dbRowCount();
-              console.log("rowCnt: -------------------- ", rowCnt);
-              if (rowCnt > 0) {
-                console.log("이전에 전송하지 않은 바코드 Data가 존재합니다.");
-              }
+              createIndexedDB().then((bRtn) =>{
+                console.log("응답:", bRtn);
+                if(bRtn){
+                  console.log("#################################");
+                  console.log("bRtn = ", bRtn);
+                  if(bRtn){
+
+                    dbRowCount().then((rowCnt)=>{
+                      console.log("rowCnt: -------------------- ", rowCnt);
+                      if (rowCnt > 0) {
+                        console.log("이전에 전송하지 않은 바코드 Data가 존재합니다.");
+                      }
+                      else{
+                        console.log("Data가 존재하지 않습니다.");
+                      }
+                    });
+                  }
+                  console.log("#################################");
+                }
+              });
+
+
+              // selectAllIndexedDB(); //모든 데이터를 조회한다.
+
             }
           }
           else {
@@ -564,33 +581,32 @@
       }
 
       function dbRowCount(){
-        var request = indexedDB.open(dbname);
-        var nCnt = 0;
+        return new Promise((bRtn) => {
+          var request = indexedDB.open(dbname);
 
-        request.onerror = function(event){
-          alert( event.traget.errorCode);
-        }
+          request.onerror = function(event){
+            alert( event.traget.errorCode);
+            bRtn(0);
+          }
+          request.onsuccess = function(event){
+            var db = event.target.result;
+            var transaction = db.transaction(['stc'], "readonly");
+            var objectStore = transaction.objectStore('stc');
+            var countRequest = objectStore.count();
 
-        request.onsuccess = function(event){
-          var db = event.target.result;
-          var transaction = db.transaction(['stc'], "readonly");
-          var objectStore = transaction.objectStore('stc');
-          var countRequest = objectStore.count();
-
-          countRequest.onsuccess = function() {
-            console.log("rowCount:", countRequest.result);
-            if (countRequest.result >= 0){
-              console.log("111");
-              nCnt = countRequest.result;
-              console.log("rowCount  1 :", nCnt);
+            countRequest.onsuccess = function() {
+              console.log("rowCount:", countRequest.result);
+              if (countRequest.result >= 0){
+                console.log("111");
+                bRtn(countRequest.result);
+              }
+            }
+            countRequest.onerror = function() {
+              console.log("rowCount: bb=", countRequest.result);
+              bRtn(0);
             }
           }
-          countRequest.onerror = function() {
-            console.log("rowCount: bb=", countRequest.result);
-          }
-        }
-        console.log("rowCount  2 :", nCnt);
-        return nCnt;
+        });
       }
 
       function selectAllIndexedDB(){
@@ -678,47 +694,45 @@
         }
       }
 
-      function createIndexedDB(){
-        if(!window.indexedDB){
-          alert("browser doesn't support IndexedDB");
-        }
-        else{
-          dbname = 'stcDB_' + strSilsano.value;
-          console.log("dbname: ", dbname, strSilsano.value);
-          var version = 1;
-          var request = indexedDB.open(dbname, version);
+      // async function createIndexedDB() {
+      //   await createDB().then((res) =>{
+      //     console.log("응답:", res);
+      //     return res;
+      //   });
+      // }
 
-          request.onupgradeneeded = function(event){
-            var db = event.target.result;
-            // db.createObjectStore('silsa', {keyPath:'userid'});
-            // db.createObjectStore('silsa', {keyPath:'key', autoIncrement: true});
-            // var objectStore = db.createObjectStore('silsa', {keyPath:'key', autoIncrement: true});
-            // objectStore.put({key: 11, value: 33});  // OK, key generator set to 11
-            // objectStore.put({value: 66});           // OK, will have auto-generated key 12
+      async function createIndexedDB(){
+        return new Promise((bRtn) => {
+          if(!window.indexedDB){
+            alert("browser doesn't support IndexedDB");
+            bRtn(false);
+          }
+          else{
+            dbname = 'stcDB_' + strSilsano.value;
+            console.log("dbname: ", dbname, strSilsano.value);
+            let version = 1;
+            // var request = await fetch(indexedDB.open(dbname, version));
+            let request = indexedDB.open(dbname, version);
 
-            var objectStore = db.createObjectStore('stc', {keyPath:['stcno','rowno','barno']});
-            // var objectStore = db.createObjectStore('stc', ['stcno', 'rowno', 'barno']);
-            // objectStore.createIndex("stcno", "stcno", { unique: false });
-            objectStore.createIndex("werks", "werks", { unique: false });
-            objectStore.createIndex("lgort", "lgort", { unique: false });
-            // objectStore.createIndex("rowno", "rowno", { unique: false });
-            // objectStore.createIndex("barno", "barno", { unique: false });
-            objectStore.createIndex("userid", "userid", { unique: false });
-            // objectStore.transaction.oncomplete = function() {
-            //   // Store values in the newly created objectStore.
-            //   var silsaObjectStore = db.transaction("silsa", "readwrite").objectStore("silsa");
-            //   userData.forEach(function(user) {
-            //     silsaObjectStore.add(user);
-            //   });
-            // };
+            console.log("request start", request);
+            request.onupgradeneeded = function(event){
+              let db = event.target.result;
+              let objectStore = db.createObjectStore('stc', {keyPath:['stcno','rowno','barno']});
+              objectStore.createIndex("werks", "werks", { unique: false });
+              objectStore.createIndex("lgort", "lgort", { unique: false });
+              objectStore.createIndex("userid", "userid", { unique: false });
+            }
+
+            request.onerror = function(event){
+              alert(event);
+              bRtn(false);
+            }
+            request.onsuccess = function(event){
+              console.log("success == ", event);
+              bRtn(true);
+            }
           }
-          request.onerror = function(event){
-            alert(event);
-          }
-          request.onsuccess = function(event){
-            console.log("success = ", event);
-          }
-        }
+        });
       }
 
       function deleteIndexedDB(delstcno, delrowno, delbarno){
