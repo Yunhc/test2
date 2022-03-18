@@ -144,7 +144,7 @@
 					<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
 					@click='sendClick'>Send</button>
 					<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
-					@click='deleteClick'>Delete</button>				    				
+					@click='deleteClick'>Delete</button>
 					<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
 					@click='scanClick'>Scan</button>
 					<button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 0px 0px 0px', width:'70px'}"
@@ -212,7 +212,7 @@
 
       let columnDefs= reactive([
 				{headerName: '', field: 'sel', width: 4, cellStyle: {textAlign: "center"},
-					headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'},				
+					headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'},
         {headerName: 'Barcode', field: 'barno', width: 100, cellStyle: {textAlign: "center"}, sortable: true, filter: true, pinned: 'left'},
         {headerName: 'S/L', field: 'lgort', width: 60, cellStyle: {textAlign: "center"}, sortable: true, filter: true},
         {headerName: 'Row No', field: 'rowno', width: 80, cellStyle: {textAlign: "center"}, sortable: true, filter: true},
@@ -341,17 +341,13 @@
               lblSCType.value = res.data[0].silsatype;
               console.log("실사번호 : ", strSilsano.value);
               createIndexedDB();  //로컬DB 생성
-              
-              var rowCnt = dbRowCount();
-              setTimeout(function () {
-                console.log("rowCnt: ", rowCnt);
-                if (rowCnt > 0) {
-                  console.log("이전에 전송하지 않은 바코드 Data가 존재합니다.");
-                } 
-              }, 1000);
-
 
               selectAllIndexedDB(); //모든 데이터를 조회한다.
+              var rowCnt = dbRowCount();
+              console.log("rowCnt: -------------------- ", rowCnt);
+              if (rowCnt > 0) {
+                console.log("이전에 전송하지 않은 바코드 Data가 존재합니다.");
+              }
             }
           }
           else {
@@ -414,7 +410,7 @@
 
 					if (strBar.length != 13){
 						alert('유효하지 않은 바코드번호입니다.')
-						return;						
+						return;
 					}
 
 					if (strBar.substr(0,1) == "9") {
@@ -451,7 +447,7 @@
 						// 맨밑에 추가
 						// this.gridOptions.api.updateRowData({add: [newData]});
 
-						// 그리드 특정위치에 추가 
+						// 그리드 특정위치에 추가
 						gridApi.value.updateRowData({add:[newData], addIndex:0});
 
             // exportTextFile();  //텍스트 파일로 저장
@@ -569,6 +565,7 @@
 
       function dbRowCount(){
         var request = indexedDB.open(dbname);
+        var nCnt = 0;
 
         request.onerror = function(event){
           alert( event.traget.errorCode);
@@ -579,20 +576,21 @@
           var transaction = db.transaction(['stc'], "readonly");
           var objectStore = transaction.objectStore('stc');
           var countRequest = objectStore.count();
+
           countRequest.onsuccess = function() {
-            console.log("rowCount: ", countRequest.result);
+            console.log("rowCount:", countRequest.result);
             if (countRequest.result >= 0){
               console.log("111");
-              return countRequest.result;
-            } else{
-              return 0;
+              nCnt = countRequest.result;
+              console.log("rowCount  1 :", nCnt);
             }
           }
           countRequest.onerror = function() {
-            console.log("rowCount: ", countRequest.result);
-            return 0;
+            console.log("rowCount: bb=", countRequest.result);
           }
         }
+        console.log("rowCount  2 :", nCnt);
+        return nCnt;
       }
 
       function selectAllIndexedDB(){
@@ -657,7 +655,7 @@
 
           var objectStore = transaction.objectStore('stc');
 
-          stcData.push({stcno:strSilsano.value, 
+          stcData.push({stcno:strSilsano.value,
                        werks:getdata(store.state.auth.user[0].plantcd),
                        lgort:getdata(req_param.stor_loc),
                        rowno:req_param.rowno,
@@ -718,7 +716,7 @@
             alert(event);
           }
           request.onsuccess = function(event){
-            console.log("success = ", event);  
+            console.log("success = ", event);
           }
         }
       }
@@ -848,7 +846,7 @@
 
           //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
            await $axios.post(urlPost, {
-          // $axios.post(urlPost, {  
+          // $axios.post(urlPost, {
               i_lang: "KR",
               i_werks: getdata(store.state.auth.user[0].plantcd),
               i_userid: store.state.auth.user[0].userid,
@@ -896,7 +894,7 @@
       async function yesClick() {
         popupisopen.value = false;
         if (strCalltype.value == "send"){
-          var bRtn = await sendData();      
+          var bRtn = await sendData();
           if (bRtn){
               msg_color.value = "blue";
               msg.value = "전송이 완료되었습니다. 처리결과를 확인하시기 바랍니다.";
@@ -908,20 +906,20 @@
         else if (strCalltype.value == "delete"){
           var selectedData = gridApi.value.getSelectedRows();
           console.log("[selected row]", selectedData);
-    
+
           var removedRows = [];
           selectedData.forEach( function(selectedRow){
             removedRows.push(selectedRow);
             gridApi.value.updateRowData({remove: [selectedRow]});
             console.log("삭제대상 바코드: ", selectedRow.barno);
             deleteIndexedDB(strSilsano.value, selectedRow.rowno, selectedRow.barno);
-   
+
             lblScanCnt.value -= 1;
           });
           console.log("[removed row]", removedRows);
           }
       }
-      
+
       function noClick(){
         popupisopen.value = false;
       }
