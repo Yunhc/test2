@@ -208,6 +208,7 @@
       let msg = ref(null);
 			let msg_color = ref(null);
       let stcData = ([]);
+      var dbname = "";
 
       let columnDefs= reactive([
 				{headerName: '', field: 'sel', width: 4, cellStyle: {textAlign: "center"},
@@ -246,7 +247,7 @@
 
       onBeforeMount(()=>{
         console.log("[Stockcount_offline] = ", "onBeforeMount--");
-        initSelectBox();   
+        initSelectBox();
       });
 
       onMounted(() => {
@@ -339,6 +340,18 @@
               strSilsano.value = res.data[0].stc_no;
               lblSCType.value = res.data[0].silsatype;
               console.log("실사번호 : ", strSilsano.value);
+              createIndexedDB();  //로컬DB 생성
+              
+              var rowCnt = dbRowCount();
+              setTimeout(function () {
+                console.log("rowCnt: ", rowCnt);
+                if (rowCnt > 0) {
+                  console.log("이전에 전송하지 않은 바코드 Data가 존재합니다.");
+                } 
+              }, 1000);
+
+
+              selectAllIndexedDB(); //모든 데이터를 조회한다.
             }
           }
           else {
@@ -365,9 +378,16 @@
         if (e.target.id == "stor_loc"){
           console.log("stor_loc : ", req_param.stor_loc)
           if (req_param.stor_loc != ""){
+            // var bRtn1 = await search_SCInfo();
             search_SCInfo();
-            // importTextFile(); //텍스트 파일 불러오기
-            createIndexedDB();  //로컬DB 생성
+            // console.log("bRtn1:" ,bRtn1);  //null?
+            // if (bRtn1) {
+            //   // importTextFile(); //텍스트 파일 불러오기
+            //   createIndexedDB();  //로컬DB 생성
+            //   // selectAllIndexedDB(); //모든 데이터를 조회한다.
+            //   // selectIndexedDB();  //F.key로 진행중인 실사번호만 조회한다. 에러
+            //   // selectBoundIndexedDB(); //index로 진행중인 실사번호만 조회한다. 에러
+            // }
             rowno.value.focus();
             rowno.value.select();
           }
@@ -449,8 +469,176 @@
         // }
       }
 
+      function selectBoundIndexedDB(){
+        var request = indexedDB.open(dbname);
+
+        request.onerror = function(event){
+          alert( event.traget.errorCode);
+        }
+
+        request.onsuccess = function(event){
+          var db = event.target.result;
+          var transaction = db.transaction(['stc']);
+
+          transaction.oncomplete = function(){
+            console.log("transaction done");
+            gridApi.value.setRowData(recvData);
+          }
+          transaction.onerror = function(){
+            console.log("transaction fail");
+          }
+
+          //변수Clear
+          recvData.splice(0, recvData.length);
+
+          var objectStore = transaction.objectStore('stc');
+          var singleKeyRange = IDBKeyRange.only("2202001");
+
+          // // Match anything past "Bill", including "Bill"
+          // var lowerBoundKeyRange = IDBKeyRange.lowerBound("Bill");
+          // // Match anything past "Bill", but don't include "Bill"
+          // var lowerBoundOpenKeyRange = IDBKeyRange.lowerBound("Bill", true);
+          // // Match anything up to, but not including, "Donna"
+          // var upperBoundOpenKeyRange = IDBKeyRange.upperBound("Donna", true);
+          // // Match anything between "Bill" and "Donna", but not including "Donna"
+          // var boundKeyRange = IDBKeyRange.bound("Bill", "Donna", false, true);
+
+          var index = objectStore.index("stcno");
+          var request = index.openCursor(singleKeyRange);
+          request.onsuccess = function(event){
+            var cursor = event.target.result;
+            if (cursor){
+              recvData.push(cursor.value);
+              cursor.continue();
+            }
+          }
+
+          request.onerror = function(){
+            console.log("select all fail");
+          }
+        }
+      }
+
+      function selectIndexedDB(){
+        var request = indexedDB.open(dbname);
+
+        request.onerror = function(event){
+          alert( event.traget.errorCode);
+        }
+
+        request.onsuccess = function(event){
+          var db = event.target.result;
+          var transaction = db.transaction(['stc']);
+
+          transaction.oncomplete = function(){
+            console.log("transaction done");
+          }
+          transaction.onerror = function(){
+            console.log("transaction fail");
+          }
+          var objectStore = transaction.objectStore('stc');
+
+          // var request = objectStore.get(strSilsano.value);
+          var request = objectStore.get("2202001");
+          request.onerror = function(){
+            console.log("select all fail");
+          }
+
+          request.onsuccess = function(event){
+            if(event.target.result == undefined){
+              alert("Not Exists");
+            }
+            else{
+              // alert(JSON.stringify(event.target.result));
+              alert("test")
+            }
+          }
+
+          // //index를 조회한다.
+          // var index = objectStore.index("username");
+          // index.get(user_param.username).onsuccess = function(event){
+          //   if(event.target.result == undefined){
+          //     alert("Not Exists");
+          //   }
+          //   else{
+          //     alert(JSON.stringify(event.target.result));
+          //   }
+          // }
+        }
+      }
+
+      function dbRowCount(){
+        var request = indexedDB.open(dbname);
+
+        request.onerror = function(event){
+          alert( event.traget.errorCode);
+        }
+
+        request.onsuccess = function(event){
+          var db = event.target.result;
+          var transaction = db.transaction(['stc'], "readonly");
+          var objectStore = transaction.objectStore('stc');
+          var countRequest = objectStore.count();
+          countRequest.onsuccess = function() {
+            console.log("rowCount: ", countRequest.result);
+            if (countRequest.result >= 0){
+              console.log("111");
+              return countRequest.result;
+            } else{
+              return 0;
+            }
+          }
+          countRequest.onerror = function() {
+            console.log("rowCount: ", countRequest.result);
+            return 0;
+          }
+        }
+      }
+
+      function selectAllIndexedDB(){
+        var request = indexedDB.open(dbname);
+
+        request.onerror = function(event){
+          alert( event.traget.errorCode);
+        }
+
+        request.onsuccess = function(event){
+          var db = event.target.result;
+          var transaction = db.transaction(['stc']);
+
+          transaction.oncomplete = function(){
+            console.log("transaction done");
+            gridApi.value.setRowData(recvData);
+          }
+          transaction.onerror = function(){
+            console.log("transaction fail");
+          }
+
+          //변수Clear
+          recvData.splice(0, recvData.length);
+
+          var objectStore = transaction.objectStore('stc');
+          var request = objectStore.openCursor();
+          request.onsuccess = function(event){
+            var cursor = event.target.result;
+            if (cursor){
+              request = objectStore.get(cursor.key);
+              request.onsuccess = function(event){
+                recvData.push(event.target.result)
+                // console.log(event.target.result);
+              }
+              cursor.continue();
+            }
+          }
+
+          request.onerror = function(){
+            console.log("select all fail");
+          }
+        }
+      }
+
       function writeIndexedDB(){
-        var request = indexedDB.open('stcDB');
+        var request = indexedDB.open(dbname);
         stcData.splice(0,stcData.length);
         request.onerror = function(event){
           alert('Database error: ' + event.traget.errorCode);
@@ -497,9 +685,10 @@
           alert("browser doesn't support IndexedDB");
         }
         else{
-          var name = 'stcDB';
+          dbname = 'stcDB_' + strSilsano.value;
+          console.log("dbname: ", dbname, strSilsano.value);
           var version = 1;
-          var request = indexedDB.open(name, version);
+          var request = indexedDB.open(dbname, version);
 
           request.onupgradeneeded = function(event){
             var db = event.target.result;
@@ -529,14 +718,14 @@
             alert(event);
           }
           request.onsuccess = function(event){
-            console.log("success = ", event);
+            console.log("success = ", event);  
           }
         }
       }
 
       function deleteIndexedDB(delstcno, delrowno, delbarno){
         console.log("delete: ", delstcno, delrowno, delbarno);
-        var request = indexedDB.open('stcDB');
+        var request = indexedDB.open(dbname);
 
         request.onerror = function(event){
           alert( event.traget.errorCode);
@@ -775,6 +964,9 @@
         fn_SelectAll,
         closeClick,
         sendcloseClick,
+        selectAllIndexedDB,
+        selectIndexedDB,
+        selectBoundIndexedDB,
       };
     },
   }
