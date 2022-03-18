@@ -858,7 +858,10 @@
 
       async function sendData() {
         var rowCnt = gridApi.value.getDisplayedRowCount();
-        hoffset.value -= 85;
+        console.log("전송 popup: ", isTransfer.value);
+        if (!isTransfer.value) {  //전송결과 조회 box를 처음 화면에 불러올때만 그리드 높이 조정. 
+          hoffset.value -= 85;
+        }
         isTransfer.value = true;
         // lblTotCnt.value = lblScanCnt.value;
         lblTotCnt.value = rowCnt;
