@@ -25,7 +25,7 @@
         id="agGrid1"
         class="ag-theme-alpine"
         headerHeight='35'
-        style="width: 400px; height:100%"
+        style="width: 350px; height:100%"
         :gridOptions="gridOptions"
         allow_unsafe_jscode="True"
         >
@@ -172,11 +172,11 @@ export default {
     let columnApi = ref(null);
 
     let columnDefs= reactive([
-      {headerName: '', field: 'sel', width: 10, cellStyle: {textAlign: "center"}, hide: true,
+      {headerName: '', field: 'sel', width: 20, cellStyle: {textAlign: "center"}, hide: true,
         headerCheckboxSelection: true, checkboxSelection: true},
       //행번호
-      {headerName: '번호', field: 'seq', width: 10, cellStyle: {textAlign: "center"}, sortable: true, valueGetter: (params) => { return params.node.rowIndex + 1 } },  
-      {headerName: '바코드', field: 'barno', width: 20, cellStyle: {textAlign: "center"}, sortable: true},
+      {headerName: '번호', field: 'seq', width: 20, cellStyle: {textAlign: "center"}, sortable: true, valueGetter: (params) => { return params.node.rowIndex + 1 } },  
+      {headerName: '바코드', field: 'barno', width: 80, cellStyle: {textAlign: "center"}, sortable: true},
     ]);
     var gridOptions = {
       defaultColDef: {
@@ -193,9 +193,12 @@ export default {
       rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
       onGridReady: function(event) {
         console.log("[Autolabeller Production Result Barcode Scan] = ", "onGridReady");
+        // setTimeout(function () {
+        //   autoSizeAll(false);
+        // }, 500);
         setTimeout(function () {
           event.api.setRowData(recvData);
-        }, 500);
+        }, 500);        
         gridApi.value = event.api;
         columnApi.value = event.columnApi;
         event.api.sizeColumnsToFit();
@@ -423,6 +426,9 @@ export default {
             msg_color.value = "blue";
             msg.value = res.data[0].message;
             PlaySound("OK");
+            setTimeout(function () {
+              autoSizeAll(false);
+            }, 500);
             rtn = true;
           }
         }
@@ -459,14 +465,14 @@ export default {
       }
     }
 
-    // function autoSizeAll(skipHeader) {
-    //   const allColumnIds = [];
-    //   columnApi.value.getAllColumns().forEach((column) => {
-    //     allColumnIds.push(column.colId);
-    //   });
+    function autoSizeAll(skipHeader) {
+      const allColumnIds = [];
+      columnApi.value.getAllColumns().forEach((column) => {
+        allColumnIds.push(column.colId);
+      });
 
-    //   columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
-    // }
+      columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
+    }
 
 
     return{
