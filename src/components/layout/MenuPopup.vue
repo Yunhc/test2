@@ -92,11 +92,13 @@ import qrcode from '@/views/QRCode.vue';
 import print from '@/views/Print.vue';
 import room from '@/views/OneRoom.vue';
 import good_receipt from '@/views/Good_Receipt.vue';
+import usermanagement from '@/views/UserManagement.vue';
+import auth_management from '@/views/Auth_Management.vue';
+import master_company from '@/views/Master_Company.vue';
 import good_receipt_order from '@/views/Good_Receipt_Order.vue';
 import autolabeller_change_lot from '@/views/Autolabeller_Change_Lot.vue';
 import autolabeller_production_result from '@/views/Autolabeller_Production_Result.vue';
-import usermanagement from '@/views/UserManagement.vue';
-import auth_management from '@/views/Auth_Management.vue';
+import autolabeller_barcode_info from '@/views/Autolabeller_Barcode_Info.vue';
 import mdi from '@/views/Mdi.vue';
 import label_print_hist from '@/views/Label_Print_Hist.vue';
 import parents from '@/views/Parents.vue';
@@ -125,12 +127,14 @@ export default {
 		qrcode,
 		print,
 		room,
+		master_company,
+		usermanagement,
+		auth_management,
 		good_receipt,
 		good_receipt_order,
 		autolabeller_change_lot,
 		autolabeller_production_result,
-		usermanagement,
-		auth_management,
+		autolabeller_barcode_info,
 		mdi,
 		label_print_hist,
 		parents,
@@ -163,14 +167,16 @@ export default {
 			{pid: 'M000', id:'usermanagement', name:'사용자관리'},
 			{pid: 'M000', id:'auth_management', name:'권한관리'},
 			// {pid: 'M000', id:'print', name:'Print Test'},
-			// {pid: 'M000', id:'qrcode', name:'Barcode Test'},
+			{pid: 'M000', id:'qrcode', name:'Barcode Test'},
 			// {pid: 'M000', id:'mdi', name:'MDI Test'},
 			// {pid: 'M100', id:'about', name:'About'},
 			// {pid: 'M200', id:'room', name:'Room'},
+			{pid: 'M100', id:'master_company', name:'회사코드 관리'},
 			{pid: 'M200', id:'good_receipt', name:'구매입고'},
 			{pid: 'M200', id:'good_receipt_order', name:'구매오더 조회'},
 			{pid: 'M200', id:'autolabeller_change_lot', name:'Lot번호 일괄변경'},
 			{pid: 'M200', id:'autolabeller_production_result', name:'오토라벨러 생산입고'},
+			{pid: 'M200', id:'autolabeller_barcode_info', name:'바코드 정보'},
 			{pid: 'M250', id:'label_print_hist', name:'라벨 발행 이력'},
 			// {pid: 'M250', id:'parents', name:'Slot 테스트'},
 			{pid: 'M520', id:'fg_receipt', name:'Finished Goods Receipt'},
