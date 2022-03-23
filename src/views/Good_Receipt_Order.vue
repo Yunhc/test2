@@ -355,7 +355,7 @@
       }
 
       function closeClick(){
-        emit("component_close", "good_receipt");
+        emit("component_close", "good_receipt_order");
       }
 
       return {
