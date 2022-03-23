@@ -102,6 +102,11 @@
 	// border:1px solid red;
 }
 
+.window-grid-2 {
+	margin:-8px 5px 0px 5px;
+	overflow:auto;
+}
+
 .window-save-b {
 	width:100%;
 	height:80px;
@@ -122,6 +127,12 @@
 	margin:0px 5px 0px 5px;
 	overflow-x:auto;
 	// border:1px solid red;
+}
+.window-save-2 {
+	background: gainsboro;
+	height : 105px;
+	margin : 0px 5px 0px 5px;
+	overflow-x: auto;
 }
 /******************************************************************************/
 //ag-grid 설정
