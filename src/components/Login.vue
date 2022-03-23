@@ -128,7 +128,7 @@ export default {
 			// console.log("[login] = ", "onMounted--");
 			// console.log("[login] = loggedUser --", store.state.auth.user);
 			// console.log("[login] = saveid --", store.state.saveid.id);
-
+			
 			window.addEventListener('resize', handleResize);
 
 			//언어 초기값 설정
@@ -152,12 +152,26 @@ export default {
 					// console.log("[login] = store.state.saveid.id.chk -- ", store.state.saveid.id[0].chk);
 				}
 			}
+			if (user.value.userid == "" || user.value.userid == null){
+				userid.value.focus();
+			} else {
+				password.value.focus();
+			}
+			// fullPageChange();	//에러발생 (브라우저에서 보안문제로 차단)
+			console.log("fullscreen");
     });
 
 		onUnmounted(() =>{
 			// console.log("[login] = onUnmounted -- ");
 			window.removeEventListener('resize', handleResize);
 		});
+
+		function fullPageChange(){
+			const documentElement = document.documentElement;
+			if (document.fullscreenElement === null) { //전체화면 아닌 상태
+				documentElement.requestFullscreen();
+			}
+		}
 
 		function radioChangeLang()
 		{
@@ -170,6 +184,7 @@ export default {
 		function handleLogin() {
 			if (user.value.userid && user.value.password) {
 				store.commit('loading/startLoading'); //진행표시 시작
+				fullPageChange();	//전체화면 전환
 				setTimeout(function(){
 					handleLogin_S();
 				}, 1000)
