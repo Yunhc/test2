@@ -266,6 +266,7 @@
       onMounted(() => {
         console.log("[Autolabeller Barcode Info] = ", "onMounted--");
         window.addEventListener('resize', handleResize);
+        fullPageChange();
         scan.value.focus();
       });
 
@@ -277,6 +278,13 @@
       function handleResize() {
         window_width.value = window.innerWidth;
         window_height.value = window.innerHeight;
+      }
+
+      function fullPageChange(){
+        const documentElement = document.documentElement;
+        if (document.fullscreenElement === null) { //전체화면 아닌 상태
+          documentElement.requestFullscreen();
+        }
       }
 
       function fn_Search(){
