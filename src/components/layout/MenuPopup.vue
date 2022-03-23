@@ -99,6 +99,7 @@ import good_receipt_order from '@/views/Good_Receipt_Order.vue';
 import autolabeller_change_lot from '@/views/Autolabeller_Change_Lot.vue';
 import autolabeller_production_result from '@/views/Autolabeller_Production_Result.vue';
 import autolabeller_barcode_info from '@/views/Autolabeller_Barcode_Info.vue';
+import quality_scrap from '@/views/Quality_Scrap.vue';
 import mdi from '@/views/Mdi.vue';
 import label_print_hist from '@/views/Label_Print_Hist.vue';
 import parents from '@/views/Parents.vue';
@@ -135,6 +136,7 @@ export default {
 		autolabeller_change_lot,
 		autolabeller_production_result,
 		autolabeller_barcode_info,
+		quality_scrap,
 		mdi,
 		label_print_hist,
 		parents,
@@ -177,6 +179,7 @@ export default {
 			{pid: 'M200', id:'autolabeller_change_lot', name:'Lot번호 일괄변경'},
 			{pid: 'M200', id:'autolabeller_production_result', name:'오토라벨러 생산입고'},
 			{pid: 'M200', id:'autolabeller_barcode_info', name:'바코드 정보'},
+			{pid: 'M200', id:'quality_scrap', name:'폐기처리'},
 			{pid: 'M250', id:'label_print_hist', name:'라벨 발행 이력'},
 			// {pid: 'M250', id:'parents', name:'Slot 테스트'},
 			{pid: 'M520', id:'fg_receipt', name:'Finished Goods Receipt'},
