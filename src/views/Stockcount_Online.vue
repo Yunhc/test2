@@ -330,7 +330,7 @@
           }
           else {
             msg_color.value = "red";
-            msg.value = "바코드 정보가 조회되지 않았습ㄴ디ㅏ.";
+            msg.value = "바코드 정보가 조회되지 않았습니다.";
           }
 
           scan.value.focus();
