@@ -95,7 +95,7 @@ import good_receipt from '@/views/Good_Receipt.vue';
 import usermanagement from '@/views/UserManagement.vue';
 import auth_management from '@/views/Auth_Management.vue';
 import master_company from '@/views/Master_Company.vue';
-import master_material from '@/views/master_material.vue';
+import master_material from '@/views/Master_Material.vue';
 import good_receipt_order from '@/views/Good_Receipt_Order.vue';
 import autolabeller_change_lot from '@/views/Autolabeller_Change_Lot.vue';
 import autolabeller_production_result from '@/views/Autolabeller_Production_Result.vue';
