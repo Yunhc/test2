@@ -11,7 +11,7 @@
 
     <div class="window-search-5">
       <!-- 바코드 번호 -->
-      <div class="input-group mb-3" :style="{ margin:'0px 0px 0px 0px'}">
+      <div class="input-group mb-3" :style="{ margin:'2px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
           :style="{width:'80px', display:'inline-block', 'text-align':'right'}">바코드
         </span>
@@ -130,7 +130,7 @@
   import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
   import {AgGridVue} from 'ag-grid-vue3'
   import { useStore } from 'vuex';
-  import { getdata } from '@/helper/filter.js';
+  // import { getdata } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
   import popupyn from '@/views/PopupYN.vue';
 
@@ -172,44 +172,38 @@
       let msg_color = ref(null);
 
       let gridApi = ref(null);
-      // let columnApi = ref(null);
+      let columnApi = ref(null);
 
       let columnDefs= reactive([
-        {headerName: '오더번호', field: 'ebeln', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-        {headerName: '품번', field: 'ebelp', width: 6, cellStyle: {textAlign: "center"}},
-        {headerName: '오더유형', field: 'bsart', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '오더일자', field: 'bedat', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '공급업체', field: 'lifnr', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '공급업체명', field: 'name1', width: 20, hide: true, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
-        {headerName: '공급플랜트', field: 'reswk', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '회사코드', field: 'bukrs', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '구매그룹', field: 'ekgrp', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '아이템유형', field: 'bstyp', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '자재코드', field: 'ematn', width: 10, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: '자재명', field: 'txz01', width: 20, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '플랜트', field: 'werks', width: 10, hide: true, cellStyle: {textAlign: "center"}},
-        {headerName: '저장위치', field: 'lgort', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: '오더수량', field: 'menge', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
+				{headerName: '', field: 'sel', width: 4, cellStyle: {textAlign: "center"},
+					headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'},        
+        {headerName: '바코드', field: 'barno', width: 10, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        {headerName: '재고상태', field: 'status', width: 10, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: '처리유형', field: 'proctype', width: 4, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '라벨유형', field: 'lbltype', width: 4, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '수량', field: 'qty', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
         {headerName: '단위', field: 'meins', width: 4, cellStyle: {textAlign: "left"}, sortable: true},
-        {headerName: '환산수량', field: 'menge2', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
-        {headerName: '누적수량', field: 'procqty', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
-        {headerName: '스캔수량', field: 'scanqty', width: 6, cellStyle: {textAlign: "right"}, valueFormatter: (params) => {return Number(params.value).toLocaleString()}, sortable: true},
-        {headerName: '환산단위', field: 'meins2', width: 4, cellStyle: {textAlign: "left"}, sortable: true},
-        {headerName: '처리여부', field: 'procflag', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: '마감여부', field: 'elikz', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: '수량초과허용', field: 'uebtk', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: '수량초과범위', field: 'uebto', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: '최대가능수량', field: 'maxqty', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: 'LPMFO', field: 'var1', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: 'LPMFI', field: 'var2', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: 'LPMBO', field: 'var3', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: 'LPMBI', field: 'var4', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: 'Plate F', field: 'var5', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: 'Plate B', field: 'var6', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: '외자여부', field: 'kalsk', width: 8, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: 'S/O 번호', field: 'kdauf', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: 'S/O 품번', field: 'kdpos', width: 10, hide: true, cellStyle: {textAlign: "center"}, sortable: true},
-        {headerName: '재고유형', field: 'insmk', width: 8, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: '자재코드', field: 'matnr', width: 10, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: '자재명', field: 'maktx', width: 20, cellStyle: {textAlign: "left"}, sortable: true},
+        {headerName: '그룹바코드', field: 'grpbarno', width: 10, cellStyle: {textAlign: "center"}, sortable: true},
+        {headerName: '낱박스존재', field: 'subflag', width: 4, cellStyle: {textAlign: "center"}},
+        {headerName: '플랜트', field: 'werks', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '작업장', field: 'arbpl', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '저장위치', field: 'lgort', width: 10, cellStyle: {textAlign: "center"}},        
+        {headerName: 'S/O 번호', field: 'kdauf', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: 'S/O 품번', field: 'kdpos', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '이전바코드', field: 'prebar', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '이전자재코드', field: 'prematnr', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: 'D/O 번호', field: 'vbeln', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: 'D/O 품번', field: 'posnr', width: 10, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: 'Lot 번호', field: 'lotno', width: 8, cellStyle: {textAlign: "center"}},
+        {headerName: '생산일자', field: 'proddate', width: 8, cellStyle: {textAlign: "center"}},
+        {headerName: 'LPM전면(내)', field: 'lpm_fo', width: 6, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: 'LPM전면(외)', field: 'lpm_fi', width: 6, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: 'LPM후면(내)', field: 'lpm_bo', width: 6, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: 'LPM후면(외)', field: 'lpm_bi', width: 6, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '경면판(전)', field: 'plate_f', width: 4, hide: true, cellStyle: {textAlign: "center"}},
+        {headerName: '경면판(후)', field: 'plate_b', width: 4, hide: true, cellStyle: {textAlign: "center"}},
       ]);
       var gridOptions = {
         defaultColDef: {
@@ -226,12 +220,17 @@
         rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
         onGridReady: function(event) {
           console.log("[Quality Scrap] = ", "onGridReady");
-          setTimeout(function () {
+          //timeout 설정하면 화면오픈시 그리드 비활성화됨.
+          // setTimeout(function () {
             event.api.setRowData(recvData);
-          }, 1000);
+          // }, 500);
+          //화면오픈시 그리드 칼럼명으로 칼럼폭 자동조정. timeout 설정없으면 동작안됨.
+          setTimeout(function () {
+            autoSizeAll(false);
+          }, 500);
           event.api.sizeColumnsToFit();
           gridApi.value = event.api;
-      // columnApi.value = event.columnApi;
+          columnApi.value = event.columnApi;
         },
         getRowHeight: function() {
           return 35;
@@ -282,66 +281,90 @@
       //   }
       // }
 
-
-      function scanEnter(e) {
-        if (e.target.id == "scan"){
-          console.log(req_param.txtScan);
-        }
-
-        if (lblBarNo.value) {  //오더가 조회된 경우만 스캔을 허용 한다.
-          //이미 스캔한 바코드인지 체크한다.
-          // for (var i=0; i<scanData.length; i++){
-          //   if (scanData[i].barno == req_param.txtScan){
-          //     msg_color.value = "red";
-          //     msg.value = "이미 스캔한 바코드입니다.";
-          //     scan.value.focus();
-          //     scan.value.select();
-          //     return;
-          //   }
-          // }
-
-          //데이터 전송
-          let urlPost = url.value + '/dw/good_receipt/scan';
-
-          console.log("[req_param]", req_param);
-          // console.log(getdata(req_param.txtScan));
-
-          //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
-          $axios.post(urlPost, {
-              i_lang: "KR",
-              i_werks: getdata(store.state.auth.user[0].plantcd),
-              i_userid: store.state.auth.user[0].userid,
-              i_barno: req_param.txtScan,
-          })
-          .then((res) => {
-            console.log("[response data]", res.data);
-            console.log("[response data] = res.data[0].barno -- ", res.data[0].barno);
-            console.log("[response data] = req_param.txtScan -- ", req_param.txtScan);
-
-            if (res.data[0].code == "NG"){
-              msg_color.value = "red";
-              msg.value = res.data[0].message;
-            } else{
-              msg_color.value = "blue";
-              msg.value = "OK";
-              PlaySound("OK");
-            }
-
-            req_param.txtScan = "";
+      async function fn_Search(){
+        // store.commit('loading/startLoading');
+        let urlPost = url.value + '/dw/quality/pda/barcode_search';
+        // console.log(store.state.setup.language.toUpperCase());
+        //전송 파라미터 : 프로시저 파라미터와 동일하게 구성
+        await $axios.post(urlPost, {
+            i_lang: store.state.setup.language.toUpperCase(),  //"KR",
+            // i_werks: getdata(store.state.auth.user[0].plantcd),
+            i_werks: "K143",
+            i_userid: store.state.auth.user[0].userid.toUpperCase(),
+            i_barno: req_param.txtScan,
+            i_calltype: "", //취소시 Cancel
+        })
+        .then((res) => {
+          console.log("[response data]", res.data);
+          if(res.data.length > 0) {
+            lblBarNo.value = res.data[0].barno;
+            lblStatus.value = res.data[0].status;
+            lblQty.value = res.data[0].qty;         
+            lblMatnr.value = res.data[0].matnr;
+            lblMaktx.value = res.data[0].maktx;
+            //조회데이터 그리드에 추가
+            gridApi.value.updateRowData({add: [res.data[0]], addIndex:0});
+            // setTimeout(function () {
+              autoSizeAll(false);   //그리드 칼럼폭 재조정
+            // }, 500);              
+            PlaySound("OK");
             scan.value.focus();
-            // scan.value.select();
-          }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
-            //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
-          .catch(err => {
-            alert(err);
-            console.error(err)
-          })
-        }
-        else {
+            return true;
+          } else {
             msg_color.value = "red";
-            msg.value = "Please search P/O information first.";
-            
-            scan.value.focus();
+            msg.value = "바코드 정보가 없습니다.";
+            return false;
+          }
+        }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+          //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+        .catch(err => {
+          alert(err);
+          console.error(err)
+          return false;
+        })
+        // store.commit('loading/endLoading');
+      }
+
+      async function keyupenter(e){
+        if (e.target.id == "scan"){
+          console.log("txtScan: ",req_param.txtScan);
+          //키보드 입력을 해지
+          // var tmpScan = document.getElementById("scan");
+          // tmpScan.setAttribute('inputmode','none');
+          // console.log(tmpScan.inputMode);
+
+          if (req_param.txtScan.length != 13) {
+						alert('유효하지 않은 바코드번호입니다.')
+						return;
+          }
+          var isBreak = false;
+					gridApi.value.forEachNode( (node) => {
+						console.log("[node.getdata]", node.rowIndex, " : ", node.data.barno);
+						if (node.data.barno == req_param.txtScan) {
+              alert('이미 스캔한 바코드입니다.')
+              // return;  //forEachNode 루프를 빠져나가지 못한다. 
+              isBreak = true;
+						}
+            if (req_param.txtScan.substr(0,1) == "9") {
+              if (node.data.grpbarno == req_param.txtScan) {
+                alert('그룹에 속한 낱바코드가 이미 스캔되었습니다.')
+                isBreak = true;
+              }
+            }
+					});
+          
+          console.log("에러발생: ", isBreak);
+          if (!isBreak) { //에러체크 통과시만 바코드 조회 API 전송
+            var bRtn = await fn_Search();
+            if (bRtn){
+                msg_color.value = "blue";
+                msg.value = "바코드 정보가 조회되었습니다.";
+            }
+          }
+
+          // scan.value.select();
+          // msg_color.value = "blue";
+          // msg.value = "스캔한 바코드가 추가되었습니다.";
         }
       }
 
@@ -354,14 +377,70 @@
         popupisopen.value = false;
       }
 
+      async function sendData(){
+        let urlPost = url.value + '/dw/quality/pda/scrap_save';
+
+        console.log("[req_param]", req_param);
+        // console.log(getdata(req_param.txtScan));
+
+        await $axios.post(urlPost, {
+          i_lang: store.state.setup.language.toUpperCase(),  //"KR",
+          // i_werks: getdata(store.state.auth.user[0].plantcd),
+          i_werks: "K143",
+          i_userid: store.state.auth.user[0].userid.toUpperCase(),
+          i_barno: req_param.txtScan,
+          i_calltype: "", //사용안함. 단, 반드시 지정.
+        })
+        .then((res) => {
+          console.log("[response data]", res.data);
+
+          if(res.data.length > 0) {
+            if (res.data[0].code == "NG") {
+              msg_color.value = "red";
+              msg.value = res.data[0].message;
+              return false;
+            } else {
+              msg_color.value = "blue";
+              msg.value = "정상 처리되었습니다.";
+              // gridApi.value.updateRowData({add: [res.data[0]], addIndex:0});
+              PlaySound("OK");
+              return true;
+            }
+          }
+          else {
+            msg_color.value = "red";
+            msg.value = "에러가 발생하였습니다. 다시 시도하세요.";
+            return false;
+          }
+        }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
+          //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
+        .catch(err => {
+          alert(err);
+          console.error(err);
+          return false;
+        })
+      }
+
       async function yesClick() {
         popupisopen.value = false;
         if (strCalltype.value == "send"){
-          // var bRtn = await sendData();
-          console.log("a");
+          var bRtn = await sendData();
+          console.log("1", bRtn);
+          if (bRtn){
+            console.log("2", bRtn);
+            clearData();
+            console.log("3", bRtn);
+            msg_color.value = "blue";
+            msg.value = "정상 처리되었습니다.";
+          }
+          scan.value.focus();
+          scan.value.select();
+        }
+        else if (strCalltype.value == "delete"){
+          deleteData();
         }
         else if (strCalltype.value == "close"){
-            emit("component_close", "good_receipt");  //구매입고 메뉴화면에서 호출한 경우의 화면종료
+          emit("component_close", "quality_scrap");
         }
         else if (strCalltype.value == "clear"){
           clearData();
@@ -380,32 +459,70 @@
       }
 
       function sendClick(){
-        popupTitle.value ="Good Receipt";
-        popupMsg.value = "전송하시겠습니까?";
-        strCalltype.value = "send";
-        popupisopen.value = true;
+        const rowCount = gridOptions.api.getDisplayedRowCount();
+        if (rowCount > 0){  //미전송 데이터가 있는 경우만 사용자 확인후 처리한다.           
+          popupTitle.value ="Quality Scrap";
+          popupMsg.value = "전송하시겠습니까?";
+          strCalltype.value = "send";
+          popupisopen.value = true;
+        } else {
+          alert("전송할 데이터가 없습니다. 먼저 바코드를 스캔 후 전송하세요.");
+        }
       }
 
       function deleteClick(){
-        popupTitle.value ="Good Receipt";
-        popupMsg.value = "모든 데이터를 초기화하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
-        strCalltype.value = "clear";
-        popupisopen.value = true;
+        const rowCount = gridOptions.api.getDisplayedRowCount();
+        if (rowCount > 0){  //스캔한 바코드가 있는 경우만 사용자 확인후 처리한다.
+          var selectedData = gridApi.value.getSelectedRows();
+          if (selectedData.length > 0) {
+            popupTitle.value ="Quality Scrap";
+            popupMsg.value = "선택한 바코드를 삭제하시겠습니까?";
+            strCalltype.value = "delete";
+            popupisopen.value = true;
+          } else {
+            alert("삭제할 바코드를 선택하세요.");
+          }
+        } else {
+          alert("삭제할 데이터가 없습니다.");
+        }
       }
 
       function clearClick(){
-        popupTitle.value ="Good Receipt";
-        popupMsg.value = "모든 데이터를 초기화하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
-        strCalltype.value = "clear";
-        popupisopen.value = true;
+        const rowCount = gridOptions.api.getDisplayedRowCount();
+        if (rowCount > 0){  //미전송 데이터가 있는 경우만 사용자 확인후 처리한다.        
+          popupTitle.value ="Quality Scrap";
+          popupMsg.value = "모든 데이터를 초기화하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
+          strCalltype.value = "clear";
+          popupisopen.value = true;
+        } else {
+          clearData();
+        }
       }
 
       function closeClick(){
-        popupTitle.value ="Good Receipt";
-        popupMsg.value = "종료하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
-        strCalltype.value = "close";
-        popupisopen.value = true;
-        // emit("component_close", "good_receipt");
+        const rowCount = gridOptions.api.getDisplayedRowCount();
+        if (rowCount > 0){  //미전송 데이터가 있는 경우만 사용자 확인후 처리한다.
+          popupTitle.value ="Quality Scrap";
+          popupMsg.value = "종료하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
+          strCalltype.value = "close";
+          popupisopen.value = true;
+        } else {
+          emit("component_close", "quality_scrap");
+        }
+      }
+
+      function deleteData(){
+        var selectedData = gridApi.value.getSelectedRows();
+        console.log("[selected row]", selectedData);
+
+        var removedRows = [];
+        selectedData.forEach( function(selectedRow){
+          removedRows.push(selectedRow);
+          gridApi.value.updateRowData({remove: [selectedRow]});
+          console.log("삭제대상 바코드: ", selectedRow.barno);
+        });
+        console.log("[removed row]", removedRows);
+        scan.value.focus();
       }
 
       function clearData(){
@@ -415,6 +532,7 @@
         lblMaktx.value = "자재 상세내역을 표시합니다.";
         lblQty.value = "";
         req_param.txtScan = "1210503100419";
+        msg_color = "";
         msg.value = "";
         recvData.value = "";
         gridApi.value.setRowData([]);
@@ -422,14 +540,14 @@
         scan.value.focus();
       }
 
-      // function autoSizeAll(skipHeader) {
-      //   const allColumnIds = [];
-      //   columnApi.value.getAllColumns().forEach((column) => {
-      //     allColumnIds.push(column.colId);
-      //   });
+      function autoSizeAll(skipHeader) {
+        const allColumnIds = [];
+        columnApi.value.getAllColumns().forEach((column) => {
+          allColumnIds.push(column.colId);
+        });
 
-      //   columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
-      // }
+        columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
+      }
 
 
       return {
@@ -458,7 +576,7 @@
         recvData,
         gridOptions,
         getSelectedRows,
-        scanEnter,
+        keyupenter,
         scanClick,
         sendClick,
         deleteClick,
