@@ -57,6 +57,51 @@ var usermanagement = {
 	]
 }
 
+var master_company = {
+	lblCompanyID: {kr: "회사코드", en: "Company ID"},
+	lblCompanyName:{kr: "회사명", en: "Company Name"},
+	lblUseFlag:{kr: "사용유무", en: "Usage"},
+	lblSearch:{kr: "조회", en: "Display"},
+	lblAdd:{kr: "추가", en: "Add"},
+	lblDelete:{kr: "삭제", en: "Delete"},
+	lblSave:{kr: "저장", en: "Save"},
+	lblClose:{kr: "종료", en: "Close"},
+	grid1:[
+		{name:{kr: "선택", en: "Select"}},
+		{name:{kr: "회사코드", en: "Company ID"}},
+		{name:{kr: "회사명", en: "Company Name"}},
+		{name:{kr: "사용유무", en: "Usage"}},
+		{name:{kr: "수정자", en: "Changed by"}},
+		{name:{kr: "수정일", en: "Changed on"}},
+	]
+}
+
+var master_material = {
+	lblMatcd: {kr: "자재코드", en: "Material Code"},
+	lblMaktx:{kr: "자재명", en: "Material Name"},
+	lblMtart:{kr: "자재그룹", en: "Material Group"},
+	lblUseFlag:{kr: "사용유무", en: "Usage"},
+	lblSearch:{kr: "조회", en: "Display"},
+	lblAdd:{kr: "추가", en: "Add"},
+	lblDelete:{kr: "삭제", en: "Delete"},
+	lblSave:{kr: "저장", en: "Save"},
+	lblClose:{kr: "종료", en: "Close"},
+	grid1:[
+		{name:{kr: "선택", en: "Select"}},
+		{name:{kr: "자재코드", en: "Material Code"}},
+		{name:{kr: "자재유형", en: "Material Type"}},
+		{name:{kr: "자재그룹", en: "Material Group"}},
+		{name:{kr: "자재내역", en: "Material Disc."}},
+		{name:{kr: "기존자재", en: "Old Material"}},
+		{name:{kr: "기본단위", en: "Meins"}},
+		{name:{kr: "등급", en: "Grade"}},
+		{name:{kr: "사용유무", en: "Usage"}},
+		{name:{kr: "수정자", en: "Changed by"}},
+		{name:{kr: "수정일", en: "Changed on"}},
+	]
+}
+
+
 var message = {
 	lblNotice:{kr: "알림", en: "Notice"},
 	lblLogoutMsg:{kr: "로그아웃 하시겠습니까?", en: "Do you want to sing off?"},
@@ -68,4 +113,6 @@ export default {
 	mainheader,
 	menupopup,
 	usermanagement,
+	master_company,
+	master_material,
 }
