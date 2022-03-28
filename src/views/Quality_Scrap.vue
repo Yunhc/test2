@@ -13,11 +13,11 @@
       <!-- 바코드 번호 -->
       <div class="input-group mb-3" :style="{ margin:'2px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
-          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">바코드
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">{{titleBarNo}}
         </span>
         <label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Barcode No"
             aria-label="Barcode No" aria-describedby="basic-addon1"
-            :style="{'text-align':'left'}">
+            :style="{color: 'gray', 'text-align':'left'}">
             {{lblBarNo}}
         </label>
         <!-- <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'0px 0px 0px 5px', width:'120px'}"
@@ -29,11 +29,11 @@
       <!-- 재고상태 -->
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
-          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">재고상태
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">{{titleStatus}}
         </span>
         <label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Status"
             aria-label="Status" aria-describedby="basic-addon1"
-            :style="{'text-align':'left'}">
+            :style="{color: 'gray', 'text-align':'left'}">
             {{lblStatus}}
         </label>
       </div>
@@ -41,11 +41,11 @@
       <!-- 자재코드 -->
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
-          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">자재코드
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">{{titleMatnr}}
         </span>
         <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Material"
             aria-label="Material" aria-describedby="basic-addon1"
-            :style="{'text-align':'left'}">
+            :style="{color: 'gray', 'text-align':'left'}">
             {{lblMatnr}}
         </label>
       </div>
@@ -54,7 +54,7 @@
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
         <label type="label" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Material Description"
             aria-label="Material Description" aria-describedby="basic-addon1"
-            :style="{'text-align':'left'}">
+            :style="{color: 'gray', 'text-align':'left'}">
             {{lblMaktx}}
         </label>
       </div>
@@ -62,11 +62,11 @@
       <!-- 수량 -->
       <div class="input-group mb-3" :style="{ margin:'-15px 0px 0px 0px'}">
         <span class="input-group-text btn-sm" id="basic-addon1"
-          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">수량
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">{{titleQty}}
         </span>
         <label type="text" autocomplete="off" class="form-control btn-sm" placeholder="Qty"
             aria-label="Tot Prod Qty" aria-describedby="basic-addon1"
-            :style="{'text-align':'left'}">
+            :style="{color: 'gray', 'text-align':'left'}">
             {{lblQty}}
         </label>
       </div>
@@ -81,6 +81,7 @@
         class="ag-theme-balham"
         headerHeight='35'
         style="width: 1910px; height:100%"
+        :columnDefs="columnDefs"
         :rowData="recvData.value"
         :gridOptions="gridOptions"
         allow_unsafe_jscode="True"
@@ -112,13 +113,13 @@
       </div>
       <div align="right" :style="{height:'40px', margin:'-17px 0px 0px 0px'}">
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
-        @click='sendClick'>전송</button>
+        @click='sendClick'>{{lblSend}}</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
-        @click='deleteClick'>삭제</button>
+        @click='deleteClick'>{{lblDelete}}</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 10px 0px 0px', width:'70px'}"
-        @click='clearClick'>초기화</button>
+        @click='clearClick'>{{lblClear}}</button>
         <button class="btn btn-outline-success btn-sm" type="button" :style="{ margin:'5px 5px 0px 0px', width:'70px'}"
-        @click='closeClick'>닫기</button> 
+        @click='closeClick'>{{lblClose}}</button> 
       </div>
     </div>
   </div>
@@ -130,9 +131,12 @@
   import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
   import {AgGridVue} from 'ag-grid-vue3'
   import { useStore } from 'vuex';
+  import language from '@/assets/language.js';
   // import { getdata } from '@/helper/filter.js';
   import { PlaySound } from '@/helper/util.js';
   import popupyn from '@/views/PopupYN.vue';
+  // import { BoldRenderer, autoSizeAll } from '@/helper/ag-grid.js';
+  import { BoldRenderer } from '@/helper/ag-grid.js';
 
   export default {
     name:'quality_scrap',
@@ -146,6 +150,9 @@
       let window_width = ref(window.innerWidth);
       let window_height = ref(window.innerHeight);
 
+      //화면 언어 설정==============================================================================//
+      let lang = ref(language.quality_scrap);
+
       let popupTitle = ref(null);
       let popupMsg = ref(null);
       let popupisopen = ref(false);
@@ -154,11 +161,19 @@
       const store = useStore();	//스토어호출
       let options = reactive([]);
 
+      let titleBarNo = ref("바코드");
+      let titleStatus = ref("재고상태");
+      let titleMatnr = ref("자재코드");
+      let titleQty = ref("수량");
       let lblBarNo = ref(null);
       let lblStatus = ref(null);
       let lblMatnr = ref(null);
       let lblMaktx = ref(null);
       let lblQty = ref(null);
+      let lblSend = ref("전송");
+      let lblDelete = ref("삭제");
+      let lblClear = ref("초기화");
+      let lblClose = ref("닫기");
 
       let recvData = reactive([]);
 
@@ -177,7 +192,8 @@
       let columnDefs= reactive([
 				{headerName: '', field: 'sel', width: 4, cellStyle: {textAlign: "center"},
 					headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'},        
-        {headerName: '바코드', field: 'barno', width: 10, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left'},
+        {headerName: '바코드', field: 'barno', width: 10, cellStyle: {textAlign: "center"}, sortable: true, pinned: 'left',
+          cellRenderer: BoldRenderer,},
         {headerName: '재고상태', field: 'status', width: 10, cellStyle: {textAlign: "center"}, sortable: true},
         {headerName: '처리유형', field: 'proctype', width: 4, hide: true, cellStyle: {textAlign: "center"}},
         {headerName: '라벨유형', field: 'lbltype', width: 4, hide: true, cellStyle: {textAlign: "center"}},
@@ -215,7 +231,7 @@
           cellStyle: {textAlign: "left"},
         },
 
-        columnDefs: columnDefs,
+        // columnDefs: columnDefs,
         rowData: null,
         rowSelection: 'multiple',   //추가한 코드. multiple 설정안하면 행 선택이 안되고 하나의 셀이 선택 되어 삭제가 불가능
         onGridReady: function(event) {
@@ -235,19 +251,21 @@
         getRowHeight: function() {
           return 35;
         },
-        onGridSizeChanged: function(event) {
-          event.api.sizeColumnsToFit();
-        },
+        // onGridSizeChanged: function(event) {
+        //   event.api.sizeColumnsToFit();
+        // },
       };
 
       onBeforeMount(()=>{
         console.log("[Quality Scrap] = ", "onBeforeMount--");
-        lblMaktx.value = "자재 상세내역을 표시합니다."
+        // lblMaktx.value = "자재 상세내역을 표시합니다."
+        lblMaktx.value = lang.value['lblMaktx'][store.state.setup.language];
       });
 
       onMounted(() => {
         console.log("[Quality Scrap] = ", "onMounted--");
         window.addEventListener('resize', handleResize);
+        setLanguage();
         scan.value.focus();
       });
 
@@ -282,6 +300,7 @@
       // }
 
       async function fn_Search(){
+        var rtn = false;
         // store.commit('loading/startLoading');
         let urlPost = url.value + '/dw/quality/pda/barcode_search';
         // console.log(store.state.setup.language.toUpperCase());
@@ -302,27 +321,42 @@
             lblQty.value = res.data[0].qty;         
             lblMatnr.value = res.data[0].matnr;
             lblMaktx.value = res.data[0].maktx;
-            //조회데이터 그리드에 추가
-            gridApi.value.updateRowData({add: [res.data[0]], addIndex:0});
-            // setTimeout(function () {
-              autoSizeAll(false);   //그리드 칼럼폭 재조정
-            // }, 500);              
-            PlaySound("OK");
-            scan.value.focus();
-            return true;
+
+            var isBreak = false;
+            gridApi.value.forEachNode( (node) => {
+              console.log("[node.getdata]", node.rowIndex, " : ", node.data.barno);
+              if (node.data.barno == res.data[0].grpbarno) {
+                // alert('그룹바코드가 이미 스캔되었습니다.')
+                // return;  //forEachNode 루프를 빠져나가지 못한다. 
+                isBreak = true;
+              }
+            });
+            if (!isBreak) {
+              //조회데이터 그리드에 추가
+              gridApi.value.updateRowData({add: [res.data[0]], addIndex:0});
+              // setTimeout(function () {
+                autoSizeAll(false);   //그리드 칼럼폭 재조정
+              // }, 500);
+              rtn = true;
+              msg.value = "바코드 정보가 조회되었습니다.";
+            } else {
+              msg.value = "[" + res.data[0].grpbarno + "] 그룹바코드가 이미 스캔되었습니다.";
+              res = false;
+            }
           } else {
-            msg_color.value = "red";
             msg.value = "바코드 정보가 없습니다.";
-            return false;
+            rtn = false;
           }
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => {
           alert(err);
-          console.error(err)
-          return false;
+          console.error(err);
+          msg.value = err;
+          rtn = false;
         })
         // store.commit('loading/endLoading');
+        return rtn;
       }
 
       async function keyupenter(e){
@@ -341,13 +375,15 @@
 					gridApi.value.forEachNode( (node) => {
 						console.log("[node.getdata]", node.rowIndex, " : ", node.data.barno);
 						if (node.data.barno == req_param.txtScan) {
-              alert('이미 스캔한 바코드입니다.')
+              // alert('이미 스캔한 바코드입니다.')
+              msg.value = "이미 스캔한 바코드입니다."
               // return;  //forEachNode 루프를 빠져나가지 못한다. 
               isBreak = true;
 						}
             if (req_param.txtScan.substr(0,1) == "9") {
               if (node.data.grpbarno == req_param.txtScan) {
-                alert('그룹에 속한 낱바코드가 이미 스캔되었습니다.')
+                // alert('그룹에 속한 낱바코드가 이미 스캔되었습니다.') //alert가 여러번 반복될 수 있다.
+                msg.value = "그룹에 속한 낱바코드가 이미 스캔되었습니다."
                 isBreak = true;
               }
             }
@@ -356,10 +392,17 @@
           console.log("에러발생: ", isBreak);
           if (!isBreak) { //에러체크 통과시만 바코드 조회 API 전송
             var bRtn = await fn_Search();
-            if (bRtn){
-                msg_color.value = "blue";
-                msg.value = "바코드 정보가 조회되었습니다.";
+            console.log("bRtn: ", bRtn);
+            if (bRtn) {
+              msg_color.value = "blue";
+              PlaySound("OK");
+            } else {
+              msg_color.value = "red";
             }
+            scan.value.focus();
+          } else {
+            alert(msg.value);
+            msg_color.value = "red";
           }
 
           // scan.value.select();
@@ -378,6 +421,20 @@
       }
 
       async function sendData(){
+        var rtn = false;
+        var barlist = "";
+        //그리드의 마지막 row부터 전송하기 위하여 forEachNode를 사용하지 않는다.
+        // gridApi.value.forEachNode( (node) => {
+        for (var i = gridApi.value.getDisplayedRowCount()-1; i>=0; i--) {
+          const node = gridApi.value.getDisplayedRowAtIndex(i);
+          if (i==0) {  //마지막 데이터이면 구분자(콤마)를 넣지 않는다.
+            barlist = barlist + node.data.barno
+          } else {
+            barlist = barlist + node.data.barno + ",";
+          }
+        }
+        console.log("barlist: ", barlist);
+
         let urlPost = url.value + '/dw/quality/pda/scrap_save';
 
         console.log("[req_param]", req_param);
@@ -388,7 +445,7 @@
           // i_werks: getdata(store.state.auth.user[0].plantcd),
           i_werks: "K143",
           i_userid: store.state.auth.user[0].userid.toUpperCase(),
-          i_barno: req_param.txtScan,
+          i_barno: barlist,
           i_calltype: "", //사용안함. 단, 반드시 지정.
         })
         .then((res) => {
@@ -398,52 +455,55 @@
             if (res.data[0].code == "NG") {
               msg_color.value = "red";
               msg.value = res.data[0].message;
-              return false;
+              rtn = false;
             } else {
-              msg_color.value = "blue";
               msg.value = "정상 처리되었습니다.";
               // gridApi.value.updateRowData({add: [res.data[0]], addIndex:0});
-              PlaySound("OK");
-              return true;
+              rtn = true;
             }
           }
           else {
-            msg_color.value = "red";
             msg.value = "에러가 발생하였습니다. 다시 시도하세요.";
-            return false;
+            rtn = false;
           }
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => {
           alert(err);
           console.error(err);
-          return false;
+          rtn = false;
         })
+
+        return rtn;
       }
 
       async function yesClick() {
         popupisopen.value = false;
         if (strCalltype.value == "send"){
           var bRtn = await sendData();
-          console.log("1", bRtn);
+          console.log("bRtn: ", bRtn);
           if (bRtn){
-            console.log("2", bRtn);
             clearData();
-            console.log("3", bRtn);
+            console.log("Data are cleared");
             msg_color.value = "blue";
             msg.value = "정상 처리되었습니다.";
+            PlaySound("OK");
           }
           scan.value.focus();
           scan.value.select();
         }
         else if (strCalltype.value == "delete"){
           deleteData();
+          msg_color.value = "blue";
+          msg.value = "선택한 바코드가 삭제되었습니다.";
         }
         else if (strCalltype.value == "close"){
           emit("component_close", "quality_scrap");
         }
         else if (strCalltype.value == "clear"){
           clearData();
+          // msg_color.value = "blue";  //정상적으로 처리되지 않음.
+          // msg.value = "데이터가 초기화되었습니다.";
         }
       }
 
@@ -529,13 +589,23 @@
         lblBarNo.value = "";
         lblStatus.value = "";
         lblMatnr.value = "";
-        lblMaktx.value = "자재 상세내역을 표시합니다.";
+        // lblMaktx.value = "자재 상세내역을 표시합니다.";
+        lblMaktx.value = lang.value['lblMaktx'][store.state.setup.language];
         lblQty.value = "";
         req_param.txtScan = "1210503100419";
-        msg_color = "";
-        msg.value = "";
-        recvData.value = "";
+        // msg_color = "";
+        // msg.value = "";
+        msg_color.value = "blue";
+        msg.value = "데이터가 초기화되었습니다.";
+
+        recvData = "";
+        // recvData = reactive([]);
+        
         gridApi.value.setRowData([]);
+
+        setTimeout(function () {
+          autoSizeAll(false);
+        }, 500);
 
         scan.value.focus();
       }
@@ -549,6 +619,22 @@
         columnApi.value.autoSizeColumns(allColumnIds, skipHeader);
       }
 
+      function setLanguage(){
+        titleBarNo.value = lang.value['titleBarNo'][store.state.setup.language];
+        titleStatus.value = lang.value['titleStatus'][store.state.setup.language];
+        titleMatnr.value = lang.value['titleMatnr'][store.state.setup.language];
+        lblMaktx.value = lang.value['lblMaktx'][store.state.setup.language];
+        titleQty.value = lang.value['titleQty'][store.state.setup.language];
+
+        lblSend.value = lang.value['lblSend'][store.state.setup.language];
+        lblDelete.value = lang.value['lblDelete'][store.state.setup.language];
+        lblClear.value = lang.value['lblClear'][store.state.setup.language];
+        lblClose.value = lang.value['lblClose'][store.state.setup.language];
+
+        for(var i=0; i<columnDefs.length; i++){
+          columnDefs[i].headerName = lang.value.grid1[i]['name'][store.state.setup.language];
+        }
+      }
 
       return {
         window_width,
@@ -558,13 +644,22 @@
         popupisopen,
         yesClick,
         noClick,
+        columnDefs,
         // fullPage,
         // fullPageChange,
+        titleBarNo,
+        titleStatus,
+        titleMatnr,
+        titleQty,
         lblBarNo,
         lblStatus,
         lblMatnr,
         lblMaktx,
         lblQty,
+        lblSend,
+        lblDelete,
+        lblClear,
+        lblClose,
         scan,   //scan.value.focus() 처리
         req_param,
         msg,
@@ -587,3 +682,11 @@
     },
   }
 </script>
+// <style lang="scss">
+// .list {
+//   /* height: calc(50vh - 70px); */
+//   width : 100%;
+//   height: 455px;
+//   overflow: auto;
+// }
+// </style>
