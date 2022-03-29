@@ -6,7 +6,7 @@
       :title="popupTitle"
       :message="popupMsg"
       @yesClick="yesClick"
-      @noClick="popupisopen=false">
+      @noClick="noClick">
     </popupyn>
 
     <div class="window-search-5">
@@ -107,6 +107,7 @@
                     background:'transparent',
                     'font-size':'16px',
                     'font-weight':'bold',
+                    'text-align':'left',
                     color:msg_color}">
           Msg:{{msg}}
         </p>
@@ -152,6 +153,7 @@
 
       //화면 언어 설정==============================================================================//
       let lang = ref(language.quality_scrap);
+      let msg_lang = ref(language.message);
 
       let popupTitle = ref(null);
       let popupMsg = ref(null);
@@ -338,13 +340,17 @@
                 autoSizeAll(false);   //그리드 칼럼폭 재조정
               // }, 500);
               rtn = true;
-              msg.value = "바코드 정보가 조회되었습니다.";
+              // msg.value = "조회되었습니다.";
+              msg.value = msg_lang.value['msg_search'][store.state.setup.language];
             } else {
-              msg.value = "[" + res.data[0].grpbarno + "] 그룹바코드가 이미 스캔되었습니다.";
+              // msg.value = "[" + res.data[0].grpbarno + "] 그룹바코드가 이미 스캔되었습니다.";
+              msg.value = "[" + res.data[0].grpbarno + "] " + msg_lang.value['msg_err1'][store.state.setup.language];
+
               res = false;
             }
           } else {
-            msg.value = "바코드 정보가 없습니다.";
+            // msg.value = "조회된 데이터가 없습니다.";
+            msg.value = msg_lang.value['msg_noinfo'][store.state.setup.language];
             rtn = false;
           }
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
@@ -368,7 +374,8 @@
           // console.log(tmpScan.inputMode);
 
           if (req_param.txtScan.length != 13) {
-						alert('유효하지 않은 바코드번호입니다.')
+						// alert('유효하지 않은 바코드번호입니다.')
+            alert(msg_lang.value['msg_err2'][store.state.setup.language]);
 						return;
           }
           var isBreak = false;
@@ -376,14 +383,16 @@
 						console.log("[node.getdata]", node.rowIndex, " : ", node.data.barno);
 						if (node.data.barno == req_param.txtScan) {
               // alert('이미 스캔한 바코드입니다.')
-              msg.value = "이미 스캔한 바코드입니다."
+              // msg.value = "이미 스캔한 바코드입니다."
+              msg.value = msg_lang.value['msg_err3'][store.state.setup.language];
               // return;  //forEachNode 루프를 빠져나가지 못한다. 
               isBreak = true;
 						}
             if (req_param.txtScan.substr(0,1) == "9") {
               if (node.data.grpbarno == req_param.txtScan) {
                 // alert('그룹에 속한 낱바코드가 이미 스캔되었습니다.') //alert가 여러번 반복될 수 있다.
-                msg.value = "그룹에 속한 낱바코드가 이미 스캔되었습니다."
+                // msg.value = "그룹에 속한 낱바코드가 이미 스캔되었습니다."
+                msg.value = msg_lang.value['msg_err4'][store.state.setup.language];
                 isBreak = true;
               }
             }
@@ -418,6 +427,7 @@
 
       function noClick(){
         popupisopen.value = false;
+        scan.value.focus();
       }
 
       async function sendData(){
@@ -457,13 +467,15 @@
               msg.value = res.data[0].message;
               rtn = false;
             } else {
-              msg.value = "정상 처리되었습니다.";
+              // msg.value = "정상 처리되었습니다.";
+              msg.value = msg_lang.value['msg_success'][store.state.setup.language];
               // gridApi.value.updateRowData({add: [res.data[0]], addIndex:0});
               rtn = true;
             }
           }
           else {
-            msg.value = "에러가 발생하였습니다. 다시 시도하세요.";
+            // msg.value = "에러가 발생하였습니다.";
+            msg.value = msg_lang.value['msg_fail'][store.state.setup.language];
             rtn = false;
           }
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
@@ -486,7 +498,9 @@
             clearData();
             console.log("Data are cleared");
             msg_color.value = "blue";
-            msg.value = "정상 처리되었습니다.";
+            // msg.value = "정상 처리되었습니다.";
+            msg.value = msg_lang.value['msg_success'][store.state.setup.language];
+
             PlaySound("OK");
           }
           scan.value.focus();
@@ -494,8 +508,9 @@
         }
         else if (strCalltype.value == "delete"){
           deleteData();
-          msg_color.value = "blue";
-          msg.value = "선택한 바코드가 삭제되었습니다.";
+          // msg_color.value = "blue";
+          // msg.value = "선택한 바코드가 삭제되었습니다.";
+          // msg.value = msg_lang.value['msg_delete'][store.state.setup.language];
         }
         else if (strCalltype.value == "close"){
           emit("component_close", "quality_scrap");
@@ -522,12 +537,15 @@
         const rowCount = gridOptions.api.getDisplayedRowCount();
         if (rowCount > 0){  //미전송 데이터가 있는 경우만 사용자 확인후 처리한다.           
           popupTitle.value ="Quality Scrap";
-          popupMsg.value = "전송하시겠습니까?";
+          // popupMsg.value = "전송하시겠습니까?";
+          popupMsg.value = msg_lang.value['msg_que1'][store.state.setup.language];
           strCalltype.value = "send";
           popupisopen.value = true;
         } else {
-          alert("전송할 데이터가 없습니다. 먼저 바코드를 스캔 후 전송하세요.");
+          // alert("전송할 데이터가 없습니다. 먼저 바코드를 스캔 후 전송하세요.");
+          alert(msg_lang.value['msg_war1'][store.state.setup.language]);
         }
+        scan.value.focus();
       }
 
       function deleteClick(){
@@ -536,22 +554,27 @@
           var selectedData = gridApi.value.getSelectedRows();
           if (selectedData.length > 0) {
             popupTitle.value ="Quality Scrap";
-            popupMsg.value = "선택한 바코드를 삭제하시겠습니까?";
+            // popupMsg.value = "선택한 바코드를 삭제하시겠습니까?";
+            popupMsg.value = msg_lang.value['msg_que2'][store.state.setup.language];
             strCalltype.value = "delete";
             popupisopen.value = true;
           } else {
-            alert("삭제할 바코드를 선택하세요.");
+            // alert("삭제할 바코드를 선택하세요.");
+            alert(msg_lang.value['msg_war2'][store.state.setup.language]);
           }
         } else {
-          alert("삭제할 데이터가 없습니다.");
+          // alert("삭제할 데이터가 없습니다.");
+          alert(msg_lang.value['msg_war3'][store.state.setup.language]);
         }
+        scan.value.focus();
       }
 
       function clearClick(){
         const rowCount = gridOptions.api.getDisplayedRowCount();
         if (rowCount > 0){  //미전송 데이터가 있는 경우만 사용자 확인후 처리한다.        
           popupTitle.value ="Quality Scrap";
-          popupMsg.value = "모든 데이터를 초기화하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
+          // popupMsg.value = "모든 데이터를 초기화하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
+          popupMsg.value = msg_lang.value['msg_que3'][store.state.setup.language];
           strCalltype.value = "clear";
           popupisopen.value = true;
         } else {
@@ -563,7 +586,8 @@
         const rowCount = gridOptions.api.getDisplayedRowCount();
         if (rowCount > 0){  //미전송 데이터가 있는 경우만 사용자 확인후 처리한다.
           popupTitle.value ="Quality Scrap";
-          popupMsg.value = "종료하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
+          // popupMsg.value = "종료하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.";
+          popupMsg.value = msg_lang.value['msg_que4'][store.state.setup.language];
           strCalltype.value = "close";
           popupisopen.value = true;
         } else {
@@ -582,6 +606,9 @@
           console.log("삭제대상 바코드: ", selectedRow.barno);
         });
         console.log("[removed row]", removedRows);
+        msg_color.value = "blue";
+        // msg.value = "선택한 바코드가 삭제되었습니다.";
+        msg.value = msg_lang.value['msg_delete'][store.state.setup.language];
         scan.value.focus();
       }
 
@@ -596,7 +623,8 @@
         // msg_color = "";
         // msg.value = "";
         msg_color.value = "blue";
-        msg.value = "데이터가 초기화되었습니다.";
+        // msg.value = "데이터가 초기화되었습니다.";
+        msg.value = msg_lang.value['msg_clear'][store.state.setup.language];
 
         recvData = "";
         // recvData = reactive([]);
