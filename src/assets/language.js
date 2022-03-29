@@ -147,6 +147,33 @@ var quality_scrap = {
 var message = {
 	lblNotice:{kr: "알림", en: "Notice"},
 	lblLogoutMsg:{kr: "로그아웃 하시겠습니까?", en: "Do you want to sing off?"},
+
+	msg_search:{kr: "조회되었습니다.", en: "Inquiry has been made."},
+	msg_noinfo:{kr: "조회된 데이터가 없습니다.", en: "There is no data inquired."},
+	msg_delete:{kr: "선택한 바코드가 삭제되었습니다.", en: "The selected barcode has been deleted."},
+	msg_clear:{kr: "데이터가 초기화되었습니다.", en: "The data has been initialized."},
+	msg_success:{kr: "정상 처리되었습니다.", en: "It has been processed normally."},
+	msg_fail:{kr: "에러가 발생하였습니다.", en: "An error has occurred."},
+
+	msg_que1:{kr: "전송하시겠습니까?", en: "Do you want to send it?"},
+	msg_que2:{kr: "선택한 바코드를 삭제하시겠습니까?", en: "Are you sure you want to delete the selected barcode?"},
+	msg_que3:{kr: "모든 데이터를 초기화하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.", 
+						en: "Do you want to initialize all data? \nThe data that was not sent will be deleted."},
+	msg_que4:{kr: "종료하시겠습니까? \n전송하지 않은 데이터는 삭제됩니다.", 
+						en: "Do you want to end it? \nThe data that was not sent will be deleted."},						
+
+	msg_war1:{kr: "전송할 데이터가 없습니다. 먼저 바코드를 스캔 후 전송하세요.",
+						en: "There is no data to transfer. First, scan the barcode and send it."},
+	msg_war2:{kr: "삭제할 바코드를 선택하세요.", en: "Please select the barcode you want to delete."},
+	msg_war3:{kr: "삭제할 데이터가 없습니다.", en: "There is no data to delete."},
+
+	msg_err1:{kr: "그룹바코드가 이미 스캔되었습니다.", en: "The group barcode has already been scanned."},
+	msg_err2:{kr: "유효하지 않은 바코드번호입니다.", en: "Invalid barcode number."},
+	msg_err3:{kr: "이미 스캔한 바코드입니다.", en: "This is a barcode that has already been scanned."},
+	msg_err4:{kr: "그룹에 속한 낱바코드가 이미 스캔되었습니다.", en: "The barcode belonging to the group has already been scanned."},
+	
+
+
 }
 
 export default {
