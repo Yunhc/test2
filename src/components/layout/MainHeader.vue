@@ -59,7 +59,7 @@
 
       let window_width = ref(window.innerWidth);
       let window_height = ref(window.innerHeight);
-      let bCheckWindowWidth = ref(true);
+      let bCheckWindowWidth = ref(false);
 
       let popupisopen = ref(false);
 
