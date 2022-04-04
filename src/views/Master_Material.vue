@@ -7,20 +7,20 @@
     <div class="window-search-1">
       <form class="d-flex" :style="{height:'37px'}" >
         <div class="input-group mb-3" :style="{ margin:'5px 5px 0px 5px'}">
-          <span class="input-group-text btn-sm" id="basic-addon1">{{lblMatcd}}</span>
-          <input type="text" class="form-control btn-sm" placeholder="Material Code" aria-label="Material Code" aria-describedby="basic-addon1" v-model="Material_param.companyid">
+          <span class="input-group-text btn-sm" id="basic-addon1">{{lblMatnr}}</span>
+          <input type="text" class="form-control btn-sm" placeholder="Material Code" aria-label="Material Code" aria-describedby="basic-addon1" v-model="Material_param.matnr">
         </div>
 
         <div class="input-group mb-3" :style="{ margin:'5px 5px 0px 5px'}">
           <span class="input-group-text btn-sm" id="basic-addon1">{{lblMaktx}}</span>
-          <input type="text" class="form-control btn-sm" placeholder="Material Name" aria-label="Material Name" aria-describedby="basic-addon1" v-model="Material_param.companyname">
+          <input type="text" class="form-control btn-sm" placeholder="Material Name" aria-label="Material Name" aria-describedby="basic-addon1" v-model="Material_param.maktx">
         </div>
 
 
         
         <div class="input-group mb-3" :style="{ margin:'5px 5px 0px 0px'}">
           <span class="input-group-text btn-sm" id="basic-addon1">{{lblMtart}}</span>
-          <select class="form-select btn-sm" aria-label="Default select example" v-model="Material_param.useflag">
+          <select class="form-select btn-sm" aria-label="Default select example" v-model="Material_param.mtart">
             <option disabled value="">ALL</option>
             <option v-for="(d, i) in optionsMtart" :key="i" :value="d.id">{{ d.name }}</option>
           </select>
@@ -103,7 +103,7 @@
       //화면 언어 설정==============================================================================//
       let lang = ref(language.master_material);
 
-      let lblMatcd = ref("자재코드");
+      let lblMatnr = ref("자재코드");
       let lblMaktx = ref("자재명");
       let lblMtart = ref("자재그룹");
       let lblUseFlag = ref("사용유무");      
@@ -120,20 +120,20 @@
       let url = ref($url_rest);
       let gridApi = ref(null);
       let columnApi = ref(null);
-      let Material_param = reactive({Matcd:"", mtart:"", Maktx:"" ,useflag:""});
+      let Material_param = reactive({matnr:"", mtart:"", maktx:"" ,useflag:""});
 
       let columnDefs= reactive([
           {headerName: '선택', field: 'sel', width: 50, cellStyle: {textAlign: "center"},
             headerCheckboxSelection: true, checkboxSelection: true, pinned: 'left'
           },
-          {headerName: '자재코드', field: 'matcd', width: 100, sortable: true, pinned: 'left',
+          {headerName: '자재코드', field: 'matnr', width: 100, sortable: true, pinned: 'left',
             cellRenderer: BoldRenderer,
           },
           {headerName: '자재유형', field: 'mtart', width: 120},
           {headerName: '자재그룹', field: 'matkl', width: 120},
 
           {headerName: '자재내역', field: 'maktx', width: 120},
-          {headerName: '기존자재', field: 'bimst', width: 120},
+          {headerName: '기존자재', field: 'bismt', width: 120},
           {headerName: '기본단위', field: 'meins', width: 120},
           {headerName: '등급', field: 'grade', width: 120},
           {headerName: '사용유무', field: 'useflag', cellStyle: {textAlign: "center"},
@@ -143,23 +143,10 @@
             cellRenderer: useflagCellRenderer,
             keyCreator: (useflag) => {
               return useflag.name;
-            },   
-            
-            cellEditorParams: function(param){
-              var selectedPlant = getdata(param.data.plantcd);
-              // console.log("[selectedPlant]", selectedPlant );
-              
-              if (selectedPlant == 'K143'){
-                return{
-                  values: ['Y', 'N']
-                };
-              }
-              else{
-                return{
-                  values: ['Y', 'N']
-                };
-              }
-            },                                                                                                                        
+            },              
+            cellEditorParams: {
+              values: ['Y', 'N'],   
+            },                                                          
           },                  
           {headerName: '수정자', field: 'upduser'},
           {headerName: '수정일', field: 'upddate', cellStyle: {textAlign: "center"},},
@@ -216,7 +203,7 @@
       onBeforeMount(()=>{
         // console.log("[UserManagement] = ", "onBeforeMount--");
         searchSelectBox_UseFlag();
-        searchSelectBox_Matrt();
+        searchSelectBox_Mtart();
       });
 
       onMounted(() => {
@@ -245,7 +232,7 @@
         alert(`Selected nodes: ${selectedDataStringPresentation}`);
       };
 
-      function searchSelectBox_Matrt() {
+      function searchSelectBox_Mtart() {
         // options.push({id:"", name:"All"});
         // options.push({id:"Y", name:"Yes"});
         // options.push({id:"N", name:"No"});
@@ -263,7 +250,7 @@
           space: "Y",
         })
         .then((res) => {
-          // console.log("[UserManagement] = response data -- ", res.data);
+          console.log("[Master_Material_Mtart] = response data -- ", res.data);
           optionsMtart.splice(0, optionsMtart.length);
           for(var i=0; i<res.data.length; i++){
              optionsMtart.push({id:res.data[i].id, name:res.data[i].name});
@@ -297,7 +284,7 @@
           space: "Y",
         })
         .then((res) => {
-          // console.log("[UserManagement] = response data -- ", res.data);
+           console.log("[Master_Material_Use] = response data -- ", res.data);
 
           optionsUse.splice(0, optionsUse.length);
           for(var i=0; i<res.data.length; i++){
@@ -314,18 +301,21 @@
       }
 
       function searchClick_post() {
+
+        store.commit('loading/startLoading'); //진행표시 시작
+
         let urlPost = url.value + '/dw/master/Material/search';
 
-         console.log("[Material_param.Matcd]", Material_param.Matcd);
-         console.log("[Material_param.Maktx]", Material_param.Maktx);
-         console.log("[Material_param.Matrt]", Material_param.mtart);
+         console.log("[Material_param.matnr]", Material_param.matnr);
+         console.log("[Material_param.Maktx]", Material_param.maktx);
+         console.log("[Material_param.Mtart]", Material_param.mtart);
          console.log("[Material_param.useflag]", Material_param.useflag);
 
         $axios.post(urlPost, {
           lang: "KR",
-          Matcd: Material_param.Matcd,
-          Maktx: Material_param.Maktx,
-          mtart: Material_param.mtart,
+          matnr: Material_param.matnr,
+          maktx: Material_param.maktx,
+          mtart: getdata(Material_param.mtart),
           useflag: Material_param.useflag,
         })
         .then((res) => {
@@ -336,21 +326,25 @@
           setTimeout(function () {
 						autoSizeAll(false, columnApi);
 					});
+
+          store.commit('loading/endLoading'); //진행표시 중지
+
           // console.log("[ received data ] ", recvData);
         }) //인자로 넣어주는 함수니 콜백함수. 함수가 메서드가 아니므로 this는 method다. 콜백함수는 무조건 화살표쓴다
           //.then(res => this.photos = res.data ) //리턴 없고 인자도 하나니 이렇게 가능하다
         .catch(err => {
           alert(err);
           console.error(err)
+          store.commit('loading/endLoading'); //진행표시 중지
         })
       }
       function createNewRowData() {
         var newData = {
-          matcd:"",
-          matrt:"",
+          matnr:"",
+          mtart:"",
           matkl:"",
           maktx:"",
-          bimst:"",
+          bismt:"",
           meins:"",
           grade:"",
           useflag:"Y"
@@ -369,33 +363,9 @@
 
         const rowNode = gridApi.value.getDisplayedRowAtIndex(0);
         rowNode.setSelected(true);
-
-        // gridApi.value.forEachNode( (node) => {
-        //     if (node.rowIndex === 0) {
-        //         node.setSelected(true);
-        //     }
-
-        //     // var rowdata = gridApi.value.getdata()
-        //     console.log("[node.getdata]", node.data.userid );
-        // });
-
-        // gridApi.value.forEachNodeAfterFilter( function(node) {
-        //   console.log("[node.rowIndex]", node.rowIndex);
-        //   if (node.rowIndex === 0){
-        //     node.setSelected(true);
-        //   }
-        // });
-        //printResult(res);
       }
       function deleteClick() {
-        // alert("deleteClick");
-        // var selectedData = gridOptions.api.getSelectedRows();
-        // console.log("[checked row]", selectedData);
-        //alert(selectedData[0].userid + "    " + selectedData.length);
-
         saveUser2("D");
-        // var res = gridOptions.api.updateRowData({remove: selectedData});
-        // recvData.remove(res);
       }
 
       function saveClick() {
@@ -410,7 +380,7 @@
 
         console.log("[checked row]", selectedData);
 
-        let urlPost = url.value + '/dw/master/company/save';
+        let urlPost = url.value + '/dw/master/material/save';
         $axios.post(urlPost, {
           lang:       "KR",
           type:       sType,
@@ -473,7 +443,7 @@
 
       function setLanguage(){
         console.log("lang = ", lang.value);
-        lblMatcd.value = lang.value['lblMatcd'][store.state.setup.language];
+        lblMatnr.value = lang.value['lblMatnr'][store.state.setup.language];
         lblMaktx.value = lang.value['lblMaktx'][store.state.setup.language];
         lblMtart.value = lang.value['lblMtart'][store.state.setup.language];
         lblUseFlag.value = lang.value['lblUseFlag'][store.state.setup.language];
@@ -572,8 +542,8 @@
         columnDefs,
         MaterialData,
         searchSelectBox_UseFlag,
-        searchSelectBox_Matrt,
-        lblMatcd,
+        searchSelectBox_Mtart,
+        lblMatnr,
         lblMaktx,
         lblMtart,
         lblUseFlag,
