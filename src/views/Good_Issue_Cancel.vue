@@ -15,15 +15,28 @@
       @DOcloseClick="DOcloseClick">
     </popupdosearch>
 
-    <div class="pda-panel-7">
-			<div class="input-group mb-3">
+    <!-- <div class="pda-panel-7"> -->
+    <div class="window-search-5">
+      <!-- DO 번호 -->
+      <div class="input-group mb-3" :style="{ margin:'2px 0px 0px 0px'}">
+        <span class="input-group-text btn-sm" id="basic-addon1"
+          :style="{width:'80px', display:'inline-block', 'text-align':'right'}">Order No
+        </span>
+        <label type="text" autocomplete="off" class="form-control btn-sm ellipsis" placeholder="Order No"
+            aria-label="Order No" aria-describedby="basic-addon1"
+            :style="{color: 'gray', 'text-align':'left'}">
+            {{lblDONo}}
+        </label>
+      </div>
+
+			<!-- <div class="input-group mb-3">
 				<span class="input-group-text btn-sm" id="basic-addon1"
 					:style="{width:'80px', display:'inline-block', 'text-align':'left'}">Order No
 				</span>
 				<label type="text" autocomplete="off" class="form-control btn-sm" placeholder="" aria-describedby="basic-addon1"
           >{{lblDONo}}
 				</label>
-			</div>
+			</div> -->
 			<div class="input-group mb-3 pda-panel-div">
 				<span class="input-group-text btn-sm" id="basic-addon1"
 					:style="{width:'80px', display:'inline-block', 'text-align':'left'}">Plan Date
