@@ -210,4 +210,5 @@ export default {
 	master_company,
 	master_material,
 	management_purchase_order,
+	quality_scrap,
 }
